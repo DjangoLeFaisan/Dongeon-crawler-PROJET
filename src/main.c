@@ -20,6 +20,8 @@ int main(void)
     gTileTextures[1] = LoadTexture("assets/marron.png");
     gTileTextures[2] = LoadTexture("assets/tool.png");
     gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
+
+    gTileTextureCount = 4;
     
     Board board = {0};
     GameInit(&board);
