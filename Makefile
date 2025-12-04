@@ -1,28 +1,37 @@
-CC      = gcc
-CFLAGS  = -Wall -Wextra -std=c17 -g -Iinclude $(shell pkg-config --cflags raylib)
-LDFLAGS = $(shell pkg-config --libs raylib)
+# Makefile
 
-SRC_DIR = src
-OBJ_DIR = build
+CC      ?= gcc
+CFLAGS  ?= -std=c17 -Wall -Wextra -g
+CFLAGS  += -Isrc -Iinclude
+LDFLAGS ?=
 
-SRC = $(wildcard $(SRC_DIR)/*.c)
-OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC))
 
-TARGET = game
+SRC  := $(wildcard src/*.c)
+OBJ  := $(SRC:src/%.c=build/%.o)
+BIN  := build/game
 
-.PHONY: all clean run
+UNAME_S := $(shell uname -s)
 
-all: $(TARGET)
+# macOS (Homebrew + pkg-config)
+ifeq ($(UNAME_S),Darwin)
+    CFLAGS  += $(shell pkg-config --cflags raylib)
+    LDFLAGS += $(shell pkg-config --libs raylib)
+endif
 
-$(TARGET): $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS)
+# Windows (MSYS2 / MinGW64)
+ifeq ($(OS),Windows_NT)
+    CFLAGS  += $(shell pkg-config --cflags raylib)
+    LDFLAGS += $(shell pkg-config --libs raylib)
+endif
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
+all: $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(OBJ) -o $@ $(LDFLAGS)
+
+build/%.o: src/%.c
+	mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
-run: $(TARGET)
-	./$(TARGET)
-
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
+	rm -rf build
