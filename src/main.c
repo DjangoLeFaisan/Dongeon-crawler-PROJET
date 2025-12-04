@@ -9,6 +9,9 @@ int gTileTextureCount = 0;
 
 int main(void)
 {
+
+    /*int test(choixJoueurs, resultatordi);*/
+
     const int screenWidth = 1384;
     const int screenHeight = 704;
 
