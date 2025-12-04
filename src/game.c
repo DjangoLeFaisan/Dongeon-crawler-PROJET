@@ -45,16 +45,15 @@ void GameInit(Board *board)
             Tile *t = &board->tiles[y][x];
             TileClear(t);
 
-            // couche 0 : sol
-            int groundIndex = (x+y) % 2; // ex: desert ou mer
-            TilePush(t, groundIndex);
+            int groundIndex = 0;
 
-            // disposition des marteau sur la diagonale
-            if (x == y)
-            {
-                int objectIndex = 2; // ex: pierre, arbre…
-                TilePush(t, objectIndex);
-            }
+            // couche 0 : sol
+            if ((x % 43) < 34)
+                groundIndex = 0;
+            else 
+                groundIndex = 1;
+            
+            TilePush(t, groundIndex);
         }
     }
 }
