@@ -1,4 +1,4 @@
-#ifndef BATTLE_H
+/*#ifndef BATTLE_H
 #define BATTLE_H
 
 int test();

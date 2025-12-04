@@ -1,6 +1,6 @@
 /*systeme de combat en tour par tour , tes sorts ou tes actions possibles sont visibles tout le temps 
 une fois qu'un enemie t'as vu le tour par tour commence chacun attaque et en haut une barre de priorité s'affiche pile ou face pour savoir qui commence, 
-possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendre les dégats puis lancer le combat */
+possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendre les dégats puis lancer le combat 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -10,8 +10,9 @@ possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendr
 
 
 int test() {
-int choixJoueurs, resultatordi; /* fonctions pour stocker le choix du joueurs et le resultat*/
-int lancedés(); {
+int choixJoueurs, resultatordi; 
+fonctions pour stocker le choix du joueurs et le resultat*/
+/* int lancedés(); {
  
      
        srand((unsigned)time(NULL)); // Initialisation de la génération de nombres aléatoires en fonction du temps actuel
@@ -50,7 +51,7 @@ int lancedés(); {
    return 0;
   
 }
-
+*/
 
 
 

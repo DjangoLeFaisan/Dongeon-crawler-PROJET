@@ -9,16 +9,11 @@ int gTileTextureCount = 0;
 
 int main(void)
 {
-<<<<<<< HEAD
 
-    int test(choixJoueurs, resultatordi);
+    /*int test(choixJoueurs, resultatordi);*/
 
-    const int screenWidth = BOARD_COLS * TILE_SIZE;
-    const int screenHeight = BOARD_ROWS * TILE_SIZE;
-=======
     const int screenWidth = 1384;
     const int screenHeight = 704;
->>>>>>> b73a9c39beb3c10b4fed85c0d70646438f55a145
 
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
     SetTargetFPS(60);
