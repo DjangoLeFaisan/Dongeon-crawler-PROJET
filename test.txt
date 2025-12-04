@@ -3,3 +3,8 @@
 bonjour 
 
 au aau au test
+<<<<<<< HEAD
+=======
+
+Test 04/12/2025
+>>>>>>> 01a2c27a2a3b8bb07aca4d22bd0b55f955f24576

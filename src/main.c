@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include "game.h"
+#include "map.h"
 
 
 // Gestionnaire de texture
@@ -18,7 +18,7 @@ int main(void)
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/sand.png");
     gTileTextures[1] = LoadTexture("assets/water.png");
-    gTileTextures[2] = LoadTexture("assets/tool.png");
+    gTileTextures[2] = LoadTexture("assets/sorcier_idle.png");
     gTileTextureCount = 3;
     
     Board board = {0};
