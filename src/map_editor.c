@@ -23,7 +23,6 @@ int map_editor(Board *board) {
             }
         }
         editor_active = true;
-        WaitTime(1);
 
     } else {
         //Retour à l'inventaire
@@ -43,7 +42,6 @@ int map_editor(Board *board) {
             }
         }
         editor_active = false;
-        WaitTime(1);
     }
 
     return 0;

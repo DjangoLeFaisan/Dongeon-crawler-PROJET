@@ -21,8 +21,8 @@ int main(void)
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
-    gTileTextures[2] = LoadTexture("assets/tool.png");
-    gTileTextures[3] = LoadTexture("assets/murs/mur bas_1_copie.png");
+    gTileTextures[2] = LoadTexture("assets/violet.png");
+    gTileTextures[3] = LoadTexture("assets/murs/mur bas 1 copie.png");
     gTileTextures[4] = LoadTexture("assets/murs/mur bas 3 copie.png");
     gTileTextures[5] = LoadTexture("assets/murs/mur coté bas droit_.png");
     gTileTextures[6] = LoadTexture("assets/murs/mur coté bas gauche_.png");
@@ -70,9 +70,11 @@ int main(void)
 
         EndDrawing();
 
+        // Ouverture de l'editeur de map
         if (IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
+
     }
 
     // Libération mémoire
