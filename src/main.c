@@ -22,7 +22,7 @@ int main(void)
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
     gTileTextures[2] = LoadTexture("assets/tool.png");
-    gTileTextures[3] = LoadTexture("assets/murs/mur bas 1 copie.png");
+    gTileTextures[3] = LoadTexture("assets/murs/mur bas_1_copie.png");
     gTileTextures[4] = LoadTexture("assets/murs/mur bas 3 copie.png");
     gTileTextures[5] = LoadTexture("assets/murs/mur coté bas droit_.png");
     gTileTextures[6] = LoadTexture("assets/murs/mur coté bas gauche_.png");
@@ -41,12 +41,14 @@ int main(void)
     gTileTextures[19] = LoadTexture("assets/murs/toit dessus coin droit.png");
     gTileTextures[20] = LoadTexture("assets/murs/toit dessus droit.png");
     gTileTextures[21] = LoadTexture("assets/murs/toit dessus gauche.png");
+    gTileTextures[22] = LoadTexture("assets/sols/sol_1.png");
+    gTileTextures[23] = LoadTexture("assets/sols/sol_2.png");
 
 
     gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
     
 
-    gTileTextureCount = 4;
+    gTileTextureCount = 22;
     
     Board board = {0};
     GameInit(&board);
