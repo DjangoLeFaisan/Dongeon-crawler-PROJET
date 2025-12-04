@@ -9,7 +9,8 @@ int gTileTextureCount = 0;
 
 int main(void)
 {
-    test();
+
+    int test(choixJoueurs, resultatordi);
 
     const int screenWidth = BOARD_COLS * TILE_SIZE;
     const int screenHeight = BOARD_ROWS * TILE_SIZE;
