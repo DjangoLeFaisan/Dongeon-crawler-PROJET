@@ -1,4 +1,6 @@
+#include "raylib.h"
 #include "game.h"
+
 
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
@@ -7,7 +9,7 @@ extern int gTileTextureCount;
 // ******************************************
 //
 
-static void TileClear(Tile *t)
+void TileClear(Tile *t)
 {
     t->layerCount = 0;
     for (int i = 0; i < MAX_LAYERS; i++)
@@ -16,7 +18,7 @@ static void TileClear(Tile *t)
     }
 }
 
-static bool TilePush(Tile *t, int texIndex)
+bool TilePush(Tile *t, int texIndex)
 {
     if (t->layerCount >= MAX_LAYERS)
         return false;
@@ -24,7 +26,7 @@ static bool TilePush(Tile *t, int texIndex)
     return true;
 }
 
-static int TilePop(Tile *t)
+int TilePop(Tile *t)
 {
     if (t->layerCount <= 0)
         return -1;
@@ -45,16 +47,15 @@ void GameInit(Board *board)
             Tile *t = &board->tiles[y][x];
             TileClear(t);
 
-            // couche 0 : sol
-            int groundIndex = (x+y) % 2; // ex: desert ou mer
-            TilePush(t, groundIndex);
+            int groundIndex = 0;
 
-            // disposition des marteau sur la diagonale
-            if (x == y)
-            {
-                int objectIndex = 2; // ex: pierre, arbre…
-                TilePush(t, objectIndex);
-            }
+            // couche 0 : sol
+            if ((x % 43) < 34)
+                groundIndex = 0;
+            else 
+                groundIndex = 1;
+            
+            TilePush(t, groundIndex);
         }
     }
 }

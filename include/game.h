@@ -4,8 +4,8 @@
 #include "raylib.h"
 
 #define TILE_SIZE 32
-#define BOARD_COLS 10
-#define BOARD_ROWS 8
+#define BOARD_COLS 43
+#define BOARD_ROWS 24
 #define MAX_LAYERS 4
 
 typedef struct
@@ -18,6 +18,12 @@ typedef struct
 {
     Tile tiles[BOARD_ROWS][BOARD_COLS];
 } Board;
+
+int map_editor(Board *board);
+
+void TileClear(Tile *t);
+bool TilePush(Tile *t, int texIndex);
+int TilePop(Tile *t);
 
 void GameInit(Board *board);
 void GameUpdate(Board *board, float dt);
