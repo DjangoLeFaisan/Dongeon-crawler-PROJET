@@ -9,16 +9,22 @@ int gTileTextureCount = 0;
 
 int main(void)
 {
-    const int screenWidth = BOARD_COLS * TILE_SIZE;
-    const int screenHeight = BOARD_ROWS * TILE_SIZE;
+    const int screenWidth = 1384;
+    const int screenHeight = 704;
 
-    InitWindow(screenWidth, screenHeight, "Raylib Board Game - macOS M1");
+    InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
     SetTargetFPS(60);
 
     // Chargement des textures
+<<<<<<< HEAD
     gTileTextures[0] = LoadTexture("assets/sand.png");
     gTileTextures[1] = LoadTexture("assets/water.png");
     gTileTextures[2] = LoadTexture("assets/sorcier_idle.png");
+=======
+    gTileTextures[0] = LoadTexture("assets/noir.png");
+    gTileTextures[1] = LoadTexture("assets/marron.png");
+    gTileTextures[2] = LoadTexture("assets/tool.png");
+>>>>>>> 2b42345e8b69d85d108ed5613629e629051ae073
     gTileTextureCount = 3;
     
     Board board = {0};
