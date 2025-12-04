@@ -16,16 +16,10 @@ int main(void)
     SetTargetFPS(60);
 
     // Chargement des textures
-<<<<<<< HEAD
-    gTileTextures[0] = LoadTexture("assets/sand.png");
-    gTileTextures[1] = LoadTexture("assets/water.png");
-    gTileTextures[2] = LoadTexture("assets/sorcier_idle.png");
-=======
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
     gTileTextures[2] = LoadTexture("assets/tool.png");
->>>>>>> 2b42345e8b69d85d108ed5613629e629051ae073
-    gTileTextureCount = 3;
+    gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
     
     Board board = {0};
     GameInit(&board);
@@ -46,6 +40,10 @@ int main(void)
         DrawText(TextFormat("Time : %.2f", time), 170, 10, 20, GREEN);
 
         EndDrawing();
+
+        if (IsKeyPressed(KEY_I)) {
+            map_editor(&board);
+        }
     }
 
     // Libération mémoire
