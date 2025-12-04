@@ -49,7 +49,7 @@ void GameInit(Board *board)
             int groundIndex = (x+y) % 2; // ex: desert ou mer
             TilePush(t, groundIndex);
 
-            // en bonus : mettre un “décor” 1 case sur 3
+            // disposition des marteau sur la diagonale
             if (x == y)
             {
                 int objectIndex = 2; // ex: pierre, arbre…
@@ -61,8 +61,6 @@ void GameInit(Board *board)
 
 void GameUpdate(Board *board, float dt)
 {
-    (void)dt;
-    
     Vector2 m = GetMousePosition();
     
     // Gestion des entrées souris sur les tuiles

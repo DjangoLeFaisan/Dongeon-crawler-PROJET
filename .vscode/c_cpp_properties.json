@@ -1,18 +1,37 @@
 {
+    "version": 4,
     "configurations": [
         {
-            "name": "Mac",
+            "name": "macOS",
             "includePath": [
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/include",
                 "${workspaceFolder}/**",
-                "/opt/homebrew/include",
-                "/opt/homebrew/Cellar/raylib/5.5/include"
+                "/opt/homebrew/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
-            "cppStandard": "c++14",
-            "intelliSenseMode": "macos-clang-arm64"
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-x64"
+        },
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/**",
+                "C:/msys64/mingw64/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
         }
-    ],
-    "version": 4
+    ]
 }

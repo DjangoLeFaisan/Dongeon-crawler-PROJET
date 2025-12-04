@@ -95,7 +95,7 @@ Installer avec les options par défaut.
 
 ## 2. Mettre à jour MSYS2
 
-Ouvrir **MSYS2 UCRT64** (ou MINGW64) et taper :
+Ouvrir **MSYS2 MINGW64** et taper :
 
 ```bash
 pacman -Syu
@@ -111,13 +111,14 @@ pacman -Syu
 
 ## 3. Installer le compilateur + raylib
 
-Toujours dans **MSYS2 UCRT64** ou **MINGW64** :
+Toujours dans **MINGW64** :
 
 ```bash
-pacman -S mingw-w64-x86_64-gcc \
-          mingw-w64-x86_64-raylib \
-          mingw-w64-x86_64-pkg-config \
-          make
+pacman -S mingw-w64-x86_64-gcc
+pacman -S mingw-w64-x86_64-gdb
+pacman -S mingw-w64-x86_64-raylib
+pacman -S mingw-w64-x86_64-pkg-config
+pacman -S make
 ```
 
 ---
@@ -127,6 +128,7 @@ pacman -S mingw-w64-x86_64-gcc \
 ```bash
 pkg-config --libs raylib
 gcc --version
+gcdb --version
 ```
 
 ---
