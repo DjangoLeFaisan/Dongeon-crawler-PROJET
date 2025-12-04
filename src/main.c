@@ -19,7 +19,29 @@ int main(void)
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
     gTileTextures[2] = LoadTexture("assets/tool.png");
+    gTileTextures[3] = LoadTexture("assets/murs/mur bas 1 copie.png");
+    gTileTextures[4] = LoadTexture("assets/murs/mur bas 3 copie.png");
+    gTileTextures[5] = LoadTexture("assets/murs/mur coté bas droit_.png");
+    gTileTextures[6] = LoadTexture("assets/murs/mur coté bas gauche_.png");
+    gTileTextures[7] = LoadTexture("assets/murs/mur coté bas sol droit.png");
+    gTileTextures[8] = LoadTexture("assets/murs/mur coté bas sol gauche.png");
+    gTileTextures[9] = LoadTexture("assets/murs/mur coté millieu droit.png");
+    gTileTextures[10] = LoadTexture("assets/murs/mur coté millieu gauche.png");
+    gTileTextures[11] = LoadTexture("assets/murs/mur millieu mod 1.png");
+    gTileTextures[12] = LoadTexture("assets/murs/mur millieu mod 3.png");
+    gTileTextures[13] = LoadTexture("assets/murs/Noir.png");
+    gTileTextures[14] = LoadTexture("assets/murs/toit coin gauche.png");
+    gTileTextures[15] = LoadTexture("assets/murs/toit dessous coin droit.png");
+    gTileTextures[16] = LoadTexture("assets/murs/toit dessous coin gauche.png");
+    gTileTextures[17] = LoadTexture("assets/murs/toit dessous droite.png");
+    gTileTextures[18] = LoadTexture("assets/murs/toit dessous gauche.png");
+    gTileTextures[19] = LoadTexture("assets/murs/toit dessus coin droit.png");
+    gTileTextures[20] = LoadTexture("assets/murs/toit dessus droit.png");
+    gTileTextures[21] = LoadTexture("assets/murs/toit dessus gauche.png");
+
+
     gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
+    
 
     gTileTextureCount = 4;
     
