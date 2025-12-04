@@ -1,4 +1,6 @@
+#include "raylib.h"
 #include "game.h"
+
 
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
