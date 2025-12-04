@@ -7,7 +7,7 @@ extern int gTileTextureCount;
 // ******************************************
 //
 
-static void TileClear(Tile *t)
+void TileClear(Tile *t)
 {
     t->layerCount = 0;
     for (int i = 0; i < MAX_LAYERS; i++)
@@ -16,7 +16,7 @@ static void TileClear(Tile *t)
     }
 }
 
-static bool TilePush(Tile *t, int texIndex)
+bool TilePush(Tile *t, int texIndex)
 {
     if (t->layerCount >= MAX_LAYERS)
         return false;
@@ -24,7 +24,7 @@ static bool TilePush(Tile *t, int texIndex)
     return true;
 }
 
-static int TilePop(Tile *t)
+int TilePop(Tile *t)
 {
     if (t->layerCount <= 0)
         return -1;

@@ -18,7 +18,7 @@ int main(void)
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
-    gTileTextures[2] = LoadTexture("assets/tool.png");
+    gTileTextures[2] = LoadTexture("assets/violet.png");
     gTileTextureCount = 3;
     
     Board board = {0};
@@ -40,6 +40,10 @@ int main(void)
         DrawText(TextFormat("Time : %.2f", time), 170, 10, 20, GREEN);
 
         EndDrawing();
+
+        if (IsKeyPressed(KEY_I)) {
+            map_editor(&board);
+        }
     }
 
     // Libération mémoire
