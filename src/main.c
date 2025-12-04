@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include "game.h"
+#include "stdlib.h"
+#include "time.h"
 
 
 // Gestionnaire de texture
@@ -10,7 +12,9 @@ int gTileTextureCount = 0;
 int main(void)
 {
 
-    /*int test(choixJoueurs, resultatordi);*/
+    int test(int choixJoueurs, int resultatordi) ;
+    
+    
 
     const int screenWidth = 1384;
     const int screenHeight = 704;
@@ -50,7 +54,8 @@ int main(void)
     
     Board board = {0};
     GameInit(&board);
-
+    
+        
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
@@ -71,6 +76,7 @@ int main(void)
         if (IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
+        
     }
 
     // Libération mémoire
