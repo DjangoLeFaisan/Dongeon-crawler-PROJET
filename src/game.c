@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "game.h"
+#include "map_io.h"
 
 
 extern Texture2D gTileTextures[];
@@ -8,6 +9,8 @@ extern bool editor_active;
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
+
+#define MAP_FILENAME "maps/map_default.map"
 
 
 // ******************************************
@@ -111,6 +114,7 @@ void GameUpdate(Board *board, float dt)
                 
                 Tile *t = &board->tiles[tileY][tileX];
                 TilePop(t);
+
         } else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) // Sélectionner la tuile la plus haute
         {
             TraceLog(LOG_INFO,
@@ -129,6 +133,24 @@ void GameUpdate(Board *board, float dt)
                 if (textureIndex >= 4) {
                     objectIndex = textureIndex;
                 }
+        }
+        
+        // Sauvegarde (Ctrl+S)
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)) {
+            if (MapSave(board, MAP_FILENAME)) {
+                TraceLog(LOG_INFO, "Map saved to %s", MAP_FILENAME);
+            } else {
+                TraceLog(LOG_ERROR, "Failed to save map");
+            }
+        }
+
+        // Chargement (Ctrl+L)
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L)) {
+            if (MapLoad(board, MAP_FILENAME)) {
+                TraceLog(LOG_INFO, "Map loaded from %s", MAP_FILENAME);
+            } else {
+                TraceLog(LOG_ERROR, "Failed to load map");
+            }
         }
     }
 
