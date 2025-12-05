@@ -4,6 +4,10 @@
 
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
+extern bool editor_active;
+int objectIndex = 4;
+static int lastPreviewX = -1;
+static int lastPreviewY = -1;
 
 
 // ******************************************
@@ -28,7 +32,7 @@ bool TilePush(Tile *t, int texIndex)
 
 int TilePop(Tile *t)
 {
-    if (t->layerCount <= 0)
+    if (t->layerCount <= 1)
         return -1;
     int tex = t->layers[--t->layerCount];
     t->layers[t->layerCount] = -1;
@@ -50,7 +54,7 @@ void GameInit(Board *board)
             int groundIndex = 0;
 
             // couche 0 : sol
-            if ((x % 43) < 34)
+            if (x < 34)
                 groundIndex = 0;
             else 
                 groundIndex = 1;
@@ -63,28 +67,70 @@ void GameInit(Board *board)
 void GameUpdate(Board *board, float dt)
 {
     Vector2 m = GetMousePosition();
-    
-    // Gestion des entrées souris sur les tuiles
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-    {
-        int tileX = (int)(m.x) / TILE_SIZE;
-        int tileY = (int)(m.y) / TILE_SIZE;
-        
-        TraceLog(LOG_INFO,
-            "MOUSE DOWN at x=%.1f y=%.1f corresponding tile (%d, %d)",
-            m.x, m.y, tileX, tileY);
-            
-            Tile *t = &board->tiles[tileY][tileX];
-            if (t->layerCount > 1)
-            {
-                TilePop(t);
-            }
-            else
-            {
-                int objectIndex = 2;
-                TilePush(t, objectIndex);
-            }
+    int tileX = (int)(m.x) / TILE_SIZE;
+    int tileY = (int)(m.y) / TILE_SIZE;
+
+    // Gestion de la tuile factice (éditeur de carte)
+    if (tileX != lastPreviewX || tileY != lastPreviewY) {
+
+        // Retire la tuile factice de l'ancienne position
+        if (lastPreviewX >= 0 && lastPreviewX < BOARD_COLS && lastPreviewY >= 0 && lastPreviewY < BOARD_ROWS) {
+            Tile *oldTile = &board->tiles[lastPreviewY][lastPreviewX];
+            TilePop(oldTile);
         }
+        
+        // Ajoute la tuile factice à la nouvelle position
+        if ((tileX <= 33) && editor_active) {
+            Tile *newTile = &board->tiles[tileY][tileX];
+            TilePush(newTile, objectIndex);
+            lastPreviewX = tileX;
+            lastPreviewY = tileY;
+        } else {
+            lastPreviewX = -1;
+            lastPreviewY = -1;
+        }
+    }
+    
+    // Gestion des intéractions en mode éditeur de carte 
+    if (editor_active == true) {
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (tileX <= 33)) //Placer une tuile
+        {   
+            TraceLog(LOG_INFO,
+                "Tuile placée au coordonnées x=%.1f y=%.1f à la tuile correspondante : (%d, %d)",
+                m.x, m.y, tileX, tileY);
+                
+                Tile *t = &board->tiles[tileY][tileX];
+                TilePush(t, objectIndex);
+        
+        } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && (tileX <= 33)) // Enlever la tuile la plus haute
+        {
+            TraceLog(LOG_INFO,
+                "Tuile enlevée au coordonnées x=%.1f y=%.1f à la tuile correspondante : (%d, %d)",
+                m.x, m.y, tileX, tileY);
+                
+                Tile *t = &board->tiles[tileY][tileX];
+                TilePop(t);
+        } else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) // Sélectionner la tuile la plus haute
+        {
+            TraceLog(LOG_INFO,
+                "Type de tuile sélectionnée au coordonnées x=%.1f y=%.1f à la tuile correspondante : (%d, %d)",
+                m.x, m.y, tileX, tileY);
+                
+                Tile *t = &board->tiles[tileY][tileX];
+
+                int textureIndex = 0;
+                if (tileX <= 33) {
+                    textureIndex = t->layers[t->layerCount - 2];
+                } else {
+                    textureIndex = t->layers[t->layerCount - 1];
+                }
+
+                if (textureIndex >= 4) {
+                    objectIndex = textureIndex;
+                }
+        }
+    }
 
     // Gestion des entrées clavier
     if (IsKeyPressed(KEY_SPACE))
