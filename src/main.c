@@ -46,6 +46,8 @@ int main(void)
     gTileTextures[24] = LoadTexture("assets/sols/sol 2.png");
     gTileTextures[25] = LoadTexture("assets/eclairage/brasero.png");
     gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
+    gTileTextures[27] = LoadTexture("assets/sprites portes/porte close.png");
+    gTileTextures[28] = LoadTexture("assets/sprites portes/porte open.png");
 
 
     

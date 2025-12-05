@@ -245,9 +245,6 @@ void GameDraw(const Board *board)
                 DARKGRAY);
         }
     }
-<<<<<<< HEAD
-}
-=======
 
     // Affichage du nom de carte en haut à gauche
     if (editor_active) {
@@ -263,4 +260,3 @@ void GameDraw(const Board *board)
         }
     }
 }
->>>>>>> 93cf85b666590b48bd4251f590e4803c6e583611
