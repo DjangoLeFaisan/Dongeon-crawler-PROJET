@@ -23,6 +23,12 @@ bool MapSave(const Board *board, const char *filename)
     fwrite(&cols, sizeof(unsigned int), 1, file);
 
     // Ecrire les tuiles (uniquement colonnes 0-33)
+    Vector2 m = GetMousePosition();
+    int tileX = (int)(m.x) / TILE_SIZE;
+    int tileY = (int)(m.y) / TILE_SIZE;
+    Tile *t = &board->tiles[tileY][tileX];
+    TilePop(t);
+
     for (int y = 0; y < BOARD_ROWS; y++) {
         for (int x = 0; x < PLAYABLE_COLS; x++) {
             const Tile *t = &board->tiles[y][x];
