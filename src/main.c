@@ -5,7 +5,7 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[3];
+Texture2D gTileTextures[29];
 int gTileTextureCount = 0;
 
 
@@ -36,7 +36,7 @@ int main(void)
     gTileTextures[12] = LoadTexture("assets/murs/mur_milieu_mod_1.png");
     gTileTextures[13] = LoadTexture("assets/murs/mur_milieu_mod_3.png");
     gTileTextures[14] = LoadTexture("assets/murs/mur_interieur.png");
-    gTileTextures[15] = LoadTexture("assets/murs/toit_coin_gauche.png");
+    gTileTextures[15] = LoadTexture("assets/murs/toit coin gauche.png");
     gTileTextures[16] = LoadTexture("assets/murs/toit_dessous_coin_droit.png");
     gTileTextures[17] = LoadTexture("assets/murs/toit_dessous_coin_gauche.png");
     gTileTextures[18] = LoadTexture("assets/murs/toit_dessous_droite.png");
@@ -44,12 +44,20 @@ int main(void)
     gTileTextures[20] = LoadTexture("assets/murs/toit_dessus_coin_droit.png");
     gTileTextures[21] = LoadTexture("assets/murs/toit_dessus_droit.png");
     gTileTextures[22] = LoadTexture("assets/murs/toit_dessus_gauche.png");
+    gTileTextures[23] = LoadTexture("assets/sols/sol 1.png");
+    gTileTextures[24] = LoadTexture("assets/sols/sol 2.png");
+    gTileTextures[25] = LoadTexture("assets/eclairage/brasero.png");
+    gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
 
 
-    gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
     
 
-    gTileTextureCount = 22;
+
+    gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
+    gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
+    
+
+    gTileTextureCount = 29;
     
     Board board = {0};
     GameInit(&board);
@@ -65,15 +73,15 @@ int main(void)
         ClearBackground(RAYWHITE);
 
         GameDraw(&board);
-        DrawFPS(10, 10);
+        DrawFPS(400, 10);
 
         double time = GetTime();
-        DrawText(TextFormat("Time : %.2f", time), 170, 10, 20, GREEN);
+        DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
 
         EndDrawing();
 
         // Ouverture de l'editeur de map
-        if (IsKeyPressed(KEY_I)) {
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
         ;
