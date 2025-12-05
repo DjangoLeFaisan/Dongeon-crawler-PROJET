@@ -7,12 +7,13 @@
 // Gestionnaire de texture
 Texture2D gTileTextures[3];
 int gTileTextureCount = 0;
+int resultatordi = 0 ;
 
 
 int main(void)
 {
 
-
+    
     const int screenWidth = 1384;
     const int screenHeight = 704;
 
@@ -75,9 +76,21 @@ int main(void)
         if (IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
+        ;
         
+     if (IsKeyPressed(KEY_T))
+    {
+        
+          test(  int resultatordi);
+       DrawText(TextFormat(  "Le combat commence : %d !", resultatordi), 230, 25, 30, GREEN);
+
+        EndDrawing();
+    }   
 
     }
+
+    
+    
 
     // Libération mémoire
     for (int i = 0; i < gTileTextureCount; i++)
