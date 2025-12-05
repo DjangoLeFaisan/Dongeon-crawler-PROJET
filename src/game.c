@@ -6,6 +6,8 @@ extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
 int objectIndex = 4;
+static int lastPreviewX = -1;
+static int lastPreviewY = -1;
 
 
 // ******************************************
@@ -65,11 +67,32 @@ void GameInit(Board *board)
 void GameUpdate(Board *board, float dt)
 {
     Vector2 m = GetMousePosition();
+    int tileX = (int)(m.x) / TILE_SIZE;
+    int tileY = (int)(m.y) / TILE_SIZE;
+
+    // Gestion de la tuile factice (éditeur de carte)
+    if (tileX != lastPreviewX || tileY != lastPreviewY) {
+
+        // Retire la tuile factice de l'ancienne position
+        if (lastPreviewX >= 0 && lastPreviewX < BOARD_COLS && lastPreviewY >= 0 && lastPreviewY < BOARD_ROWS) {
+            Tile *oldTile = &board->tiles[lastPreviewY][lastPreviewX];
+            TilePop(oldTile);
+        }
+        
+        // Ajoute la tuile factice à la nouvelle position
+        if ((tileX <= 33) && editor_active) {
+            Tile *newTile = &board->tiles[tileY][tileX];
+            TilePush(newTile, objectIndex);
+            lastPreviewX = tileX;
+            lastPreviewY = tileY;
+        } else {
+            lastPreviewX = -1;
+            lastPreviewY = -1;
+        }
+    }
     
     // Gestion des intéractions en mode éditeur de carte 
     if (editor_active == true) {
-        int tileX = (int)(m.x) / TILE_SIZE;
-        int tileY = (int)(m.y) / TILE_SIZE;
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (tileX <= 33)) //Placer une tuile
         {   
@@ -97,7 +120,12 @@ void GameUpdate(Board *board, float dt)
                 Tile *t = &board->tiles[tileY][tileX];
 
                 int textureIndex = 0;
-                textureIndex = t->layers[t->layerCount - 1];
+                if (tileX <= 33) {
+                    textureIndex = t->layers[t->layerCount - 2];
+                } else {
+                    textureIndex = t->layers[t->layerCount - 1];
+                }
+
                 if (textureIndex >= 4) {
                     objectIndex = textureIndex;
                 }
