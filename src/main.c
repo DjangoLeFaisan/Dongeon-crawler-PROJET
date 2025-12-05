@@ -71,10 +71,10 @@ int main(void)
         ClearBackground(RAYWHITE);
 
         GameDraw(&board);
-        DrawFPS(10, 10);
+        DrawFPS(400, 10);
 
         double time = GetTime();
-        DrawText(TextFormat("Time : %.2f", time), 170, 10, 20, GREEN);
+        DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
 
         EndDrawing();
 
