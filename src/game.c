@@ -4,6 +4,8 @@
 
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
+extern bool editor_active;
+int objectIndex = 4;
 
 
 // ******************************************
@@ -28,7 +30,7 @@ bool TilePush(Tile *t, int texIndex)
 
 int TilePop(Tile *t)
 {
-    if (t->layerCount <= 0)
+    if (t->layerCount <= 1)
         return -1;
     int tex = t->layers[--t->layerCount];
     t->layers[t->layerCount] = -1;
@@ -50,7 +52,7 @@ void GameInit(Board *board)
             int groundIndex = 0;
 
             // couche 0 : sol
-            if ((x % 43) < 34)
+            if (x < 34)
                 groundIndex = 0;
             else 
                 groundIndex = 1;
@@ -64,27 +66,43 @@ void GameUpdate(Board *board, float dt)
 {
     Vector2 m = GetMousePosition();
     
-    // Gestion des entrées souris sur les tuiles
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-    {
+    // Gestion des intéractions en mode éditeur de carte 
+    if (editor_active == true) {
         int tileX = (int)(m.x) / TILE_SIZE;
         int tileY = (int)(m.y) / TILE_SIZE;
-        
-        TraceLog(LOG_INFO,
-            "MOUSE DOWN at x=%.1f y=%.1f corresponding tile (%d, %d)",
-            m.x, m.y, tileX, tileY);
-            
-            Tile *t = &board->tiles[tileY][tileX];
-            if (t->layerCount > 1)
-            {
-                TilePop(t);
-            }
-            else
-            {
-                int objectIndex = 2;
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (tileX <= 33)) //Placer une tuile
+        {   
+            TraceLog(LOG_INFO,
+                "Tuile placée au coordonnées x=%.1f y=%.1f à la tuile correspondante : (%d, %d)",
+                m.x, m.y, tileX, tileY);
+                
+                Tile *t = &board->tiles[tileY][tileX];
                 TilePush(t, objectIndex);
-            }
+        
+        } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && (tileX <= 33)) // Enlever la tuile la plus haute
+        {
+            TraceLog(LOG_INFO,
+                "Tuile enlevée au coordonnées x=%.1f y=%.1f à la tuile correspondante : (%d, %d)",
+                m.x, m.y, tileX, tileY);
+                
+                Tile *t = &board->tiles[tileY][tileX];
+                TilePop(t);
+        } else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) // Sélectionner la tuile la plus haute
+        {
+            TraceLog(LOG_INFO,
+                "Type de tuile sélectionnée au coordonnées x=%.1f y=%.1f à la tuile correspondante : (%d, %d)",
+                m.x, m.y, tileX, tileY);
+                
+                Tile *t = &board->tiles[tileY][tileX];
+
+                int textureIndex = 0;
+                textureIndex = t->layers[t->layerCount - 1];
+                if (textureIndex >= 4) {
+                    objectIndex = textureIndex;
+                }
         }
+    }
 
     // Gestion des entrées clavier
     if (IsKeyPressed(KEY_SPACE))
