@@ -1,6 +1,8 @@
 #ifndef MARCHER_H
 #define MARCHER_H
 
-void marcher();
+typedef struct Player Player;
+
+void Marcher(Player *player);
 
 #endif // MARCHER_H

@@ -1,29 +1,34 @@
-/* #include "marcher.h" 
 #include "player.h"
+#include "marcher.h"
 #include "raylib.h"
 
-int dx, int dy;
+static float moveTimer = 0.0f;
+static const float MOVE_DELAY = 0.2f;
 
-void marcher(Player)
+void Marcher(Player *player) 
 {
-    int dx = 0; //DX = Horizontal
-    int dy = 0; //DY = Vertical
+    moveTimer -= GetFrameTime();
+    
+    int dx = 0;
+    int dy = 0;
 
-    if (IsKeyPressed[KEY_Z]) {
-        dy = -1; // 1 case vers le haut
+    if (IsKeyDown(KEY_W)) { 
+        dy = -1;
+    }
+    if (IsKeyDown(KEY_S)) {
+        dy = 1;
     }
 
-    else if (IsKeyPressed[KEY_S]) {
-        dy = 1; // 1 case vers le bas
+    if (IsKeyDown(KEY_A)) {
+        dx = -1;
+    }
+    if (IsKeyDown(KEY_D)) {
+        dx = 1;
     }
 
-    else if (IsKeyPressed[KEY_Q]) {
-        dx = -1; // 1 cqse vers la gauche
-    }
-
-    else if (IsKeyPressed[KEY_D]) {
-        dx = 1; // 1 case vers la droite
+    if ((dx != 0 || dy != 0) && moveTimer <= 0.0f) {
+        player->gridX += dx;
+        player->gridY += dy;
+        moveTimer = MOVE_DELAY;
     }
 }
-
-*/
