@@ -1,5 +1,8 @@
 #include "raylib.h"
 #include "game.h"
+#include "map_io.h"
+#include <string.h>
+#include <stdio.h>
 
 
 extern Texture2D gTileTextures[];
@@ -8,6 +11,18 @@ extern bool editor_active;
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
+
+// Gestion du nom de carte
+#define MAX_MAP_NAME_LENGTH 64
+static char currentMapName[MAX_MAP_NAME_LENGTH] = "map_default";
+static bool isNamingMap = false;
+static int namingCursorPos = 0;
+
+// Construit le chemin complet du fichier
+static void GetMapFilepath(const char *mapName, char *filepath, int maxLen)
+{
+    snprintf(filepath, maxLen, "maps/%s.map", mapName);
+}
 
 
 // ******************************************
@@ -111,6 +126,7 @@ void GameUpdate(Board *board, float dt)
                 
                 Tile *t = &board->tiles[tileY][tileX];
                 TilePop(t);
+
         } else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) // Sélectionner la tuile la plus haute
         {
             TraceLog(LOG_INFO,
@@ -129,6 +145,57 @@ void GameUpdate(Board *board, float dt)
                 if (textureIndex >= 4) {
                     objectIndex = textureIndex;
                 }
+        }
+
+        // Gestion du nom de carte (Tab pour éditer)
+        if (IsKeyPressed(KEY_TAB)) {
+            isNamingMap = !isNamingMap;
+            namingCursorPos = strlen(currentMapName);
+        }
+
+        // Édition du nom de carte
+        if (isNamingMap) {
+            // Traiter les touches de caractères
+            int key = GetCharPressed();
+            while (key > 0) {
+                if ((key >= 32 && key < 127) && namingCursorPos < MAX_MAP_NAME_LENGTH - 1) {
+                    currentMapName[namingCursorPos++] = (char)key;
+                    currentMapName[namingCursorPos] = '\0';
+                }
+                key = GetCharPressed();
+            }
+
+            // Backspace pour supprimer
+            if (IsKeyPressed(KEY_BACKSPACE) && namingCursorPos > 0) {
+                currentMapName[--namingCursorPos] = '\0';
+            }
+
+            // Enter pour confirmer
+            if (IsKeyPressed(KEY_ENTER)) {
+                isNamingMap = false;
+            }
+        }
+
+        // Sauvegarde (Ctrl+S)
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)) {
+            char filepath[256];
+            GetMapFilepath(currentMapName, filepath, sizeof(filepath));
+            if (MapSave(board, filepath)) {
+                TraceLog(LOG_INFO, "Map saved to %s", filepath);
+            } else {
+                TraceLog(LOG_ERROR, "Failed to save map");
+            }
+        }
+
+        // Chargement (Ctrl+L)
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L)) {
+            char filepath[256];
+            GetMapFilepath(currentMapName, filepath, sizeof(filepath));
+            if (MapLoad(board, filepath)) {
+                TraceLog(LOG_INFO, "Map loaded from %s", filepath);
+            } else {
+                TraceLog(LOG_ERROR, "Failed to load map");
+            }
         }
     }
 
@@ -178,4 +245,22 @@ void GameDraw(const Board *board)
                 DARKGRAY);
         }
     }
+<<<<<<< HEAD
 }
+=======
+
+    // Affichage du nom de carte en haut à gauche
+    if (editor_active) {
+        char displayText[128];
+        if (isNamingMap) {
+            snprintf(displayText, sizeof(displayText), "Map name: %s_", currentMapName);
+            DrawText(displayText, 10, 10, 20, YELLOW);
+            DrawText("(Press Enter to confirm, Tab to cancel)", 10, 35, 14, GRAY);
+        } else {
+            snprintf(displayText, sizeof(displayText), "Map: %s (Tab to rename)", currentMapName);
+            DrawText(displayText, 10, 10, 20, WHITE);
+            DrawText("Ctrl+S to save | Ctrl+L to load", 10, 35, 14, GRAY);
+        }
+    }
+}
+>>>>>>> 93cf85b666590b48bd4251f590e4803c6e583611
