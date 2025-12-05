@@ -65,6 +65,7 @@ int main(void)
         
     while (!WindowShouldClose())
     {
+        int test (resultatordi );
         float dt = GetFrameTime();
 
         GameUpdate(&board, dt);
@@ -89,8 +90,8 @@ int main(void)
      if (IsKeyPressed(KEY_T)) 
     {
         
-       
-       DrawText(TextFormat ("Le combat commence ! :  " ) , 230, 25, 30, GREEN);
+      
+       DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
 
         EndDrawing();
     }
