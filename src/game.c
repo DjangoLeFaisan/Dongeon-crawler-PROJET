@@ -245,4 +245,18 @@ void GameDraw(const Board *board)
                 DARKGRAY);
         }
     }
+
+    // Affichage du nom de carte en haut à gauche
+    if (editor_active) {
+        char displayText[128];
+        if (isNamingMap) {
+            snprintf(displayText, sizeof(displayText), "Map name: %s_", currentMapName);
+            DrawText(displayText, 10, 10, 20, YELLOW);
+            DrawText("(Press Enter to confirm, Tab to cancel)", 10, 35, 14, GRAY);
+        } else {
+            snprintf(displayText, sizeof(displayText), "Map: %s (Tab to rename)", currentMapName);
+            DrawText(displayText, 10, 10, 20, WHITE);
+            DrawText("Ctrl+S to save | Ctrl+L to load", 10, 35, 14, GRAY);
+        }
+    }
 }
