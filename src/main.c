@@ -42,12 +42,21 @@ int main(void)
     gTileTextures[20] = LoadTexture("assets/murs/toit_dessus_coin_droit.png");
     gTileTextures[21] = LoadTexture("assets/murs/toit_dessus_droit.png");
     gTileTextures[22] = LoadTexture("assets/murs/toit_dessus_gauche.png");
+    gTileTextures[23] = LoadTexture("assets/sols/sol 1.png");
+    gTileTextures[24] = LoadTexture("assets/sols/sol 2.png");
+    gTileTextures[25] = LoadTexture("assets/eclairage/brasero.png");
+    gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
+    gTileTextures[27] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
+    gTileTextures[28] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
+
+
+    
 
 
     gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
     
 
-    gTileTextureCount = 22;
+    gTileTextureCount = 29;
     
     Board board = {0};
     GameInit(&board);
