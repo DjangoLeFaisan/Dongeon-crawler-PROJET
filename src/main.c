@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include "game.h"
+#include "stdlib.h"
+#include "time.h"
 
 
 // Gestionnaire de texture
@@ -7,11 +9,11 @@ Texture2D gTileTextures[30];
 int gTileTextureCount = 0;
 
 
+
 int main(void)
 {
 
-    /*int test(choixJoueurs, resultatordi);*/
-
+   
     const int screenWidth = 1384;
     const int screenHeight = 704;
 
@@ -61,9 +63,11 @@ int main(void)
     
     Board board = {0};
     GameInit(&board);
-
+    
+        
     while (!WindowShouldClose())
     {
+        int test (resultatordi );
         float dt = GetFrameTime();
 
         GameUpdate(&board, dt);
@@ -83,8 +87,20 @@ int main(void)
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
+        ;
+          
+     if (IsKeyPressed(KEY_T)) 
+    {
+        
+      
+       DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
 
+        EndDrawing();
     }
+
+    
+}
+    
 
     // Libération mémoire
     for (int i = 0; i < gTileTextureCount; i++)
@@ -94,4 +110,7 @@ int main(void)
 
     CloseWindow();
     return 0;
-}
+}  
+
+
+

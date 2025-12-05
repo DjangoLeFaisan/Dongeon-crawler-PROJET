@@ -1,7 +1,6 @@
 /*systeme de combat en tour par tour , tes sorts ou tes actions possibles sont visibles tout le temps 
 une fois qu'un enemie t'as vu le tour par tour commence chacun attaque et en haut une barre de priorité s'affiche pile ou face pour savoir qui commence, 
-possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendre les dégats puis lancer le combat*/
-
+possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendre les dégats puis lancer le combat*/ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -11,10 +10,10 @@ possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendr
 
 
 int test( int resultatordi ) {
-
+    
     // Active tous les logs
     SetTraceLogLevel(LOG_ALL);
-
+    
     // Affichage des options 
 
 
@@ -33,6 +32,18 @@ int test( int resultatordi ) {
 
 
         }
+<<<<<<< HEAD
+=======
+
+ /*int combat (resultatordi) {
+     int PV_J1 = 100 , PV_J2=80 , tour = 1 , action = 2 , mana = 100 , rage = 100 , sorts = ?, épée = 0  ; */
+
+     
+
+
+
+
+>>>>>>> f8ea8822da6ddc5122b4e0ab674a82dde7bf7e8d
 
 
 
