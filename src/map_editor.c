@@ -22,7 +22,6 @@ int map_editor(Board *board) {
                 }
                 if (((y > 0) && (y < 21)) && ((x > 34) && (x < 42))) {
                     if (tile_list_index <= 21) {
-                        TileClear(t);
                         TilePush(t, tile_list_index);
                         tile_list_index += 1;
                     }
