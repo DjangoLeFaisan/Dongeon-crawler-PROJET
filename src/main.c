@@ -3,7 +3,7 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[3];
+Texture2D gTileTextures[29];
 int gTileTextureCount = 0;
 
 
@@ -34,7 +34,7 @@ int main(void)
     gTileTextures[12] = LoadTexture("assets/murs/mur_milieu_mod_1.png");
     gTileTextures[13] = LoadTexture("assets/murs/mur_milieu_mod_3.png");
     gTileTextures[14] = LoadTexture("assets/murs/mur_interieur.png");
-    gTileTextures[15] = LoadTexture("assets/murs/toit_coin_gauche.png");
+    gTileTextures[15] = LoadTexture("assets/murs/toit coin gauche.png");
     gTileTextures[16] = LoadTexture("assets/murs/toit_dessous_coin_droit.png");
     gTileTextures[17] = LoadTexture("assets/murs/toit_dessous_coin_gauche.png");
     gTileTextures[18] = LoadTexture("assets/murs/toit_dessous_droite.png");
@@ -46,14 +46,13 @@ int main(void)
     gTileTextures[24] = LoadTexture("assets/sols/sol 2.png");
     gTileTextures[25] = LoadTexture("assets/eclairage/brasero.png");
     gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
-    gTileTextures[27] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
-    gTileTextures[28] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
 
 
     
 
 
-    gTileTextures[101] = LoadTexture("assets/sorcier_idle.png");
+    gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
+    gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     
 
     gTileTextureCount = 29;
