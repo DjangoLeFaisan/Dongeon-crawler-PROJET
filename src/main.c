@@ -7,13 +7,13 @@
 // Gestionnaire de texture
 Texture2D gTileTextures[3];
 int gTileTextureCount = 0;
-int resultatordi = 0 ;
+
 
 
 int main(void)
 {
 
-    
+   
     const int screenWidth = 1384;
     const int screenHeight = 704;
 
@@ -77,19 +77,18 @@ int main(void)
             map_editor(&board);
         }
         ;
-        
-     if (IsKeyPressed(KEY_T))
+          
+     if (IsKeyPressed(KEY_T)) 
     {
         
-          test(  int resultatordi);
-       DrawText(TextFormat(  "Le combat commence : %d !", resultatordi), 230, 25, 30, GREEN);
+       
+       DrawText(TextFormat ("Le combat commence ! :  " ) , 230, 25, 30, GREEN);
 
         EndDrawing();
-    }   
-
     }
 
     
+}
     
 
     // Libération mémoire
@@ -100,4 +99,7 @@ int main(void)
 
     CloseWindow();
     return 0;
-}
+}  
+
+
+

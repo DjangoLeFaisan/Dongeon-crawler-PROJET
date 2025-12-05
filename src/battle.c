@@ -7,9 +7,9 @@ possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendr
 #include "raylib.h"
 #include "game.h"
 
-int resultatordi = 0; 
 
-int test() {
+
+int test( int resultatordi ) {
     
     // Active tous les logs
     SetTraceLogLevel(LOG_ALL);
@@ -18,19 +18,17 @@ int test() {
 
 
     // Initialisation du générateur aléatoire
-    int GetRandomValue(int min, int max);;
-    resultatordi = rand() % 2;
+    int GetRandomValue(int min  , int max );
+     resultatordi = rand() % 2;
 
     // Vérification des résultats + enlever le print remplacer par le log 
     if (resultatordi == 1) {
         TraceLog(LOG_INFO,"Le monstre commence à attaquer !");
-}
+                           }
     else {
         TraceLog(LOG_INFO,"Le joueur commence à attaquer !");
 
-} 
-
-
+         } 
 
 
 }
