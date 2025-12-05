@@ -79,7 +79,7 @@ int main(void)
         EndDrawing();
 
         // Ouverture de l'editeur de map
-        if (IsKeyPressed(KEY_I)) {
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
 
