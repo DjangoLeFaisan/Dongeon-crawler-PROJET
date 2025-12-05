@@ -19,13 +19,10 @@ int test(int choixJoueurs, int resultatordi) {
     scanf("%d", &choixJoueurs);
     
     // Initialisation du générateur aléatoire
-    srand((unsigned)time(NULL));
+    int GetRandomValue(int min, int max);;
     resultatordi = rand() % 2;
 
-   
-    
-
-    // Vérification des résultats
+    // Vérification des résultats + enlever le print remplacer par le log 
     if (choixJoueurs == resultatordi) {
         if (resultatordi == 0) {
             printf("La pièce est tombée sur Pile. Vous avez gagné !\n");
@@ -44,6 +41,21 @@ int test(int choixJoueurs, int resultatordi) {
 
     return 0;
 }
+
+ int combat (resultatordi) {
+     int PV_J1 = 100 , PV_J2=80 , tour = 1 , action = 2 , mana = 100 , rage = 100 , sorts = ?, épée = 0  ; 
+    
+    
+    
+    
+    
+    
+    
+    }
+     
+
+
+
 
 
 

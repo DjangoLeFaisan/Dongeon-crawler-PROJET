@@ -1,3 +1,5 @@
+/*
+
 #include "raylib.h"
 #include "game.h"
 
@@ -8,3 +10,5 @@ typedef struct Player {
     int y; 
     Texture2D texture; 
 } Player;
+
+*/
