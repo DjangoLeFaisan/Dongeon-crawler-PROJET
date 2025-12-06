@@ -8,6 +8,11 @@
 Texture2D gTileTextures[30];
 int gTileTextureCount = 0;
 
+// Gestionnaire de l'état de jeu
+#define ETAT_EDITOR 0
+int gEtatJeu = ETAT_EDITOR;
+
+//Gestionnaire de l'état de combat (plus tard)
 
 
 int main(void)
@@ -67,7 +72,7 @@ int main(void)
         
     while (!WindowShouldClose())
     {
-        int test (resultatordi );
+   
         float dt = GetFrameTime();
 
         GameUpdate(&board, dt);
@@ -81,25 +86,23 @@ int main(void)
         double time = GetTime();
         DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
 
-        EndDrawing();
-
         // Ouverture de l'editeur de map
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
             map_editor(&board);
         }
-        ;
+
           
-     if (IsKeyPressed(KEY_T)) 
-    {
+        /*if (IsKeyPressed(KEY_T)) 
+        {
+            
         
-      
-       DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
+            DrawText(TextFormat ("Le combat commence ! :  ") , 230, 25, 30, GREEN);
 
-        EndDrawing();
+
+        }
+
+        EndDrawing(); */
     }
-
-    
-}
     
 
     // Libération mémoire

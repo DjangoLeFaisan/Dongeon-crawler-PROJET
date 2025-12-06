@@ -8,6 +8,7 @@
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
+
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
