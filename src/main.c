@@ -5,7 +5,7 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[30];
+Texture2D gTileTextures[103];
 int gTileTextureCount = 0;
 
 // Gestionnaire de l'état de jeu
@@ -64,7 +64,7 @@ int main(void)
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     
 
-    gTileTextureCount = 30;
+    gTileTextureCount = 103;
     
     Board board = {0};
     GameInit(&board);
