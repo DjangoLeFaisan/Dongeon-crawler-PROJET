@@ -7,7 +7,7 @@ possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendr
 #include "raylib.h"
 #include "game.h"
 
-//int Battle_mode () {
+
 int choisirQuiCommence () {
     // Initialisation du générateur aléatoire
     int resultatordi = rand() % 2;
@@ -23,9 +23,38 @@ int choisirQuiCommence () {
     return resultatordi;
 }
 
+int bool Battle_mode () {
+typedef struct Joueurs 
+{
+    int hp; 
+    int maxhp; 
+    int attack; 
+}   
+;
+typedef struct Enemy 
+{
+    int hp; 
+    int maxhp; 
+    int attack; 
+};
 
-     
-//}
+typedef struct mage
+{
+    int mana ; 
+
+};
+typedef struct chevalier
+{
+    int rage ; 
+} ;
+
+
+
+
+
+
+
+}
 
 
 
