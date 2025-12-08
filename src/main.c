@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "time.h"
 #include "map_io.h"
-
+#include "level_connexion.h"
 
 // Gestionnaire de texture
 Texture2D gTileTextures[103];
@@ -94,6 +94,8 @@ int main(void)
     } else {
         TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte");
     }
+    extern bool special_level;
+    special_level = true;
         
     while (!WindowShouldClose())
     {
