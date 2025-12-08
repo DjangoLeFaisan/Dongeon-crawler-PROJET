@@ -41,7 +41,7 @@ int map_editor(Board *board) {
 
                 int groundIndex = 0;
 
-                if (x % 43 > 33) {
+                if (x > 33) {
                     TileClear(t);
                     groundIndex = 1; //Tuile marron
                     TilePush(t, groundIndex);

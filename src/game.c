@@ -87,7 +87,8 @@ void GameInit(Board *board)
 
 void GameUpdate(Board *board, float dt)
 {
-    Marcher(&board->player); 
+    // Gestion du joueur
+    Marcher(&board->player, board); 
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;
