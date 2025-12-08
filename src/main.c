@@ -67,7 +67,7 @@ int main(void)
         
     while (!WindowShouldClose())
     {
-        int test (resultatordi );
+       // int test (resultatordi );
         float dt = GetFrameTime();
 
         GameUpdate(&board, dt);
@@ -93,7 +93,7 @@ int main(void)
     {
         
       
-       DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
+      // DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
 
         EndDrawing();
     }
