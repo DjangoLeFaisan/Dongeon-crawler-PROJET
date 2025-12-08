@@ -1,12 +1,14 @@
 #include "marcher.h"
 #include "game.h"
 #include "raylib.h"
+#include <math.h>
 
 extern int SOLID_TILES[];
 #define SOLID_TILES_COUNT 27  // Nombre de tuiles solides
 
 static float moveTimer = 0.0f;
 static const float MOVE_DELAY = 0.2f;
+static const float ANIMATION_SPEED = 350.0f;  // pixels par seconde pour l'animation fluide
 
 bool can_player_move = false;
 
@@ -86,6 +88,33 @@ void Marcher(Player *player, const Board *board)
             player->gridY = newY;
             TraceLog(LOG_DEBUG, "Player moved to grid position (%d, %d)", newX, newY);
             moveTimer = MOVE_DELAY;
+        }
+    }
+    
+    // Animation fluide vers la position cible
+    float targetPixelX = player->gridX * TILE_SIZE;
+    float targetPixelY = player->gridY * TILE_SIZE;
+    
+    float diffX = targetPixelX - player->pixelX;
+    float diffY = targetPixelY - player->pixelY;
+    
+    float moveAmount = ANIMATION_SPEED * GetFrameTime();
+    
+    // Anime pixelX
+    if (fabsf(diffX) > 0.5f) {
+        if (fabsf(diffX) <= moveAmount) {
+            player->pixelX = targetPixelX;
+        } else {
+            player->pixelX += (diffX > 0 ? moveAmount : -moveAmount);
+        }
+    }
+    
+    // Anime pixelY
+    if (fabsf(diffY) > 0.5f) {
+        if (fabsf(diffY) <= moveAmount) {
+            player->pixelY = targetPixelY;
+        } else {
+            player->pixelY += (diffY > 0 ? moveAmount : -moveAmount);
         }
     }
 }
