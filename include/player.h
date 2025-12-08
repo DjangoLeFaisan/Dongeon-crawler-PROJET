@@ -1,14 +1,9 @@
-/*
-
 #include "raylib.h"
-#include "game.h"
-
-#define Player
 
 typedef struct Player {
-    int x;
-    int y; 
-    Texture2D texture; 
+    int gridX;
+    int gridY;
+    int speed;
+    int texture_id;
+    Texture2D texture;
 } Player;
-
-*/
