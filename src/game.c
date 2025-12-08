@@ -60,8 +60,10 @@ void GameInit(Board *board)
 {
     board->player.gridX = 5;
     board->player.gridY = 5;
+    board->player.pixelX = 5 * TILE_SIZE;
+    board->player.pixelY = 5 * TILE_SIZE;
     board->player.speed = 1;
-    board->player.texture_id = 102;
+    board->player.texture_id = 101;
     
     for (int y = 0; y < BOARD_ROWS; y++)
     {
@@ -257,6 +259,14 @@ void GameDraw(const Board *board)
     // Afficher le joueur par-dessus les tuiles
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)
     {
+        // Dessiner l'ombre sous le joueur avec position animée
+        DrawEllipse(
+            (int)board->player.pixelX + TILE_SIZE / 2,
+            (int)board->player.pixelY + TILE_SIZE - 4,
+            TILE_SIZE / 2 - 4,
+            4,
+            (Color){0, 0, 0, 100});  // Ombre semi-transparente
+        
         Texture2D player_texture = gTileTextures[board->player.texture_id];
             DrawTexture(
                 player_texture,

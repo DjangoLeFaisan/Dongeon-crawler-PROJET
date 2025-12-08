@@ -1,6 +1,10 @@
 #include "marcher.h"
 #include "game.h"
 #include "raylib.h"
+#include <math.h>
+
+// Forward declaration du TILE_SIZE (défini dans game.h)
+#define TILE_SIZE 32
 
 extern int SOLID_TILES[];
 #define SOLID_TILES_COUNT 27  // Nombre de tuiles solides
@@ -86,6 +90,28 @@ void Marcher(Player *player, const Board *board)
             player->gridY = newY;
             TraceLog(LOG_DEBUG, "Player moved to grid position (%d, %d)", newX, newY);
             moveTimer = MOVE_DELAY;
+        }
+    }
+    
+    // Animer la position en pixels vers la position de grille
+    float targetX = player->gridX * TILE_SIZE;
+    float targetY = player->gridY * TILE_SIZE;
+    
+    float diffX = targetX - player->pixelX;
+    float diffY = targetY - player->pixelY;
+    
+    // Interpolation douce vers la cible
+    if (diffX != 0.0f) {
+        player->pixelX += diffX * ANIMATION_SPEED;
+        if (fabsf(player->pixelX - targetX) < 1.0f) {
+            player->pixelX = targetX;
+        }
+    }
+    
+    if (diffY != 0.0f) {
+        player->pixelY += diffY * ANIMATION_SPEED;
+        if (fabsf(player->pixelY - targetY) < 1.0f) {
+            player->pixelY = targetY;
         }
     }
 }
