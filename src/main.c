@@ -81,7 +81,7 @@ int main(void)
         
     while (!WindowShouldClose())
     {
-   
+       // int test (resultatordi );
         float dt = GetFrameTime();
 
         GameUpdate(&board, dt);
@@ -100,19 +100,14 @@ int main(void)
             map_editor(&board);
         }
           
-     if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
-    {
-        
-      
-    //DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
-
-
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
+        {
+            // DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
         }
 
-        EndDrawing(); 
+        EndDrawing();
     }
     
-
     // Libération mémoire
     for (int i = 0; i < gTileTextureCount; i++)
     {
@@ -121,7 +116,6 @@ int main(void)
 
     CloseWindow();
     return 0;
-}  
-
-
+}
+    
 
