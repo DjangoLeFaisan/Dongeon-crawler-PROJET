@@ -1,6 +1,6 @@
 #ifndef BATTLE_H
 #define BATTLE_H
 
-int choisirQuiCommence ();
+//int choisirQuiCommence ();
 
 #endif

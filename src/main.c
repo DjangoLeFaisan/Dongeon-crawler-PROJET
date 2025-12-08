@@ -92,7 +92,7 @@ int main(void)
         }
 
           
-        /*if (IsKeyPressed(KEY_T)) 
+        if (IsKeyPressed(KEY_T)) 
         {
             
         
@@ -101,7 +101,7 @@ int main(void)
 
         }
 
-        EndDrawing(); */
+        EndDrawing(); 
     }
     
 
