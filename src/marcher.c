@@ -27,6 +27,7 @@ void Marcher(Player *player)
     if (IsKeyDown(KEY_A)) {
         dx = -1;
     }
+    
     if (IsKeyDown(KEY_D)) {
         dx = 1;
     }
