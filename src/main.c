@@ -72,12 +72,7 @@ int main(void)
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     
 
-<<<<<<< HEAD
-    gTileTextureCount = 103;
-    int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22}
-=======
     gTileTextureCount = 38;
->>>>>>> fc80745a6e40124c545ac8a2db062f01ab282ed2
     
     Board board = {0};
     GameInit(&board);
@@ -104,16 +99,14 @@ int main(void)
             map_editor(&board);
         }
           
-     if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
-    {
-        
-      
-      // DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
+        {
+            // DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
+        }
 
-        EndDrawing(); 
+        EndDrawing();
     }
     
-
     // Libération mémoire
     for (int i = 0; i < gTileTextureCount; i++)
     {
@@ -122,7 +115,6 @@ int main(void)
 
     CloseWindow();
     return 0;
-}  
-
-
+}
+    
 
