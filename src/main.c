@@ -5,9 +5,12 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[38];
+Texture2D gTileTextures[103];
 int gTileTextureCount = 0;
-int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 29, 30, 31, 32, 33, 34, 35, 36};
+
+//Tuiles considérées comme solides
+int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+ 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43};
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0

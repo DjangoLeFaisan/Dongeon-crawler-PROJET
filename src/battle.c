@@ -23,6 +23,8 @@ int choisirQuiCommence () {
     return resultatordi;
 }
 
+<<<<<<< HEAD
+=======
 
 /*int bool Battle_mode () {
 
@@ -54,8 +56,6 @@ typedef struct chevalier
 
   Button attackButton = CreateButton(520, 30, 60, 25, "Attack");
 }
-
-*/
 
 
 

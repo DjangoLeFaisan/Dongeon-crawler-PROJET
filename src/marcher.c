@@ -4,7 +4,7 @@
 #include <math.h>
 
 extern int SOLID_TILES[];
-#define SOLID_TILES_COUNT 27  // Nombre de tuiles solides
+#define SOLID_TILES_COUNT 99  // Nombre de tuiles solides
 
 static float moveTimer = 0.0f;
 static const float MOVE_DELAY = 0.2f;
@@ -16,7 +16,7 @@ bool can_player_move = false;
 bool VerifySolidTile(int tileIndex)
 {
     for (int x = 0; x < SOLID_TILES_COUNT; x++) {
-        if (SOLID_TILES[x] == tileIndex) {
+        if ((SOLID_TILES[x] == tileIndex) && (SOLID_TILES[x] != 0)) {
             return true;
         }
     }
