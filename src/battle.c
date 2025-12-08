@@ -23,54 +23,6 @@ int choisirQuiCommence () {
     return resultatordi;
 }
 
-/*
-int bool Battle_mode () {
-typedef struct Joueurs 
-{
-    int hp; 
-    int maxhp; 
-    int attack; 
-}   
-;
-typedef struct Enemy 
-{
-    int hp; 
-    int maxhp; 
-    int attack; 
-};
 
-typedef struct mage
-{
-    int mana ; 
-
-};
-typedef struct chevalier
-{
-    int rage ; 
-} ;
-
-
- 
-
-
-
-
-*/
-
-
-
-
-
-
-
+     
 //}
-
-
-
-
-
-
-
-
-
-
