@@ -60,6 +60,8 @@ void GameInit(Board *board)
 {
     board->player.gridX = 5;
     board->player.gridY = 5;
+    board->player.pixelX = 5 * TILE_SIZE;
+    board->player.pixelY = 5 * TILE_SIZE;
     board->player.speed = 1;
     board->player.texture_id = 101;
     
@@ -235,11 +237,15 @@ void GameDraw(const Board *board)
                 int idx = t->layers[i];
                 if (idx >= 0 && idx < gTileTextureCount)
                 {
-                    DrawTexture(
-                        gTileTextures[idx],
-                        x * TILE_SIZE,
-                        y * TILE_SIZE,
-                        WHITE);
+                    // Vérifier que la texture est chargée (non vide)
+                    if (gTileTextures[idx].id > 0)
+                    {
+                        DrawTexture(
+                            gTileTextures[idx],
+                            x * TILE_SIZE,
+                            y * TILE_SIZE,
+                            WHITE);
+                    }
                 }
             }
 
@@ -256,23 +262,35 @@ void GameDraw(const Board *board)
     // Afficher le joueur par-dessus les tuiles
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)
     {
+        // Dessiner l'ombre sous le joueur avec position animée
+        DrawEllipse(
+            (int)board->player.pixelX + TILE_SIZE / 2,
+            (int)board->player.pixelY + TILE_SIZE - 4,
+            TILE_SIZE / 2 - 4,
+            4,
+            (Color){0, 0, 0, 100});  // Ombre semi-transparente
+        
         Texture2D player_texture = gTileTextures[board->player.texture_id];
-        DrawTexture(
-            player_texture,
-            board->player.gridX * TILE_SIZE,
-            board->player.gridY * TILE_SIZE,
-            WHITE
-        );
-    }
-    else
-    {
-        // Fallback : afficher un carré rouge si pas de texture
-        DrawRectangle(
-            board->player.gridX * TILE_SIZE,
-            board->player.gridY * TILE_SIZE,
-            TILE_SIZE,
-            TILE_SIZE,
-            RED);
+        // Vérifier que la texture est chargée
+        if (player_texture.id > 0)
+        {
+            DrawTexture(
+                player_texture,
+                (int)board->player.pixelX,
+                (int)board->player.pixelY,
+                WHITE
+            );
+        }
+        else
+        {
+            // Fallback : afficher un carré rouge si la texture n'est pas chargée
+            DrawRectangle(
+                (int)board->player.pixelX,
+                (int)board->player.pixelY,
+                TILE_SIZE,
+                TILE_SIZE,
+                RED);
+        }
     }
 
     // Affichage du nom de carte en haut à gauche
