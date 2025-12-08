@@ -31,19 +31,14 @@ int test( int resultatordi ) {
          } 
 
 
-        }
-<<<<<<< HEAD
-=======
+}
 
- /*int combat (resultatordi) {
-     int PV_J1 = 100 , PV_J2=80 , tour = 1 , action = 2 , mana = 100 , rage = 100 , sorts = ?, épée = 0  ; */
 
      
 
 
 
 
->>>>>>> f8ea8822da6ddc5122b4e0ab674a82dde7bf7e8d
 
 
 

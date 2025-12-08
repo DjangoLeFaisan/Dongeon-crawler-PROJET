@@ -5,7 +5,7 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[30];
+Texture2D gTileTextures[38];
 int gTileTextureCount = 0;
 
 
@@ -50,6 +50,14 @@ int main(void)
     gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
     gTileTextures[27] = LoadTexture("assets/sprites portes/porte close.png");
     gTileTextures[28] = LoadTexture("assets/sprites portes/porte open.png");
+    gTileTextures[29] = LoadTexture("assets/murs/mur angle bas droite.png");
+    gTileTextures[30] = LoadTexture("assets/murs/mur angle bas gauche.png");
+    gTileTextures[31] = LoadTexture("assets/murs/mur angle cote droite.png");
+    gTileTextures[32] = LoadTexture("assets/murs/mur angle cote gauche.png");
+    gTileTextures[33] = LoadTexture("assets/murs/mur angle haut droite.png");
+    gTileTextures[34] = LoadTexture("assets/murs/mur angle haut gauche.png");
+    gTileTextures[35] = LoadTexture("assets/murs/mur angle toit droite.png");
+    gTileTextures[36] = LoadTexture("assets/murs/mur angle toit gauche.png");
 
 
     
@@ -59,7 +67,7 @@ int main(void)
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     
 
-    gTileTextureCount = 30;
+    gTileTextureCount = 38;
     
     Board board = {0};
     GameInit(&board);
@@ -67,7 +75,7 @@ int main(void)
         
     while (!WindowShouldClose())
     {
-        int test (resultatordi );
+       // int test (resultatordi );
         float dt = GetFrameTime();
 
         GameUpdate(&board, dt);
@@ -93,7 +101,7 @@ int main(void)
     {
         
       
-       DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
+      // DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
 
         EndDrawing();
     }
