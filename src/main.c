@@ -5,7 +5,7 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[103];
+Texture2D gTileTextures[38];
 int gTileTextureCount = 0;
 
 // Gestionnaire de l'état de jeu
@@ -55,6 +55,14 @@ int main(void)
     gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
     gTileTextures[27] = LoadTexture("assets/sprites portes/porte close.png");
     gTileTextures[28] = LoadTexture("assets/sprites portes/porte open.png");
+    gTileTextures[29] = LoadTexture("assets/murs/mur angle bas droite.png");
+    gTileTextures[30] = LoadTexture("assets/murs/mur angle bas gauche.png");
+    gTileTextures[31] = LoadTexture("assets/murs/mur angle cote droite.png");
+    gTileTextures[32] = LoadTexture("assets/murs/mur angle cote gauche.png");
+    gTileTextures[33] = LoadTexture("assets/murs/mur angle haut droite.png");
+    gTileTextures[34] = LoadTexture("assets/murs/mur angle haut gauche.png");
+    gTileTextures[35] = LoadTexture("assets/murs/mur angle toit droite.png");
+    gTileTextures[36] = LoadTexture("assets/murs/mur angle toit gauche.png");
 
 
     

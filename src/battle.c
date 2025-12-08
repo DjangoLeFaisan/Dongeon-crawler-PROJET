@@ -23,8 +23,6 @@ int choisirQuiCommence () {
     return resultatordi;
 }
 
- /*int combat (resultatordi) {
-     int PV_J1 = 100 , PV_J2=80 , tour = 1 , action = 2 , mana = 100 , rage = 100 , sorts = ?, épée = 0  ; */
 
      
 //}
