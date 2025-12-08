@@ -2,6 +2,7 @@
 #include "marcher.h"
 #include "raylib.h"
 
+extern int SOLID_TILES[];
 static float moveTimer = 0.0f;
 static const float MOVE_DELAY = 0.2f;
 
