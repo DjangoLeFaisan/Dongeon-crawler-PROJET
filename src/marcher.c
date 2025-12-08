@@ -46,7 +46,7 @@ void Marcher(Player *player, const Board *board)
     int dx = 0;
     int dy = 0;
 
-    if (IsKeyDown(KEY_W)) { 
+    if (IsKeyDown(KEY_W)) {       
         dy = -1;
     }
     if (IsKeyDown(KEY_S)) {
