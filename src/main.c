@@ -64,13 +64,13 @@ int main(void)
     gTileTextures[34] = LoadTexture("assets/murs/mur angle haut gauche.png");
     gTileTextures[35] = LoadTexture("assets/murs/mur angle toit droite.png");
     gTileTextures[36] = LoadTexture("assets/murs/mur angle toit gauche.png");
-    gTileTextures[36] = LoadTexture("assets/objets/caisse tonneau sacs.png");
-    gTileTextures[36] = LoadTexture("assets/objets/caisse.png");
-    gTileTextures[36] = LoadTexture("assets/objets/Coffre copie.png");
-    gTileTextures[36] = LoadTexture("assets/objets/deux caisses petites.png");
-    gTileTextures[36] = LoadTexture("assets/objets/deux caisses.png");
-    gTileTextures[36] = LoadTexture("assets/objets/tonneau.png");
-    gTileTextures[36] = LoadTexture("assets/objets/trois caisses.png");
+    gTileTextures[37] = LoadTexture("assets/objets/caisse tonneau sacs.png");
+    gTileTextures[38] = LoadTexture("assets/objets/caisse.png");
+    gTileTextures[39] = LoadTexture("assets/objets/Coffre copie.png");
+    gTileTextures[40] = LoadTexture("assets/objets/deux caisses petites.png");
+    gTileTextures[41] = LoadTexture("assets/objets/deux caisses.png");
+    gTileTextures[42] = LoadTexture("assets/objets/tonneau.png");
+    gTileTextures[43] = LoadTexture("assets/objets/trois caisses.png");
 
 
     
