@@ -236,6 +236,9 @@ void GameDraw(const Board *board)
                 int idx = t->layers[i];
                 if (idx >= 0 && idx < gTileTextureCount)
                 {
+                    // Vérifier que la texture est chargée (non vide)
+                    if (gTileTextures[idx].id > 0)
+                    {
                         DrawTexture(
                             gTileTextures[idx],
                             x * TILE_SIZE,
@@ -243,6 +246,7 @@ void GameDraw(const Board *board)
                             WHITE);
                     }
                 }
+            }
 
             // Contour de tuile (debug)
             DrawRectangleLines(
@@ -258,23 +262,27 @@ void GameDraw(const Board *board)
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)
     {
         Texture2D player_texture = gTileTextures[board->player.texture_id];
+        // Vérifier que la texture est chargée
+        if (player_texture.id > 0)
+        {
             DrawTexture(
                 player_texture,
-            board->player.gridX * TILE_SIZE,
-            board->player.gridY * TILE_SIZE,
+                (int)board->player.pixelX,
+                (int)board->player.pixelY,
                 WHITE
             );
         }
         else
         {
-        // Fallback : afficher un carré rouge si pas de texture
+            // Fallback : afficher un carré rouge si pas de texture
             DrawRectangle(
-            board->player.gridX * TILE_SIZE,
-            board->player.gridY * TILE_SIZE,
+                (int)board->player.pixelX,
+                (int)board->player.pixelY,
                 TILE_SIZE,
                 TILE_SIZE,
                 RED);
         }
+    }
 
     // Affichage du nom de carte en haut à gauche
     if (editor_active) {
