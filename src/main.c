@@ -7,6 +7,7 @@
 // Gestionnaire de texture
 Texture2D gTileTextures[38];
 int gTileTextureCount = 0;
+int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 29, 30, 31, 32, 33, 34, 35, 36};
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0
@@ -72,7 +73,7 @@ int main(void)
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     
 
-    gTileTextureCount = 38;
+    gTileTextureCount = 103;
     
     Board board = {0};
     GameInit(&board);
