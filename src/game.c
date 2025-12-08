@@ -60,6 +60,8 @@ void GameInit(Board *board)
 {
     board->player.gridX = 5;
     board->player.gridY = 5;
+    board->player.pixelX = 5 * TILE_SIZE;
+    board->player.pixelY = 5 * TILE_SIZE;
     board->player.speed = 1;
     board->player.texture_id = 102;
     
