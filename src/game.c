@@ -87,7 +87,8 @@ void GameInit(Board *board)
 
 void GameUpdate(Board *board, float dt)
 {
-    Marcher(&board->player); 
+    // Gestion du joueur
+    Marcher(&board->player, board); 
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;
@@ -237,9 +238,6 @@ void GameDraw(const Board *board)
                 int idx = t->layers[i];
                 if (idx >= 0 && idx < gTileTextureCount)
                 {
-                    // Vérifier que la texture est chargée (non vide)
-                    if (gTileTextures[idx].id > 0)
-                    {
                         DrawTexture(
                             gTileTextures[idx],
                             x * TILE_SIZE,
@@ -247,7 +245,6 @@ void GameDraw(const Board *board)
                             WHITE);
                     }
                 }
-            }
 
             // Contour de tuile (debug)
             DrawRectangleLines(
@@ -271,27 +268,23 @@ void GameDraw(const Board *board)
             (Color){0, 0, 0, 100});  // Ombre semi-transparente
         
         Texture2D player_texture = gTileTextures[board->player.texture_id];
-        // Vérifier que la texture est chargée
-        if (player_texture.id > 0)
-        {
             DrawTexture(
                 player_texture,
-                (int)board->player.pixelX,
-                (int)board->player.pixelY,
+            board->player.gridX * TILE_SIZE,
+            board->player.gridY * TILE_SIZE,
                 WHITE
             );
         }
         else
         {
-            // Fallback : afficher un carré rouge si la texture n'est pas chargée
+        // Fallback : afficher un carré rouge si pas de texture
             DrawRectangle(
-                (int)board->player.pixelX,
-                (int)board->player.pixelY,
+            board->player.gridX * TILE_SIZE,
+            board->player.gridY * TILE_SIZE,
                 TILE_SIZE,
                 TILE_SIZE,
                 RED);
         }
-    }
 
     // Affichage du nom de carte en haut à gauche
     if (editor_active) {
