@@ -2,6 +2,7 @@
 #include "game.h"
 #include "stdlib.h"
 #include "time.h"
+#include "map_io.h"
 
 
 // Gestionnaire de texture
@@ -87,7 +88,12 @@ int main(void)
     
     Board board = {0};
     GameInit(&board);
-    
+
+    if (MapLoad(&board, "maps/couloir_defaul.map")) {
+        TraceLog(LOG_INFO, "Carte chargée avec succès");
+    } else {
+        TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte");
+    }
         
     while (!WindowShouldClose())
     {

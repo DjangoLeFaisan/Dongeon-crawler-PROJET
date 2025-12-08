@@ -23,10 +23,7 @@ int choisirQuiCommence () {
     return resultatordi;
 }
 
-<<<<<<< HEAD
-=======
-
-/*int bool Battle_mode () {
+/* int bool Battle_mode () {
 
     
 typedef struct Joueurs 
@@ -68,3 +65,5 @@ typedef struct chevalier
 
      
 //}
+
+*/
