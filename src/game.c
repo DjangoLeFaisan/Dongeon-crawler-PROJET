@@ -61,7 +61,7 @@ void GameInit(Board *board)
     board->player.gridX = 5;
     board->player.gridY = 5;
     board->player.speed = 1;
-    board->player.texture_id = 102;
+    board->player.texture_id = 101;
     
     for (int y = 0; y < BOARD_ROWS; y++)
     {
