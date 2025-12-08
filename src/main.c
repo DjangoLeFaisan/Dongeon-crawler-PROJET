@@ -5,7 +5,7 @@
 
 
 // Gestionnaire de texture
-Texture2D gTileTextures[103];
+Texture2D gTileTextures[38];
 int gTileTextureCount = 0;
 
 // Gestionnaire de l'état de jeu
@@ -55,6 +55,14 @@ int main(void)
     gTileTextures[26] = LoadTexture("assets/eclairage/torche murale.png");
     gTileTextures[27] = LoadTexture("assets/sprites portes/porte close.png");
     gTileTextures[28] = LoadTexture("assets/sprites portes/porte open.png");
+    gTileTextures[29] = LoadTexture("assets/murs/mur angle bas droite.png");
+    gTileTextures[30] = LoadTexture("assets/murs/mur angle bas gauche.png");
+    gTileTextures[31] = LoadTexture("assets/murs/mur angle cote droite.png");
+    gTileTextures[32] = LoadTexture("assets/murs/mur angle cote gauche.png");
+    gTileTextures[33] = LoadTexture("assets/murs/mur angle haut droite.png");
+    gTileTextures[34] = LoadTexture("assets/murs/mur angle haut gauche.png");
+    gTileTextures[35] = LoadTexture("assets/murs/mur angle toit droite.png");
+    gTileTextures[36] = LoadTexture("assets/murs/mur angle toit gauche.png");
 
 
     
@@ -64,8 +72,12 @@ int main(void)
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     
 
+<<<<<<< HEAD
     gTileTextureCount = 103;
     int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22}
+=======
+    gTileTextureCount = 38;
+>>>>>>> fc80745a6e40124c545ac8a2db062f01ab282ed2
     
     Board board = {0};
     GameInit(&board);
