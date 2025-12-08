@@ -7,7 +7,7 @@ possibilité si l'enemie ne te voit pas d'attaquer en premier il va alors prendr
 #include "raylib.h"
 #include "game.h"
 
-
+//int Battle_mode () {
 int choisirQuiCommence () {
     // Initialisation du générateur aléatoire
     int resultatordi = rand() % 2;
@@ -23,8 +23,12 @@ int choisirQuiCommence () {
     return resultatordi;
 }
 
-/*
+<<<<<<< HEAD
+=======
+
 int bool Battle_mode () {
+
+    
 typedef struct Joueurs 
 {
     int hp; 
@@ -50,12 +54,8 @@ typedef struct chevalier
 } ;
 
 
- 
-
-
-
-
-*/
+  Button attackButton = CreateButton(520, 30, 60, 25, "Attack");
+}
 
 
 
@@ -63,14 +63,9 @@ typedef struct chevalier
 
 
 
+
+
+>>>>>>> c0a5e6d0b1e466bb1a416d37a493e0ae4d5b93fd
+
+     
 //}
-
-
-
-
-
-
-
-
-
-
