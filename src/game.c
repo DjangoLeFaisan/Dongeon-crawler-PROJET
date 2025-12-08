@@ -9,6 +9,7 @@
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
+
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
@@ -90,7 +91,7 @@ void GameUpdate(Board *board, float dt)
     int tileX = (int)(m.x) / TILE_SIZE;
     int tileY = (int)(m.y) / TILE_SIZE;
 
-    // Gestion de la tuile factice (�diteur de carte)
+    // Gestion de la tuile factice (éditeur de carte)
     if (tileX != lastPreviewX || tileY != lastPreviewY) {
 
         // Retire la tuile factice de l'ancienne position
@@ -99,7 +100,7 @@ void GameUpdate(Board *board, float dt)
             TilePop(oldTile);
         }
         
-        // Ajoute la tuile factice � la nouvelle position
+        // Ajoute la tuile factice à la nouvelle position
         if ((tileX <= 33) && editor_active) {
             Tile *newTile = &board->tiles[tileY][tileX];
             TilePush(newTile, objectIndex);
@@ -111,7 +112,7 @@ void GameUpdate(Board *board, float dt)
         }
     }
     
-    // Gestion des int�ractions en mode �diteur de carte 
+    // Gestion des intéractions en mode éditeur de carte 
     if (editor_active == true) {
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (tileX <= 33)) //Placer une tuile
@@ -132,7 +133,7 @@ void GameUpdate(Board *board, float dt)
                 Tile *t = &board->tiles[tileY][tileX];
                 TilePop(t);
 
-        } else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) // S�lectionner la tuile la plus haute
+        } else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) // Sélectionner la tuile la plus haute
         {
             TraceLog(LOG_INFO,
                 "Type de tuile s�lectionn�e au coordonn�es x=%.1f y=%.1f � la tuile correspondante : (%d, %d)",
@@ -152,15 +153,15 @@ void GameUpdate(Board *board, float dt)
                 }
         }
 
-        // Gestion du nom de carte (Tab pour �diter)
+        // Gestion du nom de carte (Tab pour éditer)
         if (IsKeyPressed(KEY_TAB)) {
             isNamingMap = !isNamingMap;
             namingCursorPos = strlen(currentMapName);
         }
 
-        // �dition du nom de carte
+        // Edition du nom de carte
         if (isNamingMap) {
-            // Traiter les touches de caract�res
+            // Traiter les touches de caractères
             int key = GetCharPressed();
             while (key > 0) {
                 if ((key >= 32 && key < 127) && namingCursorPos < MAX_MAP_NAME_LENGTH - 1) {
@@ -204,7 +205,7 @@ void GameUpdate(Board *board, float dt)
         }
     }
 
-    // Gestion des entr�es clavier
+    // Gestion des entrées clavier
     if (IsKeyPressed(KEY_SPACE))
     {
         TraceLog(LOG_INFO, "SPACE pressed in GameUpdate");
@@ -265,7 +266,7 @@ void GameDraw(const Board *board)
     }
     else
     {
-        // Fallback : afficher un carr� rouge si pas de texture
+        // Fallback : afficher un carré rouge si pas de texture
         DrawRectangle(
             board->player.gridX * TILE_SIZE,
             board->player.gridY * TILE_SIZE,
@@ -274,7 +275,7 @@ void GameDraw(const Board *board)
             RED);
     }
 
-    // Affichage du nom de carte en haut � gauche
+    // Affichage du nom de carte en haut à gauche
     if (editor_active) {
         char displayText[128];
         if (isNamingMap) {
