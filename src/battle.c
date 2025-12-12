@@ -120,3 +120,50 @@ int choisirQuiCommence(void) {
     }
     return resultatordi;
 }
+
+/* int bool Battle_mode () {
+
+    
+typedef struct Joueurs 
+{
+    int hp; 
+    int maxhp; 
+    int attack; 
+}   
+;
+typedef struct Enemy 
+{
+    int hp; 
+    int maxhp; 
+    int attack; 
+};
+
+typedef struct mage
+{
+    int mana ; 
+
+};
+typedef struct chevalier
+{
+    int rage ; 
+} ;
+
+
+  Button attackButton = CreateButton(520, 30, 60, 25, "Attack");
+}
+
+
+
+
+
+
+
+
+
+
+     
+//}
+
+*/
+=======
+>>>>>>> 6de18e29d3f07c90fee971e5ed491ae1b0558240
