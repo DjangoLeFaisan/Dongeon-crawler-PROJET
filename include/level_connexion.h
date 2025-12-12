@@ -1,6 +1,6 @@
 #ifndef LEVEL_CONNEXION
 #define LEVEL_CONNEXION
 
-int LoadNextLevel();
+bool LoadNextLevel();
 
 #endif
