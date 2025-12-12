@@ -120,8 +120,6 @@ int choisirQuiCommence(void) {
     }
     return resultatordi;
 }
-<<<<<<< HEAD
-=======
 
 /* int bool Battle_mode () {
 
@@ -167,4 +165,3 @@ typedef struct chevalier
 //}
 
 */
->>>>>>> 10de506f45d89035d5d9366e252d08594b5089bb
