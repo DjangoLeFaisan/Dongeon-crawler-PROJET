@@ -165,5 +165,3 @@ typedef struct chevalier
 //}
 
 */
-=======
->>>>>>> 6de18e29d3f07c90fee971e5ed491ae1b0558240
