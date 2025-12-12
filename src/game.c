@@ -262,12 +262,14 @@ void GameDraw(const Board *board)
             }
 
             // Contour de tuile (debug)
-            DrawRectangleLines(
-                x * TILE_SIZE,
-                y * TILE_SIZE,
-                TILE_SIZE,
-                TILE_SIZE,
-                DARKGRAY);
+            if (editor_active) {
+                DrawRectangleLines(
+                    x * TILE_SIZE,
+                    y * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE,
+                    DARKGRAY);
+            }
         }
     }
 
