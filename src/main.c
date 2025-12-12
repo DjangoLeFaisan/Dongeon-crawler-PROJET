@@ -90,20 +90,10 @@ int main(void)
     Board board = {0};
     GameInit(&board);
 
-<<<<<<< HEAD
     // Initialiser le système de combat
     extern CombatState gCombatState;
     InitCombat(&gCombatState);
     
-=======
-    if (MapLoad(&board, "maps/couloir_defaul.map")) {
-        TraceLog(LOG_INFO, "Carte chargée avec succès");
-    } else {
-        TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte");
-    }
-    extern bool special_level;
-    special_level = true;
->>>>>>> 10de506f45d89035d5d9366e252d08594b5089bb
         
     while (!WindowShouldClose())
     {
