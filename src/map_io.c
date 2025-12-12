@@ -75,7 +75,9 @@ bool MapLoad(Board *board, const char *filename)
             if (currentTextureIndex == SPAWN_DOOR_INDEX) {
                 board->player.gridX = x;
                 board->player.gridY = (y + 1);
-                TraceLog(LOG_INFO, "Player spawn position set at (%d, %d)", x, y - 1);
+                board->player.pixelX = x * TILE_SIZE;
+                board->player.pixelY = (y + 1) * TILE_SIZE;
+                TraceLog(LOG_INFO, "Player spawn position set at (%d, %d)", x, (y + 1));
             }
         }
     }

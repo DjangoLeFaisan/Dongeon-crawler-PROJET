@@ -7,11 +7,9 @@
 
 
 
-int current_level = 0;
+int current_level = 1;
 bool special_level = false;
 char next_level[256] = "";
-
-/*
 
 // Charger le niveau suivant
 bool LoadNextLevel(Board *board) {
@@ -20,10 +18,10 @@ bool LoadNextLevel(Board *board) {
         
         // Construire le chemin du fichier : "maps/Etage{level}.map"
         snprintf(next_level, sizeof(next_level), "maps/Etage%d.map", current_level);
-        current_level++;
         
         if (MapLoad(board, next_level)) {
             TraceLog(LOG_INFO, "Carte chargée avec succès: %s", next_level);
+            current_level++;
             return true;
         } else {
             TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: %s", next_level);
@@ -42,4 +40,3 @@ bool LoadNextLevel(Board *board) {
     }
     return false;
 }
-*/
