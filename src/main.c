@@ -94,6 +94,14 @@ int main(void)
     extern CombatState gCombatState;
     InitCombat(&gCombatState);
     
+    //Charger la première carte
+    if (MapLoad(&board, "maps/couloir_defaul.map")) {
+        TraceLog(LOG_INFO, "Carte chargée avec succès");
+    } else {
+        TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte");
+    }
+    extern bool special_level;
+    special_level = true;
         
     while (!WindowShouldClose())
     {
