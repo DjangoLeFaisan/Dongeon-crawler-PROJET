@@ -6,10 +6,12 @@
 #include <string.h>
 
 
-/*
+
 int current_level = 0;
 bool special_level = false;
 char next_level[256] = "";
+
+/*
 
 // Charger le niveau suivant
 bool LoadNextLevel(Board *board) {

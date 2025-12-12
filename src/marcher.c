@@ -80,6 +80,12 @@ void Marcher(Player *player, const Board *board)
         // Vérifie si la tuile est solide
         if (tileIndex >= 0 && VerifySolidTile(tileIndex)) {
             can_player_move = false;
+<<<<<<< HEAD
+=======
+        } else if (tileIndex == 28) {
+            special_level = true;  
+            //LoadNextLevel(board);
+>>>>>>> 8485eeeb2ef12f7e0dcdbf5580632e368568f958
         }
         
         // Mouvement autorisé

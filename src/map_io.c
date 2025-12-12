@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define PLAYABLE_COLS 34  // colonnes 0-33
+#define SPAWN_DOOR_INDEX 27 // Définit quelle tuile fait apparaître le joueur
 
 bool MapSave(const Board *board, const char *filename)
 {
@@ -68,6 +69,14 @@ bool MapLoad(Board *board, const char *filename)
             Tile *t = &board->tiles[y][x];
             fread(&t->layerCount, sizeof(int), 1, file);
             fread(t->layers, sizeof(int), MAX_LAYERS, file);
+
+            // Fait apparaître le joueur si la tuile d'apparition est détectée
+            int currentTextureIndex = t->layers[t->layerCount - 1];
+            if (currentTextureIndex == SPAWN_DOOR_INDEX) {
+                board->player.gridX = x;
+                board->player.gridY = (y + 1);
+                TraceLog(LOG_INFO, "Player spawn position set at (%d, %d)", x, y - 1);
+            }
         }
     }
 
