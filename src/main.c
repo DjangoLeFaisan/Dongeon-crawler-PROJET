@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "game.h"
+#include "battle.h"
 #include "stdlib.h"
 #include "time.h"
 
@@ -87,6 +88,10 @@ int main(void)
     
     Board board = {0};
     GameInit(&board);
+
+    // Initialiser le système de combat
+    extern CombatState gCombatState;
+    InitCombat(&gCombatState);
     
         
     while (!WindowShouldClose())

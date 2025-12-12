@@ -2,6 +2,7 @@
 #include "game.h"
 #include "map_io.h"
 #include "marcher.h"
+#include "battle.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -88,7 +89,11 @@ void GameInit(Board *board)
 void GameUpdate(Board *board, float dt)
 {
     // Gestion du joueur
-    Marcher(&board->player, board); 
+    Marcher(&board->player, board);
+    
+    // Mise à jour du combat overlay
+    extern CombatState gCombatState;
+    UpdateCombat(&gCombatState, dt); 
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;
@@ -213,6 +218,12 @@ void GameUpdate(Board *board, float dt)
     {
         TraceLog(LOG_INFO, "SPACE pressed in GameUpdate");
     }
+
+    // Lancer le mode combat avec B
+    if (IsKeyPressed(KEY_B))
+    {
+        ToggleCombatOverlay();
+    }
 }
 
 void GameDraw(const Board *board)
@@ -299,4 +310,8 @@ void GameDraw(const Board *board)
             DrawText("Ctrl+S to save | Ctrl+L to load", 10, 35, 14, GRAY);
         }
     }
+
+    // Afficher l'overlay du combat par-dessus la map
+    extern CombatState gCombatState;
+    DrawCombat(&gCombatState);
 }
