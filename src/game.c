@@ -59,8 +59,8 @@ int TilePop(Tile *t)
 
 void GameInit(Board *board)
 {
-    board->player.gridX = 1;
-    board->player.gridY = 11;
+    board->player.gridX = 0;
+    board->player.gridY = 0;
     board->player.pixelX = 5 * TILE_SIZE;
     board->player.pixelY = 5 * TILE_SIZE;
     board->player.speed = 1;
