@@ -4,6 +4,9 @@
 #include <math.h>
 
 extern int SOLID_TILES[];
+extern bool special_level;  // Déclaration externe pour accéder à la variable de level_connexion.c
+extern bool LoadNextLevel(Board *board);  // Déclaration de la fonction
+
 #define SOLID_TILES_COUNT 99  // Nombre de tuiles solides
 
 static float moveTimer = 0.0f;
@@ -80,6 +83,9 @@ void Marcher(Player *player, const Board *board)
         // Vérifie si la tuile est solide
         if (tileIndex >= 0 && VerifySolidTile(tileIndex)) {
             can_player_move = false;
+        } else if (tileIndex == 28) {
+            special_level = true;  
+            LoadNextLevel(board);
         }
         
         // Mouvement autorisé
