@@ -102,6 +102,7 @@ int main(void)
     }
     extern bool special_level;
     special_level = true;
+    TraceLog(LOG_INFO, "Special_level = true");
         
     while (!WindowShouldClose())
     {

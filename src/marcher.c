@@ -85,6 +85,7 @@ void Marcher(Player *player, const Board *board)
         } else if (tileIndex == 28) {
             special_level = true;  
             LoadNextLevel(board);
+            return;
         }
         // Mouvement autorisé
         if (can_player_move) {
