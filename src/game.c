@@ -291,7 +291,8 @@ void GameDraw(const Board *board)
         if (player_texture.id > 0)
         {
             // Utiliser DrawTexturePro pour pouvoir faire un mirroir selon la direction
-            Rectangle source = {0, 0, (float)(board->player.lastDirection > 0 ? player_texture.width : -player_texture.width), (float)player_texture.height};
+            float sourceWidth = (float)(board->player.lastDirection > 0 ? player_texture.width : -player_texture.width);
+            Rectangle source = {0, 0, sourceWidth, (float)player_texture.height};
             Rectangle dest = {(int)board->player.pixelX, (int)board->player.pixelY, TILE_SIZE, TILE_SIZE};
             DrawTexturePro(player_texture, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
         }

@@ -34,7 +34,7 @@ int main(void)
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
-    gTileTextures[2] = LoadTexture("assets/violet.png");
+    gTileTextures[2] = LoadTexture("assets/sand.png");
 
     gTileTextures[4] = LoadTexture("assets/murs/mur bas 1.png");
     gTileTextures[5] = LoadTexture("assets/murs/mur bas 3.png");
@@ -123,9 +123,9 @@ int main(void)
         DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
 
         // Ouverture de l'editeur de map
-        //if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
-        //    map_editor(&board);
-        //}
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
+            map_editor(&board);
+        }
           
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
         {
