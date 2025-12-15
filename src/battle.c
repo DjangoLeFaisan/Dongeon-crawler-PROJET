@@ -12,6 +12,8 @@ Appuyer sur B pour activer/désactiver le mode combat
 #define ACTION_DURATION 1.0f
 #define ATTACK_POWER 15
 #define DEFEND_REDUCTION 0.5f
+#define HITBOX_WIDTH 32    // Largeur de la hitbox d'attaque
+#define HITBOX_HEIGHT 32   // Hauteur de la hitbox d'attaque
 
 // Variable globale du combat
 CombatState gCombatState = {0};
@@ -24,6 +26,32 @@ static bool IsButtonClicked(Rectangle btn) {
     return IsButtonHovered(btn) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 }
 
+// Fonction pour mettre à jour les hitbox d'attaque basées sur la direction et la position du joueur
+static void UpdateAttackHitboxes(Knight *knight, float playerPixelX, float playerPixelY) {
+    float centerX = playerPixelX + (TILE_SIZE / 2);
+    float centerY = playerPixelY + (TILE_SIZE / 2);
+    
+    // Hitbox devant le chevalier
+    switch (knight->facing_direction) {
+        case DIR_UP:
+            knight->attack_hitbox_front = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY - TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_back = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY + TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
+            break;
+        case DIR_DOWN:
+            knight->attack_hitbox_front = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY + TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_back = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY - TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
+            break;
+        case DIR_LEFT:
+            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_back = (Rectangle){playerPixelX + TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
+            break;
+        case DIR_RIGHT:
+            knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_back = (Rectangle){playerPixelX - TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
+            break;
+    }
+}
+
 void InitCombat(CombatState *state) {
     // Initialiser le chevalier
     state->knight.hp = 100;
@@ -32,16 +60,39 @@ void InitCombat(CombatState *state) {
     state->knight.defense = 5;
     state->knight.state = KNIGHT_IDLE;
     state->knight.state_timer = 0;
+    state->knight.facing_direction = DIR_DOWN;  // Direction initiale
+    
+    // Initialiser les hitbox
+    state->knight.attack_hitbox_front = (Rectangle){0, 0, 0, 0};
+    state->knight.attack_hitbox_back = (Rectangle){0, 0, 0, 0};
 
     // Initialiser les boutons (bas de l'écran)
-    state->btn_attack = (Rectangle){150, 650, 140, 50};
-    state->btn_defend = (Rectangle){350, 650, 140, 50};
+    state->btn_attack = (Rectangle){500, 650, 140, 50};
+    state->btn_defend = (Rectangle){640, 650, 140, 50};
 
     state->combat_overlay_active = false;
 }
 
 void UpdateCombat(CombatState *state, float dt) {
     if (!state->combat_overlay_active) return;
+
+    // ===== MISE À JOUR DE LA DIRECTION =====
+    // Sur clavier AZERTY: KEY_W=Z physique, KEY_A=Q physique, KEY_S=S, KEY_D=D
+    Direction newDirection = state->knight.facing_direction;
+    if (IsKeyDown(KEY_W)) {  // Touche Z sur AZERTY
+        newDirection = DIR_UP;
+    } else if (IsKeyDown(KEY_S)) {  // Touche S
+        newDirection = DIR_DOWN;
+    } else if (IsKeyDown(KEY_A)) {  // Touche Q sur AZERTY
+        newDirection = DIR_LEFT;
+    } else if (IsKeyDown(KEY_D)) {  // Touche D
+        newDirection = DIR_RIGHT;
+    }
+    
+    // Met à jour la direction si elle a changé
+    if (newDirection != state->knight.facing_direction) {
+        state->knight.facing_direction = newDirection;
+    }
 
     // ===== CHEVALIER =====
     // Décrémente le timer
@@ -53,25 +104,48 @@ void UpdateCombat(CombatState *state, float dt) {
     }
 
     // Détecte les clics sur les boutons
-    if (IsButtonClicked(state->btn_attack) && state->knight.state == KNIGHT_IDLE) {
-        state->knight.state = KNIGHT_ATTACKING;
-        state->knight.state_timer = ACTION_DURATION;
-        TraceLog(LOG_INFO, "Chevalier attaque!");
-    }
+    if (state->knight.state == KNIGHT_IDLE) {
+        if (IsButtonClicked(state->btn_attack) || IsKeyPressed(KEY_KP_4)) {
+            state->knight.state = KNIGHT_ATTACKING;
+            state->knight.state_timer = ACTION_DURATION;
+            TraceLog(LOG_INFO, "Chevalier attaque dans la direction %d! Hitbox front: (%f, %f, %f, %f)", 
+                     state->knight.facing_direction,
+                     state->knight.attack_hitbox_front.x,
+                     state->knight.attack_hitbox_front.y,
+                     state->knight.attack_hitbox_front.width,
+                     state->knight.attack_hitbox_front.height);
+        }
 
-    if (IsButtonClicked(state->btn_defend) && state->knight.state == KNIGHT_IDLE) {
-        state->knight.state = KNIGHT_DEFENDING;
-        state->knight.state_timer = ACTION_DURATION;
-        TraceLog(LOG_INFO, "Chevalier se défend!");
+       
+        if (IsButtonClicked(state->btn_defend) || IsKeyPressed(KEY_KP_6)) {
+            state->knight.state = KNIGHT_DEFENDING;
+            state->knight.state_timer = ACTION_DURATION;
+            TraceLog(LOG_INFO, "Chevalier se défend!");
+        }
     }
+}
+
+// Fonction pour obtenir la position du joueur (doit être appelée avec les informations du Board)
+void UpdateAttackHitboxesFromPlayer(CombatState *state, float playerPixelX, float playerPixelY) {
+    UpdateAttackHitboxes(&state->knight, playerPixelX, playerPixelY);
+}
+
+// Fonction pour récupérer la hitbox d'attaque devant
+Rectangle GetAttackHitboxFront(const CombatState *state) {
+    return state->knight.attack_hitbox_front;
+}
+
+// Fonction pour récupérer la hitbox d'attaque derrière
+Rectangle GetAttackHitboxBack(const CombatState *state) {
+    return state->knight.attack_hitbox_back;
 }
 
 void DrawCombat(const CombatState *state) {
     if (!state->combat_overlay_active) return;
 
     // === BOUTONS (overlay sur la map) ===
-    Color btn_attack_color = IsButtonHovered(state->btn_attack) ? ORANGE : DARKGRAY;
-    Color btn_defend_color = IsButtonHovered(state->btn_defend) ? SKYBLUE : DARKGRAY;
+    Color btn_attack_color = IsButtonHovered(state->btn_attack) ? GRAY : RED;
+    Color btn_defend_color = IsButtonHovered(state->btn_defend) ? GRAY : BLUE;
 
     // Boutons désactivés si le chevalier n'est pas en IDLE
     if (state->knight.state != KNIGHT_IDLE) {
@@ -87,19 +161,25 @@ void DrawCombat(const CombatState *state) {
     DrawRectangleLinesEx(state->btn_defend, 2, WHITE);
     DrawText("DEFENDRE", (int)state->btn_defend.x + 22, (int)state->btn_defend.y + 15, 14, WHITE);
 
-    // Affiche le timer d'action
-    if (state->knight.state_timer > 0) {
-        DrawText(TextFormat("Cooldown: %.1fs", state->knight.state_timer),
-                 150, 590, 14, YELLOW);
-    }
+    // Les hitbox ne sont pas affichées (transparentes)
 
-    // Affiche l'état du chevalier
-    const char* knight_state_text = (state->knight.state == KNIGHT_ATTACKING) ? "En attaque!" :
-                                    (state->knight.state == KNIGHT_DEFENDING) ? "En défense!" : "";
-    if (knight_state_text[0] != '\0') {
-        DrawText(knight_state_text, 150, 615, 12, YELLOW);
+    // Affiche la direction actuelle du chevalier
+    const char* direction_text = "";
+    switch (state->knight.facing_direction) {
+        case DIR_UP:
+            direction_text = "Direction: HAUT (Z)";
+            break;
+        case DIR_DOWN:
+            direction_text = "Direction: BAS (S)";
+            break;
+        case DIR_LEFT:
+            direction_text = "Direction: GAUCHE (Q)";
+            break;
+        case DIR_RIGHT:
+            direction_text = "Direction: DROITE (D)";
+            break;
     }
-
+    DrawText(direction_text, 10, 10, 14, WHITE);
 }
 
 void ToggleCombatOverlay(void) {
@@ -111,12 +191,4 @@ void ToggleCombatOverlay(void) {
     }
 }
 
-int choisirQuiCommence(void) {
-    int resultatordi = rand() % 2;
-    if (resultatordi == 1) {
-        TraceLog(LOG_INFO, "L'ennemi commence!");
-    } else {
-        TraceLog(LOG_INFO, "Le chevalier commence!");
-    }
-    return resultatordi;
-}
+

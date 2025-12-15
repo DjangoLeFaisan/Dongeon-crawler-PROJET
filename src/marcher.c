@@ -94,6 +94,10 @@ void Marcher(Player *player, const Board *board)
         if (can_player_move) {
             player->gridX = newX;
             player->gridY = newY;
+            // Met à jour la direction du joueur
+                if (dx != 0) {
+             player->lastDirection = (dx > 0) ? 1 : -1;
+            }
             TraceLog(LOG_DEBUG, "Player moved to grid position (%d, %d)", newX, newY);
             moveTimer = MOVE_DELAY;
         }

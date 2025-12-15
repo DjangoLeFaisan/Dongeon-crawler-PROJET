@@ -133,9 +133,9 @@ int main(void)
         DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
 
         // Ouverture de l'editeur de map
-        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
-            map_editor(&board);
-        }
+        //if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
+        //    map_editor(&board);
+        //}
           
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
         {
