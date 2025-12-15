@@ -65,6 +65,7 @@ void GameInit(Board *board)
     board->player.pixelY = 5 * TILE_SIZE;
     board->player.speed = 1;
     board->player.texture_id = 102;
+    board->player.direction = 1;  // Direction initiale : droite
     
     for (int y = 0; y < BOARD_ROWS; y++)
     {
@@ -280,12 +281,29 @@ void GameDraw(const Board *board)
         // Vérifier que la texture est chargée
         if (player_texture.id > 0)
         {
-            DrawTexture(
-                player_texture,
-                (int)board->player.pixelX,
-                (int)board->player.pixelY,
-                WHITE
-            );
+            // Appliquer le mirroring seulement pour le chevalier (texture_id 102)
+            if (board->player.texture_id == 102)
+            {
+                Vector2 position = {(int)board->player.pixelX, (int)board->player.pixelY};
+                Rectangle source = {0, 0, (float)player_texture.width * board->player.direction, (float)player_texture.height};
+                
+                DrawTextureRec(
+                    player_texture,
+                    source,
+                    position,
+                    WHITE
+                );
+            }
+            else
+            {
+                // Pour les autres textures, rendu normal sans mirroring
+                DrawTexture(
+                    player_texture,
+                    (int)board->player.pixelX,
+                    (int)board->player.pixelY,
+                    WHITE
+                );
+            }
         }
         else
         {

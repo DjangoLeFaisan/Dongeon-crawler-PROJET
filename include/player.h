@@ -8,4 +8,5 @@ typedef struct Player {
     int speed;
     int texture_id;
     Texture2D texture;
+    int direction;      // 1 = droite, -1 = gauche
 } Player;

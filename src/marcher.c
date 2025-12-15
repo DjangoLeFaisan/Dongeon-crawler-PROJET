@@ -67,6 +67,11 @@ void Marcher(Player *player, const Board *board)
     if ((dx != 0 || dy != 0) && moveTimer <= 0.0f) {
         can_player_move = true;
 
+        // Enregistrer la direction si le joueur se déplace horizontalement
+        if (dx != 0) {
+            player->direction = dx > 0 ? 1 : -1;
+        }
+
         // Calcule la nouvelle position
         int newX = player->gridX + dx;
         int newY = player->gridY + dy;
