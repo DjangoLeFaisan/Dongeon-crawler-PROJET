@@ -83,7 +83,6 @@ void Marcher(Player *player, const Board *board)
         if (tileIndex >= 0 && VerifySolidTile(tileIndex)) {
             can_player_move = false;
         } else if (tileIndex == 28) {
-            special_level = true;  
             LoadNextLevel(board);
             return;
         }

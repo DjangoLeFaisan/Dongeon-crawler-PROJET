@@ -12,7 +12,7 @@ int gTileTextureCount = 0;
 
 //Tuiles considérées comme solides
 int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
- 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43};
+ 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45};
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0
@@ -76,6 +76,8 @@ int main(void)
     gTileTextures[41] = LoadTexture("assets/objets/deux caisses.png");
     gTileTextures[42] = LoadTexture("assets/objets/tonneau.png");
     gTileTextures[43] = LoadTexture("assets/objets/trois caisses.png");
+    gTileTextures[44] = LoadTexture("assets/murs/mur coin bas gauche.png");
+    gTileTextures[45] = LoadTexture("assets/murs/mur coin bas droite.png");
 
 
     
