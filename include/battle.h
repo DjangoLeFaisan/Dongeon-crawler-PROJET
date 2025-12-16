@@ -29,6 +29,8 @@ typedef struct {
     Direction facing_direction;
     Rectangle attack_hitbox_front;
     Rectangle attack_hitbox_back;
+    float attack_animation_timer;  // Timer pour l'animation d'attaque
+    int attack_animation_frame;    // Frame actuel (0-3 pour les 4 sprites)
 } Knight;
 
 // Structure globale du combat (mode overlay)

@@ -44,7 +44,7 @@ int GetTileAtGridPos(const Board *board, int gridX, int gridY)
     return -1;
 }
 
-void Marcher(Player *player, const Board *board) 
+void Marcher(Player *player, Board *board) 
 {
     moveTimer -= GetFrameTime();
     
@@ -67,6 +67,10 @@ void Marcher(Player *player, const Board *board)
 
     if ((dx != 0 || dy != 0) && moveTimer <= 0.0f) {
         can_player_move = true;
+        // Enregistrer la direction si le joueur se déplace horizontalement
+        if (dx != 0) {
+            player->lastDirection = dx > 0 ? 1 : -1;
+        }
 
         // Calcule la nouvelle position
         int newX = player->gridX + dx;

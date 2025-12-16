@@ -65,6 +65,7 @@ void GameInit(Board *board)
     board->player.pixelY = 5 * TILE_SIZE;
     board->player.speed = 1;
     board->player.texture_id = 102;
+    board->player.lastDirection = 1;  // Direction initiale : droite
     
     for (int y = 0; y < BOARD_ROWS; y++)
     {
@@ -286,7 +287,19 @@ void GameDraw(const Board *board)
     // Afficher le joueur par-dessus les tuiles
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)
     {
-        Texture2D player_texture = gTileTextures[board->player.texture_id];
+        // Déterminer quelle texture afficher en fonction de l'état du combat
+        int texture_to_draw = board->player.texture_id;
+        
+        extern CombatState gCombatState;
+        if (gCombatState.combat_overlay_active && gCombatState.knight.state == KNIGHT_ATTACKING) {
+            // Utiliser les sprites d'attaque (103-106) selon le frame
+            texture_to_draw = 103 + gCombatState.knight.attack_animation_frame;
+        } else if (gCombatState.combat_overlay_active && gCombatState.knight.state == KNIGHT_DEFENDING) {
+            // Utiliser les sprites de défense (107-108)
+            texture_to_draw = 107;
+        }
+        
+        Texture2D player_texture = gTileTextures[texture_to_draw];
         // Vérifier que la texture est chargée
         if (player_texture.id > 0)
         {

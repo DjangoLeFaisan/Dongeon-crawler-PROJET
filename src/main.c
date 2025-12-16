@@ -86,6 +86,16 @@ int main(void)
 
     gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
+    gTileTextures[103] = LoadTexture("assets/personnages/chevalier/chevalierattaque/chevalierattaque1.png");
+    gTileTextures[104] = LoadTexture("assets/personnages/chevalier/chevalierattaque/chevalierattaque2.png");
+    gTileTextures[105] = LoadTexture("assets/personnages/chevalier/chevalierattaque/chevalierattaque3.png");
+    gTileTextures[106] = LoadTexture("assets/personnages/chevalier/chevalierattaque/chevalierattaque4.png");
+    gTileTextures[107] = LoadTexture("assets/personnages/chevalier/chevalierblock/chevalierblock1.png");
+    gTileTextures[108] = LoadTexture("assets/personnages/chevalier/chevalierblock/chevalierblock2.png");
+    gTileTextures[109] = LoadTexture("assets/personnages/orcvert/orcvertidldos.png");
+    gTileTextures[110] = LoadTexture("assets/personnages/orcvert/orcvertidldroite.png");
+    gTileTextures[111] = LoadTexture("assets/personnages/orcvert/orcvertidlface.png");
+    gTileTextures[112] = LoadTexture("assets/personnages/orcvert/orcvertidlgauche.png");
 
     gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
 

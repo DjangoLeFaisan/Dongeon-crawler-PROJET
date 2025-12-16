@@ -1,5 +1,4 @@
-/*
-#include "enemy.h"
+/*#include "enemy.h"
 #include <stdlib.h>
 
 // Crée un ennemi
