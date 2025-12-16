@@ -236,10 +236,48 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                     attackDirection = DIR_UP;
                 }
                 
-                // Si le joueur se défend dans la direction de l'attaque, l'attaque est bloquée
-                if (combatState->knight.facing_direction == attackDirection) {
+                // Vérifier si l'attaque est dans la zone de défense en "C"
+                // La défense couvre : la case devant + les deux cases adjacentes perpendiculaires
+                bool isInDefenseZone = false;
+                
+                switch (combatState->knight.facing_direction) {
+                    case DIR_RIGHT:
+                        // Bloque : droite, droite-haut, droite-bas
+                        if (attackDirection == DIR_RIGHT || 
+                            (attackDirection == DIR_UP && distX < 0) ||
+                            (attackDirection == DIR_DOWN && distX < 0)) {
+                            isInDefenseZone = true;
+                        }
+                        break;
+                    case DIR_LEFT:
+                        // Bloque : gauche, gauche-haut, gauche-bas
+                        if (attackDirection == DIR_LEFT || 
+                            (attackDirection == DIR_UP && distX > 0) ||
+                            (attackDirection == DIR_DOWN && distX > 0)) {
+                            isInDefenseZone = true;
+                        }
+                        break;
+                    case DIR_UP:
+                        // Bloque : haut, haut-gauche, haut-droite
+                        if (attackDirection == DIR_UP || 
+                            (attackDirection == DIR_LEFT && distY > 0) ||
+                            (attackDirection == DIR_RIGHT && distY > 0)) {
+                            isInDefenseZone = true;
+                        }
+                        break;
+                    case DIR_DOWN:
+                        // Bloque : bas, bas-gauche, bas-droite
+                        if (attackDirection == DIR_DOWN || 
+                            (attackDirection == DIR_LEFT && distY < 0) ||
+                            (attackDirection == DIR_RIGHT && distY < 0)) {
+                            isInDefenseZone = true;
+                        }
+                        break;
+                }
+                
+                if (isInDefenseZone) {
                     blocked = true;
-                    TraceLog(LOG_INFO, "Attaque bloquée! Le joueur se défend dans la direction correcte!");
+                    TraceLog(LOG_INFO, "Attaque bloquée! Le joueur se défend dans la zone de défense!");
                 }
             }
             
