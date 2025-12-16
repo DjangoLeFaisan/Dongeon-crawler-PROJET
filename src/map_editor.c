@@ -33,6 +33,8 @@ int map_editor(Board *board) {
 
     } else {
         //Retour à l'inventaire
+        int groundIndex = 0;
+        
         for (int y = 0; y < BOARD_ROWS; y++)
         {
             for (int x = 0; x < BOARD_COLS; x++)
@@ -41,7 +43,8 @@ int map_editor(Board *board) {
 
                 if (x > 33) {
                     TileClear(t);
-                    TilePush(t, 2);  // Tuile sand (orange/sable)
+                    groundIndex = 1;  // Tuile marron
+                    TilePush(t, groundIndex);
                 }
             }
         }

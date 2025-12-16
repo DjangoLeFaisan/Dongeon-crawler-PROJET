@@ -1,3 +1,4 @@
+/*
 #include "enemy.h"
 #include <stdlib.h>
 
@@ -68,3 +69,4 @@ void ApplyDamageToEnemy(Enemy* enemy, int damage) {
 bool IsEnemyAlive(Enemy* enemy) {
     return enemy && enemy->is_alive;
 }
+*/

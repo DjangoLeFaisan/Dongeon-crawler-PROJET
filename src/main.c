@@ -35,7 +35,7 @@ int main(void)
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
-    gTileTextures[2] = LoadTexture("assets/sand.png");
+    gTileTextures[2] = LoadTexture("assets/violet.png");
 
     gTileTextures[4] = LoadTexture("assets/murs/mur bas 1.png");
     gTileTextures[5] = LoadTexture("assets/murs/mur bas 3.png");
@@ -88,7 +88,6 @@ int main(void)
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
 
     gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
-    
 
     gTileTextureCount = 121; //Doit correspondre à l'ID max + 1
     
@@ -111,6 +110,12 @@ int main(void)
 
     // Récupère la variable pour savoir si le joueur est dans le shop
     extern bool is_in_shop;
+    // Récupère la monnaie du joueur
+    extern int player_money;
+
+
+    // Initialise les items duInitShopItems(); shop
+    InitShopItems();
         
     while (!WindowShouldClose())
     {
@@ -124,7 +129,13 @@ int main(void)
 
         GameDraw(&board);
 
-        // Dessine le shop
+        // Dessiner le shop et màj shop
+        Vector2 mousePos = GetMousePosition();
+        UpdateShopItemsHover(mousePos);  
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            HandleShopItemClick(mousePos, player_money);
+        }
+        BeginDrawing();
         DrawShop(is_in_shop);
 
         DrawFPS(400, 10);
@@ -150,6 +161,8 @@ int main(void)
     {
         UnloadTexture(gTileTextures[i]);
     }
+    UnloadShopItems();
+    CloseWindow();
 
     CloseWindow();
     return 0;

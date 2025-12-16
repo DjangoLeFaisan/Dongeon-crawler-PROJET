@@ -3,8 +3,220 @@
 #include <stdio.h>
 
 #define SHOP_TILE_ID 120
+#define MAX_SHOP_ITEMS 8
 
+int player_money = 0;
 bool is_in_shop = false;
+
+// Modificateurs de stats
+double force_modifier = 1.0;
+double defense_modifier = 1.0;
+double speed_modifier = 1.0;
+double range_modifier = 1.0;
+double health_modifier = 1.0;
+double attack_speed_modifier = 1.0;
+double avarice_modifier = 1.0;
+double rage_modifier = 1.0;
+
+// Enumération pour identifier les différents types d'items
+typedef enum {
+    ITEM_NONE = 0,
+    FORCE_UPGRADE,
+    DEFENSE_UPGRADE,
+    SPEED_UPGRADE,
+    RANGE_UPGRADE,
+    HEALTH_UPGRADE,
+    ATTACK_SPEED_UPGRADE,
+    AVARICE_CURSE,
+    RAGE_CURSE
+} ItemType;
+
+// Structure représentant un item dans le shop
+typedef struct {
+    ItemType type;           // Type d'item
+    Rectangle bounds;        // Position et taille de l'icône (x, y, width, height)
+    Texture2D icon;         // Texture de l'icône
+    int price;              // Prix de l'item
+    bool isActive;          // Si l'item est disponible à l'achat
+    Color tintColor;        // Couleur pour teinter l'icône (utile pour feedback visuel)
+} ShopItem;
+
+ShopItem shop_items[MAX_SHOP_ITEMS];  // Tableau contenant tous les items du shop
+
+// Initialise les items du shop (à appeler au démarrage du jeu)
+void InitShopItems(void) {
+    // Position de départ pour les icônes
+    int shop_posX = 368;
+    int shop_posY = 20;
+    int icon_size = 64;      // Taille d'une icône
+    int padding = 26;        // Espace entre les icônes
+    int items_per_row = 4;   // Nombre d'icônes par ligne
+    
+    // Initialisation de chaque item
+    for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+        int row = i / items_per_row;
+        int col = i % items_per_row;
+        
+        shop_items[i].type = ITEM_NONE;
+        shop_items[i].bounds = (Rectangle){
+            shop_posX + padding + col * (icon_size + padding),
+            shop_posY + padding + row * (icon_size + padding),
+            icon_size,
+            icon_size
+        };
+        shop_items[i].price = 0;
+        shop_items[i].isActive = false;
+        shop_items[i].tintColor = WHITE;
+
+    }
+    
+    // Exemple de configuration d'items (tu peux adapter selon tes besoins)
+    shop_items[0].type = FORCE_UPGRADE;
+    shop_items[0].price = 75;
+    shop_items[0].isActive = true;
+    shop_items[0].icon = LoadTexture("assets/hud/force.png");
+    
+    shop_items[1].type = DEFENSE_UPGRADE;
+    shop_items[1].price = 75;
+    shop_items[1].isActive = true;
+    shop_items[1].icon = LoadTexture("assets/hud/defense.png");
+    
+    shop_items[2].type = SPEED_UPGRADE;
+    shop_items[2].price = 50;
+    shop_items[2].isActive = true;
+    shop_items[2].icon = LoadTexture("assets/hud/vitesse.png");
+
+    shop_items[3].type = RANGE_UPGRADE;
+    shop_items[3].price = 50;
+    shop_items[3].isActive = true;
+    shop_items[3].icon = LoadTexture("assets/hud/portee.png");
+
+    shop_items[4].type = ATTACK_SPEED_UPGRADE;
+    shop_items[4].price = 75;
+    shop_items[4].isActive = true;
+    shop_items[4].icon = LoadTexture("assets/hud/vitesse d'attaque.png");
+
+    shop_items[5].type = HEALTH_UPGRADE;
+    shop_items[5].price = 75;
+    shop_items[5].isActive = true;
+    shop_items[5].icon = LoadTexture("assets/hud/PV.png");
+
+    shop_items[6].type = AVARICE_CURSE;
+    shop_items[6].price = 150;
+    shop_items[6].isActive = true;
+    shop_items[6].icon = LoadTexture("assets/hud/avarice.png");
+
+    shop_items[7].type = RAGE_CURSE;
+    shop_items[7].price = 150;
+    shop_items[7].isActive = true;
+    shop_items[7].icon = LoadTexture("assets/hud/rage.png");
+}
+
+// Décharge les textures du shop
+void UnloadShopItems(void) {
+    for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+        if (shop_items[i].isActive) {
+            UnloadTexture(shop_items[i].icon);
+        }
+    }
+}
+
+// Vérifie si un item a été cliqué et exécute son effet
+void HandleShopItemClick(Vector2 mousePos, int player_money) {
+    if (!is_in_shop) return;
+    
+    // Parcours tous les items du shop
+    for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+        // Vérifie si l'item est actif et si la souris est dessus
+        if (shop_items[i].isActive && CheckCollisionPointRec(mousePos, shop_items[i].bounds)) {
+            
+            // Vérifie si le joueur a assez d'argent
+            if (player_money >= shop_items[i].price) {
+                TraceLog(LOG_INFO, "Item acheté: %d", shop_items[i].type);
+                
+                // Exécute l'effet selon le type d'item
+                switch (shop_items[i].type) {
+                    case FORCE_UPGRADE:
+                        TraceLog(LOG_INFO, "Force +");
+                        force_modifier += 0.05;
+                        break;
+                        
+                    case DEFENSE_UPGRADE:
+                        TraceLog(LOG_INFO, "Défense +");
+                        defense_modifier += 0.1;
+                        break;
+                        
+                    case SPEED_UPGRADE:
+                        TraceLog(LOG_INFO, "Vitesse +");
+                        speed_modifier -= 0.1;
+                        break;
+                        
+                    case RANGE_UPGRADE:
+                        TraceLog(LOG_INFO, "Portée +");
+                        range_modifier += 0.1;
+                        break;
+                        
+                    case ATTACK_SPEED_UPGRADE:
+                        TraceLog(LOG_INFO, "Vitesse d'attaque +");
+                        attack_speed_modifier -= 0.1;
+                        break;
+                        
+                    case HEALTH_UPGRADE:
+                        TraceLog(LOG_INFO, "PV +");
+                        health_modifier += 0.1;
+                        break;
+                        
+                    case AVARICE_CURSE:
+                        TraceLog(LOG_INFO, "Avarice activée");
+                        break;
+                        
+                    case RAGE_CURSE:
+                        TraceLog(LOG_INFO, "Rage activée");
+                        // Effets négatifs
+                        health_modifier -= 0.2;
+                        defense_modifier -= 0.2;
+
+                        // EFfets positifs
+                        force_modifier += 0.15;
+                        attack_speed_modifier -= 0.2;
+                        speed_modifier -= 0.2;
+                        break;
+                        
+                    default:
+                        break;
+                }
+                
+                // Déduit l'argent du joueur
+                player_money -= shop_items[i].price;
+                
+            } else {
+                TraceLog(LOG_WARNING, "Pas assez d'argent pour acheter cet item!");
+            }
+            
+            return;  // Sort de la fonction après avoir traité un clic
+        }
+    }
+}
+
+// Gère le survol de la souris sur les items (pour effet visuel)
+void UpdateShopItemsHover(Vector2 mousePos) {
+    if (!is_in_shop) return;
+    
+    for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+        if (shop_items[i].isActive) {
+            // Change la couleur si la souris survole l'item
+            if (CheckCollisionPointRec(mousePos, shop_items[i].bounds)) {
+                if (player_money >= shop_items[i].price) {
+                    shop_items[i].tintColor = GREEN;
+                } else {
+                    shop_items[i].tintColor = RED;
+                }
+            } else {
+                shop_items[i].tintColor = WHITE;   // Couleur normale
+            }
+        }
+    }
+}
 
 // Alterne entre le shop ouvert et fermé
 int ToggleShopInventory(int tileIndex) {
@@ -18,12 +230,43 @@ int ToggleShopInventory(int tileIndex) {
     return 0;
 }
 
+// Dessine le shop et tous ses items
 int DrawShop(bool is_in_shop) {
     if (is_in_shop) {
         int shop_posX = 368;
         int shop_posY = 20;
         Color shop_background_color = {0x80, 0x53, 0x00, 0xff};
-        DrawRectangle(shop_posX, shop_posY, 384, 220, shop_background_color);  
+        
+        // Dessine le fond du shop
+        DrawRectangle(shop_posX, shop_posY, 384, 206, shop_background_color);
+        
+        // Dessine chaque item du shop
+        for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+            if (shop_items[i].isActive) {
+                // Dessine le fond de l'icône
+                DrawRectangleRec(shop_items[i].bounds, DARKGRAY);
+                
+                DrawTexturePro(
+                    shop_items[i].icon,
+                    (Rectangle){0, 0, shop_items[i].icon.width, shop_items[i].icon.height},
+                    shop_items[i].bounds,
+                    (Vector2){0, 0},
+                    0.0f,
+                    shop_items[i].tintColor
+                );
+                
+                // Dessine le prix en dessous de l'icône
+                char price_text[16];
+                sprintf(price_text, "%d$", shop_items[i].price);
+                DrawText(
+                    price_text,
+                    shop_items[i].bounds.x + 5,
+                    shop_items[i].bounds.y + shop_items[i].bounds.height - 15,
+                    15,
+                    GOLD
+                );
+            }
+        }
     }
     return 0;
 }
