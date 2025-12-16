@@ -6,13 +6,15 @@
 
 extern double speed_modifier;
 extern int SOLID_TILES[];
-#define SOLID_TILES_COUNT 99  // Nombre de tuiles solides
-extern bool special_level;  // Déclaration externe pour accéder à la variable de level_connexion.c
-extern bool LoadNextLevel(Board *board);  // Déclaration de la fonction
+#define SOLID_TILES_COUNT 99
+extern bool special_level;
+extern bool LoadNextLevel(Board *board);
 
 static float moveTimer = 0.0f;
-static const float MOVE_DELAY = 0.2f;
-static const float ANIMATION_SPEED = 350.0f;  // pixels par seconde pour l'animation fluide
+
+// Vitesses de base - ce sont tes valeurs "normales"
+static const float BASE_MOVE_DELAY = 0.2f;        // Délai de base entre les mouvements
+static const float BASE_ANIMATION_SPEED = 350.0f;  // Vitesse d'animation de base
 
 bool can_player_move = false;
 
@@ -30,14 +32,12 @@ bool VerifySolidTile(int tileIndex)
 // Fonction pour récupérer l'index de tuile aux coordonnées données
 int GetTileAtGridPos(const Board *board, int gridX, int gridY)
 {
-    //Si hors limites
     if (gridX < 0 || gridX >= BOARD_COLS || gridY < 0 || gridY >= BOARD_ROWS) {
         return -1;
     }
     
     const Tile *t = &board->tiles[gridY][gridX];
     
-    // Retourne la tuile visible la plus haute
     if (t->layerCount > 0) {
         return t->layers[t->layerCount - 1];
     }
@@ -47,6 +47,11 @@ int GetTileAtGridPos(const Board *board, int gridX, int gridY)
 
 void Marcher(Player *player, Board *board) 
 {
+    // Calcule les vitesses modifiées en fonction du modificateur
+    // Plus speed_modifier est grand, plus le joueur va vite
+    float currentMoveDelay = BASE_MOVE_DELAY / speed_modifier;
+    float currentAnimSpeed = BASE_ANIMATION_SPEED * speed_modifier;
+    
     moveTimer -= GetFrameTime();
     
     int dx = 0;
@@ -58,7 +63,6 @@ void Marcher(Player *player, Board *board)
     if (IsKeyDown(KEY_S)) {
         dy = 1;
     }
-
     if (IsKeyDown(KEY_A)) {
         dx = -1;
     }
@@ -68,54 +72,53 @@ void Marcher(Player *player, Board *board)
 
     if ((dx != 0 || dy != 0) && moveTimer <= 0.0f) {
         can_player_move = true;
-        // Enregistrer la direction si le joueur se déplace horizontalement
+        
         if (dx != 0) {
             player->lastDirection = dx > 0 ? 1 : -1;
         }
 
-        // Calcule la nouvelle position
         int newX = player->gridX + dx;
         int newY = player->gridY + dy;
         
-        // Vérifie les limites de la grille
         if (newX < 0 || newX >= 34 || newY < 0 || newY >= (BOARD_ROWS - 2)) {
             can_player_move = false;
         }
         
-        // Récupère la tuile à la nouvelle position
         int tileIndex = GetTileAtGridPos(board, newX, newY);
 
-        // Ouvre le shop si le marchand est sur la case où le joueur veut se déplacer
         ToggleShopInventory(tileIndex);
         
-        // Vérifie si la tuile est solide
         if (tileIndex >= 0 && VerifySolidTile(tileIndex)) {
             can_player_move = false;
         } else if (tileIndex == 28) {
             LoadNextLevel(board);
             return;
         }
-        // Mouvement autorisé
+        
         if (can_player_move) {
             player->gridX = newX;
             player->gridY = newY;
-            // Met à jour la direction du joueur
-                if (dx != 0) {
-             player->lastDirection = (dx > 0) ? 1 : -1;
+            
+            if (dx != 0) {
+                player->lastDirection = (dx > 0) ? 1 : -1;
             }
+            
             TraceLog(LOG_DEBUG, "Player moved to grid position (%d, %d)", newX, newY);
-            moveTimer = MOVE_DELAY;
+            
+            // Utilise le délai modifié au lieu de la constante
+            moveTimer = currentMoveDelay;
         }
     }
     
-    // Animation fluide vers la position cible
+    // Animation fluide vers la position cible avec la vitesse modifiée
     float targetPixelX = player->gridX * TILE_SIZE;
     float targetPixelY = player->gridY * TILE_SIZE;
     
     float diffX = targetPixelX - player->pixelX;
     float diffY = targetPixelY - player->pixelY;
     
-    float moveAmount = ANIMATION_SPEED * GetFrameTime();
+    // Utilise la vitesse d'animation modifiée
+    float moveAmount = currentAnimSpeed * GetFrameTime();
     
     // Anime pixelX
     if (fabsf(diffX) > 0.5f) {

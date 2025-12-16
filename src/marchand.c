@@ -18,10 +18,9 @@ double force_modifier = 1.0;
 double defense_modifier = 1.0;
 double speed_modifier = 1.0;
 double range_modifier = 1.0;
-double health_modifier = 1.0;
 double attack_speed_modifier = 1.0;
-double avarice_modifier = 1.0;
 double rage_modifier = 1.0;
+int avarice_modifier = 1;
 
 // Enumération pour identifier les différents types d'items
 typedef enum {
@@ -44,6 +43,8 @@ typedef struct {
     int price;              // Prix de l'item
     bool isActive;          // Si l'item est disponible à l'achat
     Color tintColor;        // Couleur pour teinter l'icône (utile pour feedback visuel)
+    int maxStack; // Définit le max d'un bonus qu'on peut avoir
+    int currentStack; // Variable du nombre de bonus actuel
 } ShopItem;
 
 ShopItem shop_items[MAX_SHOP_ITEMS];  // Tableau contenant tous les items du shop
@@ -72,6 +73,7 @@ void InitShopItems(void) {
         shop_items[i].price = 0;
         shop_items[i].isActive = false;
         shop_items[i].tintColor = WHITE;
+        shop_items[i].currentStack = 0;
 
     }
     
@@ -80,41 +82,49 @@ void InitShopItems(void) {
     shop_items[0].price = 75;
     shop_items[0].isActive = true;
     shop_items[0].icon = LoadTexture("assets/hud/force.png");
+    shop_items[0].maxStack = 5;
     
     shop_items[1].type = DEFENSE_UPGRADE;
     shop_items[1].price = 75;
     shop_items[1].isActive = true;
     shop_items[1].icon = LoadTexture("assets/hud/defense.png");
+    shop_items[1].maxStack = 5;
     
     shop_items[2].type = SPEED_UPGRADE;
     shop_items[2].price = 50;
     shop_items[2].isActive = true;
     shop_items[2].icon = LoadTexture("assets/hud/vitesse.png");
+    shop_items[2].maxStack = 5;
 
     shop_items[3].type = RANGE_UPGRADE;
     shop_items[3].price = 50;
     shop_items[3].isActive = true;
     shop_items[3].icon = LoadTexture("assets/hud/portee.png");
+    shop_items[3].maxStack = 5;
 
     shop_items[4].type = ATTACK_SPEED_UPGRADE;
     shop_items[4].price = 75;
     shop_items[4].isActive = true;
     shop_items[4].icon = LoadTexture("assets/hud/vitesse d'attaque.png");
+    shop_items[4].maxStack = 5;
 
     shop_items[5].type = HEALTH_UPGRADE;
-    shop_items[5].price = 75;
+    shop_items[5].price = 25;
     shop_items[5].isActive = true;
     shop_items[5].icon = LoadTexture("assets/hud/PV.png");
+    shop_items[5].maxStack = 10;
 
     shop_items[6].type = AVARICE_CURSE;
     shop_items[6].price = 150;
     shop_items[6].isActive = true;
     shop_items[6].icon = LoadTexture("assets/hud/avarice.png");
+    shop_items[6].maxStack = 1;
 
     shop_items[7].type = RAGE_CURSE;
     shop_items[7].price = 150;
     shop_items[7].isActive = true;
     shop_items[7].icon = LoadTexture("assets/hud/rage.png");
+    shop_items[7].maxStack = 1;
 }
 
 // Décharge les textures du shop
@@ -127,13 +137,13 @@ void UnloadShopItems(void) {
 }
 
 // Vérifie si un item a été cliqué et exécute son effet
-void HandleShopItemClick(Vector2 mousePos, int player_money) {
+void HandleShopItemClick(Vector2 mousePos, int player_money, CombatState) {
     if (!is_in_shop) return;
     
     // Parcours tous les items du shop
     for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
         // Vérifie si l'item est actif et si la souris est dessus
-        if (shop_items[i].isActive && CheckCollisionPointRec(mousePos, shop_items[i].bounds)) {
+        if ((shop_items[i].isActive && CheckCollisionPointRec(mousePos, shop_items[i].bounds)) && (shop_items[i].currentStack < shop_items[i].maxStack)) {
             
             // Vérifie si le joueur a assez d'argent
             if (player_money >= shop_items[i].price) {
@@ -143,51 +153,67 @@ void HandleShopItemClick(Vector2 mousePos, int player_money) {
                 switch (shop_items[i].type) {
                     case FORCE_UPGRADE:
                         TraceLog(LOG_INFO, "Force +");
-                        force_modifier += 0.05;
+                        force_modifier += 0.075;
                         attack_power *= force_modifier;
+                        shop_items[i].currentStack ++;
                         break;
                         
                     case DEFENSE_UPGRADE:
                         TraceLog(LOG_INFO, "Défense +");
-                        defense_modifier += 0.1;
+                        defense_modifier -= 0.05;
+                        shop_items[i].currentStack ++;
                         break;
                         
                     case SPEED_UPGRADE:
                         TraceLog(LOG_INFO, "Vitesse +");
-                        speed_modifier -= 0.1;
+                        speed_modifier += 0.1;
+                        shop_items[i].currentStack ++;
                         break;
                         
                     case RANGE_UPGRADE:
                         TraceLog(LOG_INFO, "Portée +");
-                        range_modifier += 0.1;
+                        range_modifier += 0.05;
                         hitbox_height *= range_modifier;
                         hitbox_width *= range_modifier;
+                        shop_items[i].currentStack ++;
                         break;
                         
                     case ATTACK_SPEED_UPGRADE:
                         TraceLog(LOG_INFO, "Vitesse d'attaque +");
-                        attack_speed_modifier -= 0.1;
+                        attack_speed_modifier -= 0.15;
+                        shop_items[i].currentStack ++;
                         break;
                         
                     case HEALTH_UPGRADE:
                         TraceLog(LOG_INFO, "PV +");
-                        health_modifier += 0.1;
+                        gCombatState.knight.hp = gCombatState.knight.max_hp;
+                        shop_items[i].currentStack ++;
                         break;
                         
                     case AVARICE_CURSE:
                         TraceLog(LOG_INFO, "Avarice activée");
+                        shop_items[i].currentStack ++;
+
+                        // Effets négatifs
+                        defense_modifier += 2.0;
+
+                        // Effets positifs
+                        avarice_modifier = 2.0;
                         break;
                         
                     case RAGE_CURSE:
                         TraceLog(LOG_INFO, "Rage activée");
+                        shop_items[i].currentStack ++;
+
                         // Effets négatifs
-                        health_modifier -= 0.2;
-                        defense_modifier -= 0.2;
+                        gCombatState.knight.max_hp /= 3;
+                        gCombatState.knight.hp /= 3;
+                        defense_modifier += 0.2;
 
                         // EFfets positifs
                         force_modifier += 0.15;
                         attack_speed_modifier -= 0.2;
-                        speed_modifier -= 0.2;
+                        speed_modifier += 0.2;
                         break;
                         
                     default:
@@ -214,7 +240,7 @@ void UpdateShopItemsHover(Vector2 mousePos) {
         if (shop_items[i].isActive) {
             // Change la couleur si la souris survole l'item
             if (CheckCollisionPointRec(mousePos, shop_items[i].bounds)) {
-                if (player_money >= shop_items[i].price) {
+                if ((player_money >= shop_items[i].price) && (shop_items[i].currentStack < shop_items[i].maxStack)) {
                     shop_items[i].tintColor = GREEN;
                 } else {
                     shop_items[i].tintColor = RED;
