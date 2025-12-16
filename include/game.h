@@ -3,11 +3,13 @@
 
 #include "raylib.h"
 #include "player.h"
+#include "enemy.h"
 
 #define TILE_SIZE 32
 #define BOARD_COLS 43
 #define BOARD_ROWS 24
 #define MAX_LAYERS 8
+#define MAX_ENEMIES 20
 
 typedef struct
 {
@@ -19,6 +21,8 @@ typedef struct
 {
     Player player;
     Tile tiles[BOARD_ROWS][BOARD_COLS];
+    Enemy* enemies[MAX_ENEMIES];  // Tableau d'ennemis
+    int enemy_count;               // Nombre d'ennemis actuels
 } Board;
 
 int map_editor(Board *board);

@@ -30,3 +30,4 @@ void DestroyEnemy(Enemy* enemy);
 void DrawEnemy(const Enemy* enemy);
 void ApplyDamageToEnemy(Enemy* enemy, int damage);
 bool IsEnemyAlive(Enemy* enemy);
+#endif

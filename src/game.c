@@ -67,6 +67,12 @@ void GameInit(Board *board)
     board->player.texture_id = 102;
     board->player.lastDirection = 1;  // Direction initiale : droite
     
+    // Initialiser les ennemis
+    board->enemy_count = 0;
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        board->enemies[i] = NULL;
+    }
+    
     for (int y = 0; y < BOARD_ROWS; y++)
     {
         for (int x = 0; x < BOARD_COLS; x++)
@@ -318,6 +324,24 @@ void GameDraw(const Board *board)
                 TILE_SIZE,
                 TILE_SIZE,
                 RED);
+        }
+    }
+    
+    // Afficher les ennemis par-dessus les tuiles
+    for (int i = 0; i < board->enemy_count; i++) {
+        if (board->enemies[i] != NULL) {
+            // Récupérer la texture de l'ennemi
+            if (board->enemies[i]->texture_id >= 0 && board->enemies[i]->texture_id < gTileTextureCount) {
+                Texture2D enemy_texture = gTileTextures[board->enemies[i]->texture_id];
+                if (enemy_texture.id > 0) {
+                    Rectangle source = {0, 0, (float)enemy_texture.width, (float)enemy_texture.height};
+                    Rectangle dest = {(int)board->enemies[i]->pixelX, (int)board->enemies[i]->pixelY, TILE_SIZE, TILE_SIZE};
+                    DrawTexturePro(enemy_texture, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+                } else {
+                    // Carré vert par défaut pour l'ennemi
+                    DrawRectangle((int)board->enemies[i]->pixelX, (int)board->enemies[i]->pixelY, TILE_SIZE, TILE_SIZE, GREEN);
+                }
+            }
         }
     }
 
