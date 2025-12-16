@@ -30,6 +30,7 @@ typedef struct {
     bool was_hit_this_swing; // évite de prendre plusieurs fois la même attaque
     float movement_timer;    // timer pour mouvement et IA
     float think_timer;       // timer pour changer de direction
+    float stun_timer;        // timer d'étourdissement après avoir été frappé
 
     // État
     bool is_alive;

@@ -11,6 +11,7 @@
 #define ENEMY_SPAWN_ATTEMPTS 50
 #define ENEMY_ATTACK_INTERVAL 0.7f  // Réduit de 1.0f à 0.7f pour attaquer plus souvent
 #define ENEMY_ANIMATION_SPEED 350.0f  // pixels par seconde pour l'animation fluide (même que le joueur)
+#define ENEMY_STUN_DURATION 1.0f  // Durée d'étourdissement après avoir été frappé
 
 extern double force_modifier;
 extern Texture2D gTileTextures[];
@@ -52,6 +53,24 @@ static int GetEnemyTextureForDirection(EnemyDirection dir)
     }
 }
 
+// Vérifie si une position est occupée par le joueur
+static bool IsPlayerAt(const struct Board *board, int gridX, int gridY)
+{
+    return (board->player.gridX == gridX && board->player.gridY == gridY);
+}
+
+// Vérifie si une position est occupée par un autre ennemi
+static bool IsEnemyAt(const struct Board *board, int gridX, int gridY, int excludeIndex)
+{
+    for (int i = 0; i < board->enemyCount; i++) {
+        if (i == excludeIndex) continue;  // Ignorer l'ennemi lui-même
+        if (board->enemies[i].is_alive && board->enemies[i].gridX == gridX && board->enemies[i].gridY == gridY) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void InitEnemy(Enemy *enemy, int gridX, int gridY)
 {
     enemy->gridX = gridX;
@@ -68,6 +87,7 @@ static void InitEnemy(Enemy *enemy, int gridX, int gridY)
     enemy->texture_id = GetEnemyTextureForDirection(enemy->facing_direction);
     enemy->movement_timer = 0.5f;
     enemy->think_timer = 0.0f;
+    enemy->stun_timer = 0.0f;
 }
 
 void ResetEnemies(struct Board *board)
@@ -111,6 +131,9 @@ void ApplyDamageToEnemy(Enemy *enemy, int damage)
         enemy->hp = 0;
         enemy->is_alive = false;
     }
+    
+    // Appliquer l'étourdissement quand l'ennemi est frappé
+    enemy->stun_timer = ENEMY_STUN_DURATION;
 }
 
 bool IsEnemyAlive(Enemy *enemy)
@@ -143,69 +166,82 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
         e->attack_cooldown -= dt;
         if (e->attack_cooldown < 0.0f) e->attack_cooldown = 0.0f;
 
+        // Gérer le timer d'étourdissement
+        e->stun_timer -= dt;
+        if (e->stun_timer < 0.0f) e->stun_timer = 0.0f;
+
         // ===== MOUVEMENT ET IA =====
-        e->movement_timer += dt;
-        e->think_timer += dt;
+        // Si l'ennemi est étourdi, ne pas bouger
+        if (e->stun_timer > 0.0f) {
+            // Continuer à mettre à jour les timers mais pas le mouvement
+            e->movement_timer += dt;
+            e->think_timer += dt;
+        } else {
+            e->movement_timer += dt;
+            e->think_timer += dt;
 
-        // Recalculer la direction vers le joueur tous les 0.5 secondes
-        if (e->think_timer > 0.5f) {
-            e->think_timer = 0.0f;
-            
-            // Calcul de la distance vers le joueur
-            int distX = board->player.gridX - e->gridX;
-            int distY = board->player.gridY - e->gridY;
-            int absdistX = (distX < 0) ? -distX : distX;
-            int absdistY = (distY < 0) ? -distY : distY;
-            
-            // Distance de détection = 15 cases
-            if (absdistX + absdistY <= 15) {
-                // Le joueur est détecté - le poursuivre
-                if (absdistX > absdistY) {
-                    // Mouvement horizontal prioritaire
-                    e->facing_direction = (distX > 0) ? ENEMY_DIR_RIGHT : ENEMY_DIR_LEFT;
+            // Recalculer la direction vers le joueur tous les 0.5 secondes
+            if (e->think_timer > 0.5f) {
+                e->think_timer = 0.0f;
+                
+                // Calcul de la distance vers le joueur
+                int distX = board->player.gridX - e->gridX;
+                int distY = board->player.gridY - e->gridY;
+                int absdistX = (distX < 0) ? -distX : distX;
+                int absdistY = (distY < 0) ? -distY : distY;
+                
+                // Distance de détection = 15 cases
+                if (absdistX + absdistY <= 15) {
+                    // Le joueur est détecté - le poursuivre
+                    if (absdistX > absdistY) {
+                        // Mouvement horizontal prioritaire
+                        e->facing_direction = (distX > 0) ? ENEMY_DIR_RIGHT : ENEMY_DIR_LEFT;
+                    } else {
+                        // Mouvement vertical prioritaire
+                        e->facing_direction = (distY > 0) ? ENEMY_DIR_DOWN : ENEMY_DIR_UP;
+                    }
                 } else {
-                    // Mouvement vertical prioritaire
-                    e->facing_direction = (distY > 0) ? ENEMY_DIR_DOWN : ENEMY_DIR_UP;
+                    // Le joueur n'est pas détecté - patrouille aléatoire
+                    if (GetRandomValue(0, 100) < 30) {  // 30% de chance de changer de direction
+                        e->facing_direction = (EnemyDirection)GetRandomValue(0, 3);
+                    }
                 }
-            } else {
-                // Le joueur n'est pas détecté - patrouille aléatoire
-                if (GetRandomValue(0, 100) < 30) {  // 30% de chance de changer de direction
-                    e->facing_direction = (EnemyDirection)GetRandomValue(0, 3);
-                }
-            }
-            
-            e->texture_id = GetEnemyTextureForDirection(e->facing_direction);
-        }
-
-        // Déplacement plus rapide - toutes les 0.3 secondes au lieu de 0.5
-        if (e->movement_timer > 0.3f) {
-            e->movement_timer = 0.0f;
-            
-            int newGridX = e->gridX;
-            int newGridY = e->gridY;
-
-            // Calculer la nouvelle position selon la direction
-            switch (e->facing_direction) {
-                case ENEMY_DIR_UP:
-                    newGridY--;
-                    break;
-                case ENEMY_DIR_DOWN:
-                    newGridY++;
-                    break;
-                case ENEMY_DIR_LEFT:
-                    newGridX--;
-                    break;
-                case ENEMY_DIR_RIGHT:
-                    newGridX++;
-                    break;
+                
+                e->texture_id = GetEnemyTextureForDirection(e->facing_direction);
             }
 
-            // Vérifier si la nouvelle position est praticable
-            if (IsWalkable(board, newGridX, newGridY)) {
-                e->gridX = newGridX;
-                e->gridY = newGridY;
-                e->pixelX = (float)e->gridX * TILE_SIZE;
-                e->pixelY = (float)e->gridY * TILE_SIZE;
+            // Déplacement plus rapide - toutes les 0.3 secondes au lieu de 0.5
+            if (e->movement_timer > 0.3f) {
+                e->movement_timer = 0.0f;
+                
+                int newGridX = e->gridX;
+                int newGridY = e->gridY;
+
+                // Calculer la nouvelle position selon la direction
+                switch (e->facing_direction) {
+                    case ENEMY_DIR_UP:
+                        newGridY--;
+                        break;
+                    case ENEMY_DIR_DOWN:
+                        newGridY++;
+                        break;
+                    case ENEMY_DIR_LEFT:
+                        newGridX--;
+                        break;
+                    case ENEMY_DIR_RIGHT:
+                        newGridX++;
+                        break;
+                }
+
+                // Vérifier si la nouvelle position est praticable et non occupée
+                if (IsWalkable(board, newGridX, newGridY) && 
+                    !IsPlayerAt(board, newGridX, newGridY) && 
+                    !IsEnemyAt(board, newGridX, newGridY, i)) {
+                    e->gridX = newGridX;
+                    e->gridY = newGridY;
+                    e->pixelX = (float)e->gridX * TILE_SIZE;
+                    e->pixelY = (float)e->gridY * TILE_SIZE;
+                }
             }
         }
 
