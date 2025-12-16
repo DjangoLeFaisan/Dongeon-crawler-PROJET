@@ -173,6 +173,30 @@ Rectangle GetAttackHitboxBack(const CombatState *state) {
 void DrawCombat(const CombatState *state) {
     if (!state->combat_overlay_active) return;
 
+    // === BARRE DE VIE DU JOUEUR ===
+    int bar_width = 150;
+    int bar_height = 20;
+    int bar_x = 10;
+    int bar_y = 40;
+    
+    int hp_percent = (state->knight.hp * 100) / state->knight.max_hp;
+    
+    // Fond rouge (HP manquant)
+    DrawRectangle(bar_x, bar_y, bar_width, bar_height, RED);
+    // HP restant en vert
+    DrawRectangle(bar_x, bar_y, (bar_width * hp_percent) / 100, bar_height, GREEN);
+    // Bordure blanche
+    DrawRectangleLines(bar_x, bar_y, bar_width, bar_height, WHITE);
+    
+    // Texte HP
+    DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
+             bar_x + 5, bar_y + 2, 12, WHITE);
+    
+    // État de défense
+    if (state->knight.state == KNIGHT_DEFENDING) {
+        DrawText("DEFENSE ACTIVE", bar_x + 160, bar_y + 2, 12, BLUE);
+    }
+
     // === BOUTONS (overlay sur la map) ===
     Color btn_attack_color = IsButtonHovered(state->btn_attack) ? GRAY : RED;
     Color btn_defend_color = IsButtonHovered(state->btn_defend) ? GRAY : BLUE;
@@ -209,7 +233,7 @@ void DrawCombat(const CombatState *state) {
             direction_text = "Direction: DROITE (D)";
             break;
     }
-    DrawText(direction_text, 10, 10, 14, WHITE);
+    DrawText(direction_text, 10, 70, 14, WHITE);
 }
 
 void ToggleCombatOverlay(void) {
