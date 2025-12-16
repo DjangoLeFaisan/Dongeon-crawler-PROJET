@@ -88,6 +88,10 @@ static void InitEnemy(Enemy *enemy, int gridX, int gridY)
     enemy->movement_timer = 0.5f;
     enemy->think_timer = 0.0f;
     enemy->stun_timer = 0.0f;
+    
+    // Initialiser les hitboxes d'attaque
+    enemy->attack_hitbox_front = (Rectangle){0, 0, 0, 0};
+    enemy->attack_hitbox_back = (Rectangle){0, 0, 0, 0};
 }
 
 void ResetEnemies(struct Board *board)
@@ -146,6 +150,34 @@ static Rectangle GetEnemyRect(const Enemy *enemy)
     return (Rectangle){enemy->pixelX, enemy->pixelY, TILE_SIZE, TILE_SIZE};
 }
 
+// Mise à jour des hitboxes d'attaque des ennemis (même que pour le joueur)
+static void UpdateEnemyAttackHitboxes(Enemy *enemy) {
+    double hitbox_width = 32;
+    double hitbox_height = 32;
+    float centerX = enemy->pixelX + (TILE_SIZE / 2);
+    float centerY = enemy->pixelY + (TILE_SIZE / 2);
+    
+    // Hitbox devant l'ennemi selon sa direction
+    switch (enemy->facing_direction) {
+        case ENEMY_DIR_UP:
+            enemy->attack_hitbox_front = (Rectangle){centerX - hitbox_width/2, enemy->pixelY - TILE_SIZE, hitbox_width, hitbox_height};
+            enemy->attack_hitbox_back = (Rectangle){centerX - hitbox_width/2, enemy->pixelY + TILE_SIZE, hitbox_width, hitbox_height};
+            break;
+        case ENEMY_DIR_DOWN:
+            enemy->attack_hitbox_front = (Rectangle){centerX - hitbox_width/2, enemy->pixelY + TILE_SIZE, hitbox_width, hitbox_height};
+            enemy->attack_hitbox_back = (Rectangle){centerX - hitbox_width/2, enemy->pixelY - TILE_SIZE, hitbox_width, hitbox_height};
+            break;
+        case ENEMY_DIR_LEFT:
+            enemy->attack_hitbox_front = (Rectangle){enemy->pixelX - TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            enemy->attack_hitbox_back = (Rectangle){enemy->pixelX + TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            break;
+        case ENEMY_DIR_RIGHT:
+            enemy->attack_hitbox_front = (Rectangle){enemy->pixelX + TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            enemy->attack_hitbox_back = (Rectangle){enemy->pixelX - TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            break;
+    }
+}
+
 void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
 {
     if (!board) return;
@@ -180,7 +212,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
             e->movement_timer += dt;
             e->think_timer += dt;
 
-            // Recalculer la direction vers le joueur tous les 0.5 secondes
+            // Recalculer la direction vers le joueur tous les 0.5 secondes (ou plus souvent si proche)
             if (e->think_timer > 0.5f) {
                 e->think_timer = 0.0f;
                 
@@ -247,8 +279,16 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
 
         Rectangle enemyRect = GetEnemyRect(e);
 
-        // Attaque de l'ennemi s'il touche le joueur
-        if (combatState && e->attack_cooldown <= 0.0f && CheckCollisionRecs(enemyRect, playerRect)) {
+        // ===== ATTAQUE DIRECTE SI PROCHE DU JOUEUR =====
+        // L'ennemi attaque aussi s'il est adjacent au joueur (même distance de grille)
+        int distX = e->gridX - board->player.gridX;
+        int distY = e->gridY - board->player.gridY;
+        int absdistX = (distX < 0) ? -distX : distX;
+        int absdistY = (distY < 0) ? -distY : distY;
+        bool isAdjacentToPlayer = (absdistX + absdistY == 1);  // Directement adjacent (1 case de distance)
+
+        // Attaque de l'ennemi s'il touche le joueur OU s'il est adjacent
+        if (combatState && e->attack_cooldown <= 0.0f && (CheckCollisionRecs(enemyRect, playerRect) || isAdjacentToPlayer)) {
             // Vérifier si le joueur se défend et dans quelle direction
             bool blocked = false;
             if (combatState->knight.state == KNIGHT_DEFENDING) {
@@ -331,6 +371,9 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                 e->pixelY += (diffY > 0 ? moveAmount : -moveAmount);
             }
         }
+        
+        // Mettre à jour les hitboxes d'attaque selon la position et la direction actuelles
+        UpdateEnemyAttackHitboxes(e);
     }
 }
 
@@ -352,6 +395,23 @@ void DrawEnemies(const struct Board *board)
         } else {
             DrawRectangle((int)e->pixelX, (int)e->pixelY, TILE_SIZE, TILE_SIZE, DARKGREEN);
         }
+        
+        // Afficher la hitbox de l'ennemi en rouge
+        Rectangle enemyHitbox = {
+            (int)e->pixelX,
+            (int)e->pixelY,
+            TILE_SIZE,
+            TILE_SIZE
+        };
+        DrawRectangleRec(enemyHitbox, (Color){255, 0, 0, 30});  // Rouge très transparent
+        DrawRectangleLinesEx(enemyHitbox, 1, (Color){255, 0, 0, 150});  // Bordure rouge
+        
+        // Afficher les hitboxes d'attaque de l'ennemi (comme le joueur)
+        DrawRectangleRec(e->attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent
+        DrawRectangleLinesEx(e->attack_hitbox_front, 2, RED);  // Bordure rouge
+        
+        DrawRectangleRec(e->attack_hitbox_back, (Color){255, 0, 0, 50});   // Rouge très transparent
+        DrawRectangleLinesEx(e->attack_hitbox_back, 1, (Color){255, 0, 0, 150});
 
         // Barre de vie
         int bar_width = TILE_SIZE;

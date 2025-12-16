@@ -38,6 +38,10 @@ typedef struct {
 
     // Texture
     int texture_id;          // index dans gTileTextures (direction face)
+    
+    // Hitboxes d'attaque (comme le joueur)
+    Rectangle attack_hitbox_front;
+    Rectangle attack_hitbox_back;
 } Enemy;
 
 // Forward declarations pour éviter les inclusions circulaires  

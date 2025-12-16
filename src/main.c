@@ -165,8 +165,6 @@ int main(void)
     }
     UnloadShopItems();
     CloseWindow();
-
-    CloseWindow();
     return 0;
 }
   
