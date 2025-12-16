@@ -30,6 +30,7 @@ typedef struct {
     bool was_hit_this_swing; // évite de prendre plusieurs fois la même attaque
     float movement_timer;    // timer pour mouvement et IA
     float think_timer;       // timer pour changer de direction
+    float stun_timer;        // timer d'étourdissement après avoir été frappé
 
     // État
     bool is_alive;
@@ -37,6 +38,10 @@ typedef struct {
 
     // Texture
     int texture_id;          // index dans gTileTextures (direction face)
+    
+    // Hitboxes d'attaque (comme le joueur)
+    Rectangle attack_hitbox_front;
+    Rectangle attack_hitbox_back;
 } Enemy;
 
 // Forward declarations pour éviter les inclusions circulaires  

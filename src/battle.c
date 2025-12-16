@@ -222,7 +222,12 @@ void DrawCombat(const CombatState *state) {
     DrawRectangleLinesEx(state->btn_defend, 2, WHITE);
     DrawText("DEFENDRE", (int)state->btn_defend.x + 22, (int)state->btn_defend.y + 15, 14, WHITE);
 
-    // Les hitbox ne sont pas affichées (transparentes)
+    // Affiche les hitboxes d'attaque en carré rouge
+    DrawRectangleRec(state->knight.attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent
+    DrawRectangleLinesEx(state->knight.attack_hitbox_front, 2, RED);  // Bordure rouge
+    
+    DrawRectangleRec(state->knight.attack_hitbox_back, (Color){255, 0, 0, 50});   // Rouge très transparent
+    DrawRectangleLinesEx(state->knight.attack_hitbox_back, 1, (Color){255, 0, 0, 150});
 
     // Affiche la direction actuelle du chevalier
     const char* direction_text = "";
