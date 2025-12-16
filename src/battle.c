@@ -61,6 +61,8 @@ void InitCombat(CombatState *state) {
     state->knight.state = KNIGHT_IDLE;
     state->knight.state_timer = 0;
     state->knight.facing_direction = DIR_DOWN;  // Direction initiale
+    state->knight.attack_animation_timer = 0;   // Timer pour l'animation d'attaque
+    state->knight.attack_animation_frame = 0;   // Frame courant (0-3)
     
     // Initialiser les hitbox
     state->knight.attack_hitbox_front = (Rectangle){0, 0, 0, 0};
@@ -102,12 +104,34 @@ void UpdateCombat(CombatState *state, float dt) {
             state->knight.state = KNIGHT_IDLE;
         }
     }
+    
+    // Gestion de l'animation d'attaque
+    if (state->knight.state == KNIGHT_ATTACKING) {
+        state->knight.attack_animation_timer += dt;
+        
+        // Changement de frame toutes les 0.1 secondes
+        state->knight.attack_animation_frame = (int)(state->knight.attack_animation_timer / 0.1f);
+        
+        // Limiter à 4 frames (indices 0-3)
+        if (state->knight.attack_animation_frame > 3) {
+            state->knight.attack_animation_frame = 3;
+            // L'animation d'attaque est terminée, revenir à IDLE
+            state->knight.state = KNIGHT_IDLE;
+            state->knight.attack_animation_timer = 0;
+        }
+    } else {
+        // Réinitialiser l'animation quand on n'attaque plus
+        state->knight.attack_animation_timer = 0;
+        state->knight.attack_animation_frame = 0;
+    }
 
     // Détecte les clics sur les boutons
     if (state->knight.state == KNIGHT_IDLE) {
         if (IsButtonClicked(state->btn_attack) || IsKeyPressed(KEY_KP_4)) {
             state->knight.state = KNIGHT_ATTACKING;
             state->knight.state_timer = ACTION_DURATION;
+            state->knight.attack_animation_timer = 0;  // Réinitialiser le timer d'animation
+            state->knight.attack_animation_frame = 0;  // Commencer au frame 0
             TraceLog(LOG_INFO, "Chevalier attaque dans la direction %d! Hitbox front: (%f, %f, %f, %f)", 
                      state->knight.facing_direction,
                      state->knight.attack_hitbox_front.x,
@@ -117,11 +141,17 @@ void UpdateCombat(CombatState *state, float dt) {
         }
 
        
-        if (IsButtonClicked(state->btn_defend) || IsKeyPressed(KEY_KP_6)) {
+        if (IsButtonClicked(state->btn_defend) || IsKeyDown(KEY_KP_6)) {
             state->knight.state = KNIGHT_DEFENDING;
             state->knight.state_timer = ACTION_DURATION;
             TraceLog(LOG_INFO, "Chevalier se défend!");
         }
+    }
+    
+    // Vérifier si la touche 6 est relâchée pour sortir de la défense
+    if (state->knight.state == KNIGHT_DEFENDING && !IsKeyDown(KEY_KP_6) && !IsButtonHovered(state->btn_defend)) {
+        state->knight.state = KNIGHT_IDLE;
+        state->knight.state_timer = 0;
     }
 }
 

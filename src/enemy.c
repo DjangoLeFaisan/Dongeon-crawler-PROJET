@@ -1,4 +1,4 @@
-#include "enemy.h"
+/*#include "enemy.h"
 #include <stdlib.h>
 
 // Crée un ennemi
@@ -68,3 +68,4 @@ void ApplyDamageToEnemy(Enemy* enemy, int damage) {
 bool IsEnemyAlive(Enemy* enemy) {
     return enemy && enemy->is_alive;
 }
+*/
