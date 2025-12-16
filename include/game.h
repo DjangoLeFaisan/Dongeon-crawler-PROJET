@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 #include "player.h"
+#include "enemy.h"
 
 #define TILE_SIZE 32
 #define BOARD_COLS 43
@@ -15,9 +16,11 @@ typedef struct
     int layerCount;             // nombre de couches utilisées
 } Tile;
 
-typedef struct
+typedef struct Board
 {
     Player player;
+    Enemy enemies[16];
+    int enemyCount;
     Tile tiles[BOARD_ROWS][BOARD_COLS];
 } Board;
 

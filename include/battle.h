@@ -46,6 +46,7 @@ extern CombatState gCombatState;
 
 void InitCombat(CombatState *state);
 void UpdateCombat(CombatState *state, float dt);
+void UpdateAttackHitboxesFromPlayer(CombatState *state, float playerPixelX, float playerPixelY);
 void DrawCombat(const CombatState *state);
 void ToggleCombatOverlay(void);
 int choisirQuiCommence(void);

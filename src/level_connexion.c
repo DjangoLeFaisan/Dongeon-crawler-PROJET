@@ -3,6 +3,7 @@
 #include "map_io.h"
 #include "marcher.h"
 #include "battle.h"
+#include "enemy.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -24,6 +25,7 @@ bool LoadNextLevel(Board *board) {
             current_level++;
             special_level = false;
             ToggleCombatOverlay();
+            SpawnEnemiesForEtage(board);
             return true;
         } else {
             TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: %s", next_level);
@@ -35,6 +37,7 @@ bool LoadNextLevel(Board *board) {
             TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
             special_level = true;
             ToggleCombatOverlay();
+            ResetEnemies(board);
             return true;
         } else {
             TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");

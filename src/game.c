@@ -3,6 +3,7 @@
 #include "map_io.h"
 #include "marcher.h"
 #include "battle.h"
+#include "enemy.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -14,6 +15,8 @@ extern bool editor_active;
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
+static bool game_over = false;
+static float game_over_timer = 0.0f;
 
 // Gestion du nom de carte
 #define MAX_MAP_NAME_LENGTH 64
@@ -66,6 +69,8 @@ void GameInit(Board *board)
     board->player.speed = 1;
     board->player.texture_id = 102;
     board->player.lastDirection = 1;  // Direction initiale : droite
+    board->enemyCount = 0;
+    ResetEnemies(board);
     
     for (int y = 0; y < BOARD_ROWS; y++)
     {
@@ -89,12 +94,44 @@ void GameInit(Board *board)
 
 void GameUpdate(Board *board, float dt)
 {
+    // Vérifier si le joueur est mort
+    extern CombatState gCombatState;
+    if (gCombatState.knight.hp <= 0 && !game_over) {
+        game_over = true;
+        game_over_timer = 0.0f;
+        TraceLog(LOG_INFO, "GAME OVER! Le joueur est mort!");
+    }
+    
+    // Si game over, attendre avant de revenir au menu
+    if (game_over) {
+        game_over_timer += dt;
+        if (game_over_timer > 3.0f && IsKeyPressed(KEY_SPACE)) {
+            // Reset du game - recharger Etage1
+            game_over = false;
+            game_over_timer = 0.0f;
+            gCombatState.knight.hp = gCombatState.knight.max_hp;
+            
+            // Recharger Etage1
+            if (MapLoad(board, "maps/Etage1.map")) {
+                TraceLog(LOG_INFO, "Etage1 rechargé après game over");
+            } else {
+                TraceLog(LOG_ERROR, "Erreur lors du rechargement d'Etage1");
+            }
+            
+            // Respawner les ennemis
+            extern void SpawnEnemiesForEtage(struct Board *board);
+            SpawnEnemiesForEtage(board);
+        }
+        return;  // Ne pas mettre à jour le jeu si game over
+    }
+    
     // Gestion du joueur
     Marcher(&board->player, board);
     
     // Mise à jour du combat overlay
-    extern CombatState gCombatState;
-    UpdateCombat(&gCombatState, dt); 
+    UpdateCombat(&gCombatState, dt);
+    UpdateAttackHitboxesFromPlayer(&gCombatState, board->player.pixelX, board->player.pixelY);
+    UpdateEnemies(board, dt, &gCombatState);
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;
@@ -278,6 +315,9 @@ void GameDraw(const Board *board)
         }
     }
 
+    // Afficher les ennemis au-dessus des tuiles
+    DrawEnemies(board);
+
     // Afficher le joueur par-dessus les tuiles
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)
     {
@@ -331,5 +371,25 @@ void GameDraw(const Board *board)
 
     // Afficher l'overlay du combat par-dessus la map
     extern CombatState gCombatState;
+    
+    // Afficher game over si le joueur est mort
+    if (game_over) {
+        // Fond semi-transparent noir
+        Color darkOverlay = {0, 0, 0, 200};
+        DrawRectangle(0, 0, 1384, 704, darkOverlay);
+        
+        // Texte GAME OVER
+        int screenWidth = 1384;
+        int screenHeight = 704;
+        const char *gameOverText = "GAME OVER";
+        const char *restartText = "Press SPACE to restart";
+        
+        int gameOverWidth = MeasureText(gameOverText, 80);
+        int restartWidth = MeasureText(restartText, 20);
+        
+        DrawText(gameOverText, (screenWidth - gameOverWidth) / 2, (screenHeight / 2) - 80, 80, RED);
+        DrawText(restartText, (screenWidth - restartWidth) / 2, (screenHeight / 2) + 40, 20, WHITE);
+    }
+    
     DrawCombat(&gCombatState);
 }

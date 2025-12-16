@@ -31,6 +31,7 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
     SetTargetFPS(60);
+    srand((unsigned)time(NULL));
 
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/noir.png");
@@ -104,15 +105,17 @@ int main(void)
     extern CombatState gCombatState;
     InitCombat(&gCombatState);
     
-    //Charger la première carte
-    if (MapLoad(&board, "maps/couloir_defaul.map")) {
+    //Charger la première carte Etage1
+    if (MapLoad(&board, "maps/Etage1.map")) {
         TraceLog(LOG_INFO, "Carte chargée avec succès");
     } else {
         TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte");
     }
     extern bool special_level;
     special_level = true;
-    TraceLog(LOG_INFO, "Special_level = true");
+    extern void SpawnEnemiesForEtage(Board *board);
+    SpawnEnemiesForEtage(&board);
+    TraceLog(LOG_INFO, "Special_level = true et ennemis spawnés");
 
     // Récupère la variable pour savoir si le joueur est dans le shop
     extern bool is_in_shop;
