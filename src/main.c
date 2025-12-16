@@ -13,7 +13,7 @@ int gTileTextureCount = 0;
 
 //Tuiles considérées comme solides
 int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
- 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 120};
+ 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 101, 102, 103 ,104 ,105 ,106 ,107 ,108 ,109 ,110 ,111 ,112 , 120};
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0
@@ -119,8 +119,7 @@ int main(void)
     extern bool is_in_shop;
     // Récupère la monnaie du joueur
     extern int player_money;
-
-
+    
     // Initialise les items duInitShopItems(); shop
     InitShopItems();
         
@@ -140,7 +139,7 @@ int main(void)
         Vector2 mousePos = GetMousePosition();
         UpdateShopItemsHover(mousePos);  
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            HandleShopItemClick(mousePos, player_money);
+            HandleShopItemClick(mousePos, player_money, &gCombatState);
         }
         BeginDrawing();
         DrawShop(is_in_shop);
@@ -164,8 +163,6 @@ int main(void)
         UnloadTexture(gTileTextures[i]);
     }
     UnloadShopItems();
-    CloseWindow();
-
     CloseWindow();
     return 0;
 }

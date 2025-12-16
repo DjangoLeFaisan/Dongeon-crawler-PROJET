@@ -4,6 +4,7 @@
 #include "marcher.h"
 #include "battle.h"
 #include "enemy.h"
+#include "level_connexion.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -11,6 +12,7 @@
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
+extern bool special_level;
 
 int objectIndex = 4;
 static int lastPreviewX = -1;
@@ -112,15 +114,12 @@ void GameUpdate(Board *board, float dt)
             gCombatState.knight.hp = gCombatState.knight.max_hp;
             
             // Recharger Etage1
-            if (MapLoad(board, "maps/couloir_default.map")) {
+            if (MapLoad(board, "maps/couloir_defaul.map")) {
                 TraceLog(LOG_INFO, "Couloir rechargé après game over");
+                special_level = true;
             } else {
                 TraceLog(LOG_ERROR, "Erreur lors du rechargement de couloir");
             }
-            
-            // Respawner les ennemis
-            extern void SpawnEnemiesForEtage(struct Board *board);
-            SpawnEnemiesForEtage(board);
         }
         return;  // Ne pas mettre à jour le jeu si game over
     }
@@ -353,6 +352,16 @@ void GameDraw(const Board *board)
                 TILE_SIZE,
                 RED);
         }
+        
+        // Afficher la hitbox du joueur en rouge
+        Rectangle playerHitbox = {
+            (int)board->player.pixelX,
+            (int)board->player.pixelY,
+            TILE_SIZE,
+            TILE_SIZE
+        };
+        DrawRectangleRec(playerHitbox, (Color){255, 0, 0, 50});  // Rouge semi-transparent
+        DrawRectangleLinesEx(playerHitbox, 2, RED);  // Bordure rouge solide
     }
 
     // Affichage du nom de carte en haut à gauche
