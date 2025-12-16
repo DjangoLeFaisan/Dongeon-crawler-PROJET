@@ -5,14 +5,15 @@
 #include "time.h"
 #include "map_io.h"
 #include "level_connexion.h"
+#include "marchand.h"
 
 // Gestionnaire de texture
-Texture2D gTileTextures[103];
+Texture2D gTileTextures[121];
 int gTileTextureCount = 0;
 
 //Tuiles considérées comme solides
 int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
- 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45};
+ 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 120};
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0
@@ -34,7 +35,7 @@ int main(void)
     // Chargement des textures
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
-    gTileTextures[2] = LoadTexture("assets/violet.png");
+    gTileTextures[2] = LoadTexture("assets/sand.png");
 
     gTileTextures[4] = LoadTexture("assets/murs/mur bas 1.png");
     gTileTextures[5] = LoadTexture("assets/murs/mur bas 3.png");
@@ -85,9 +86,11 @@ int main(void)
 
     gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
+
+    gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
     
 
-    gTileTextureCount = 103;
+    gTileTextureCount = 121; //Doit correspondre à l'ID max + 1
     
     Board board = {0};
     GameInit(&board);
@@ -105,6 +108,9 @@ int main(void)
     extern bool special_level;
     special_level = true;
     TraceLog(LOG_INFO, "Special_level = true");
+
+    // Récupère la variable pour savoir si le joueur est dans le shop
+    extern bool is_in_shop;
         
     while (!WindowShouldClose())
     {
@@ -117,6 +123,10 @@ int main(void)
         ClearBackground(RAYWHITE);
 
         GameDraw(&board);
+
+        // Dessine le shop
+        DrawShop(is_in_shop);
+
         DrawFPS(400, 10);
 
         double time = GetTime();

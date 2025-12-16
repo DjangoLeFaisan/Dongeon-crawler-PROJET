@@ -39,12 +39,9 @@ int map_editor(Board *board) {
             {
                 Tile *t = &board->tiles[y][x];
 
-                int groundIndex = 0;
-
                 if (x > 33) {
                     TileClear(t);
-                    groundIndex = 1; //Tuile marron
-                    TilePush(t, groundIndex);
+                    TilePush(t, 2);  // Tuile sand (orange/sable)
                 }
             }
         }

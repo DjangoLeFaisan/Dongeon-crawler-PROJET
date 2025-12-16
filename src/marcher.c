@@ -1,5 +1,6 @@
 #include "marcher.h"
 #include "game.h"
+#include "marchand.h"
 #include "raylib.h"
 #include <math.h>
 
@@ -83,6 +84,9 @@ void Marcher(Player *player, const Board *board)
         
         // Récupère la tuile à la nouvelle position
         int tileIndex = GetTileAtGridPos(board, newX, newY);
+
+        // Ouvre le shop si le marchand est sur la case où le joueur veut se déplacer
+        ToggleShopInventory(tileIndex);
         
         // Vérifie si la tuile est solide
         if (tileIndex >= 0 && VerifySolidTile(tileIndex)) {
@@ -95,6 +99,10 @@ void Marcher(Player *player, const Board *board)
         if (can_player_move) {
             player->gridX = newX;
             player->gridY = newY;
+            // Met à jour la direction du joueur
+                if (dx != 0) {
+             player->lastDirection = (dx > 0) ? 1 : -1;
+            }
             TraceLog(LOG_DEBUG, "Player moved to grid position (%d, %d)", newX, newY);
             moveTimer = MOVE_DELAY;
         }

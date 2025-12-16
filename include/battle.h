@@ -3,6 +3,14 @@
 
 #include "raylib.h"
 
+// Direction enum
+typedef enum {
+    DIR_UP,
+    DIR_DOWN,
+    DIR_LEFT,
+    DIR_RIGHT
+} Direction;
+
 // États du chevalier
 typedef enum {
     KNIGHT_IDLE,
@@ -18,6 +26,9 @@ typedef struct {
     int defense;
     KnightState state;
     float state_timer;
+    Direction facing_direction;
+    Rectangle attack_hitbox_front;
+    Rectangle attack_hitbox_back;
 } Knight;
 
 // Structure globale du combat (mode overlay)

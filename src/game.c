@@ -229,6 +229,16 @@ void GameUpdate(Board *board, float dt)
 
 void GameDraw(const Board *board)
 {
+    static bool logged = false;
+    if (!logged) {
+        TraceLog(LOG_INFO, "GameDraw called! BOARD_ROWS=%d, BOARD_COLS=%d, editor_active=%d", BOARD_ROWS, BOARD_COLS, editor_active);
+        logged = true;
+    }
+    
+    // Afficher un rectangle de test au centre
+    DrawRectangleRec((Rectangle){600, 300, 200, 100}, RED);
+    DrawText("TEST", 650, 330, 20, WHITE);
+    
     // Afficher toutes les tuiles
     for (int y = 0; y < BOARD_ROWS; y++)
     {
@@ -281,29 +291,11 @@ void GameDraw(const Board *board)
         // Vérifier que la texture est chargée
         if (player_texture.id > 0)
         {
-            // Appliquer le mirroring seulement pour le chevalier (texture_id 102)
-            if (board->player.texture_id == 102)
-            {
-                Vector2 position = {(int)board->player.pixelX, (int)board->player.pixelY};
-                Rectangle source = {0, 0, (float)player_texture.width * board->player.direction, (float)player_texture.height};
-                
-                DrawTextureRec(
-                    player_texture,
-                    source,
-                    position,
-                    WHITE
-                );
-            }
-            else
-            {
-                // Pour les autres textures, rendu normal sans mirroring
-                DrawTexture(
-                    player_texture,
-                    (int)board->player.pixelX,
-                    (int)board->player.pixelY,
-                    WHITE
-                );
-            }
+            // Utiliser DrawTexturePro pour pouvoir faire un mirroir selon la direction
+            float sourceWidth = (float)(board->player.lastDirection > 0 ? player_texture.width : -player_texture.width);
+            Rectangle source = {0, 0, sourceWidth, (float)player_texture.height};
+            Rectangle dest = {(int)board->player.pixelX, (int)board->player.pixelY, TILE_SIZE, TILE_SIZE};
+            DrawTexturePro(player_texture, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
         }
         else
         {
