@@ -4,8 +4,10 @@
 #include "stdlib.h"
 #include "time.h"
 #include "map_io.h"
+#include "inventory.h"
 #include "level_connexion.h"
 #include "marchand.h"
+#include "map_editor.h"
 
 // Gestionnaire de texture
 Texture2D gTileTextures[121];
@@ -34,6 +36,7 @@ int main(void)
     srand((unsigned)time(NULL));
 
     // Chargement des textures
+
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
     gTileTextures[2] = LoadTexture("assets/violet.png");
@@ -119,6 +122,7 @@ int main(void)
     extern bool is_in_shop;
     // Récupère la monnaie du joueur
     extern int player_money;
+    extern bool editor_active;
     
     // Initialise les items duInitShopItems(); shop
     InitShopItems();
@@ -143,6 +147,9 @@ int main(void)
         BeginDrawing();
         DrawShop(is_in_shop);
         UpdateShopItemsHover(mousePos);  
+
+        // Dessiner l'inventaire
+        DrawInventory(editor_active);
 
         DrawFPS(400, 10);
 
