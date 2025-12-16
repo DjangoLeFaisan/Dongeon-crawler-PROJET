@@ -12,7 +12,10 @@
 #define ENEMY_ATTACK_INTERVAL 0.7f  // Réduit de 1.0f à 0.7f pour attaquer plus souvent
 #define ENEMY_ANIMATION_SPEED 350.0f  // pixels par seconde pour l'animation fluide (même que le joueur)
 
+extern double defense_modifier;
 extern double force_modifier;
+extern int avarice_modifier;
+extern int player_money;
 extern Texture2D gTileTextures[];
 extern int SOLID_TILES[];
 
@@ -110,6 +113,7 @@ void ApplyDamageToEnemy(Enemy *enemy, int damage)
     if (enemy->hp <= 0) {
         enemy->hp = 0;
         enemy->is_alive = false;
+        player_money += (5 * avarice_modifier);
     }
 }
 
@@ -245,7 +249,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
             
             // Infliger les dégâts seulement si l'attaque n'est pas bloquée
             if (!blocked) {
-                combatState->knight.hp -= e->attack_power;
+                combatState->knight.hp -= (e->attack_power *= defense_modifier);
                 if (combatState->knight.hp < 0) combatState->knight.hp = 0;
                 TraceLog(LOG_INFO, "Ennemi attaque le chevalier! HP: %d", combatState->knight.hp);
             }

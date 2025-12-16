@@ -16,6 +16,8 @@ double attack_power = 15;
 double hitbox_width = 32;   // Largeur de la hitbox d'attaque
 double hitbox_height = 32;  // Hauteur de la hitbox d'attaque
 
+extern double attack_speed_modifier;
+
 extern bool editor_active;
 extern bool is_in_shop;
 
@@ -133,7 +135,7 @@ void UpdateCombat(CombatState *state, float dt) {
     if (state->knight.state == KNIGHT_IDLE) {
         if (IsButtonClicked(state->btn_attack) || (IsKeyPressed(KEY_KP_4) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (!is_in_shop && !editor_active)))) {
             state->knight.state = KNIGHT_ATTACKING;
-            state->knight.state_timer = ACTION_DURATION;
+            state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
             state->knight.attack_animation_timer = 0;  // Réinitialiser le timer d'animation
             state->knight.attack_animation_frame = 0;  // Commencer au frame 0
             TraceLog(LOG_INFO, "Chevalier attaque dans la direction %d! Hitbox front: (%f, %f, %f, %f)", 
@@ -147,7 +149,7 @@ void UpdateCombat(CombatState *state, float dt) {
        
         if (IsButtonClicked(state->btn_defend) || (IsKeyDown(KEY_KP_6) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT))) {
             state->knight.state = KNIGHT_DEFENDING;
-            state->knight.state_timer = ACTION_DURATION;
+            state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
             TraceLog(LOG_INFO, "Chevalier se défend!");
         }
     }
@@ -175,7 +177,6 @@ Rectangle GetAttackHitboxBack(const CombatState *state) {
 }
 
 void DrawCombat(const CombatState *state) {
-    if (!state->combat_overlay_active) return;
 
     // === BARRE DE VIE DU JOUEUR ===
     int bar_width = 150;
@@ -195,6 +196,8 @@ void DrawCombat(const CombatState *state) {
     // Texte HP
     DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
              bar_x + 5, bar_y + 2, 12, WHITE);
+    
+    if (!state->combat_overlay_active) return;
     
     // État de défense
     if (state->knight.state == KNIGHT_DEFENDING) {
