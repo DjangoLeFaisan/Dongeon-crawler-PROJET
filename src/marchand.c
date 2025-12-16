@@ -1,12 +1,16 @@
 #include "raylib.h"
 #include "game.h"
+#include "battle.h"
 #include <stdio.h>
 
 #define SHOP_TILE_ID 120
 #define MAX_SHOP_ITEMS 8
 
-int player_money = 0;
+int player_money = 999;
 bool is_in_shop = false;
+
+extern double hitbox_height;
+extern double hitbox_width;
 
 // Modificateurs de stats
 double force_modifier = 1.0;
@@ -154,6 +158,8 @@ void HandleShopItemClick(Vector2 mousePos, int player_money) {
                     case RANGE_UPGRADE:
                         TraceLog(LOG_INFO, "Portée +");
                         range_modifier += 0.1;
+                        hitbox_height *= range_modifier;
+                        hitbox_width *= range_modifier;
                         break;
                         
                     case ATTACK_SPEED_UPGRADE:

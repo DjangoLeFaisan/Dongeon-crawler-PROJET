@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include <math.h>
 
+extern double speed_modifier;
 extern int SOLID_TILES[];
 #define SOLID_TILES_COUNT 99  // Nombre de tuiles solides
 extern bool special_level;  // Déclaration externe pour accéder à la variable de level_connexion.c

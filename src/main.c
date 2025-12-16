@@ -80,10 +80,6 @@ int main(void)
     gTileTextures[44] = LoadTexture("assets/murs/mur coin bas gauche.png");
     gTileTextures[45] = LoadTexture("assets/murs/mur coin bas droite.png");
 
-
-    
-
-
     gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
     gTileTextures[103] = LoadTexture("assets/personnages/chevalier/chevalierattaque/chevalierattaque1.png");
@@ -156,11 +152,6 @@ int main(void)
         // Ouverture de l'editeur de map
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
             map_editor(&board);
-        }
-          
-        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_T)) 
-        {
-            // DrawText(TextFormat ("Le combat commence ! :  " , &resultatordi ) , 230, 25, 30, GREEN);
         }
 
         EndDrawing();

@@ -219,12 +219,6 @@ void GameUpdate(Board *board, float dt)
     {
         TraceLog(LOG_INFO, "SPACE pressed in GameUpdate");
     }
-
-    // Lancer le mode combat avec B
-    if (IsKeyPressed(KEY_B))
-    {
-        ToggleCombatOverlay();
-    }
 }
 
 void GameDraw(const Board *board)

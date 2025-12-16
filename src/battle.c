@@ -12,8 +12,12 @@ Appuyer sur B pour activer/désactiver le mode combat
 #define ACTION_DURATION 1.0f
 #define ATTACK_POWER 15
 #define DEFEND_REDUCTION 0.5f
-#define HITBOX_WIDTH 32    // Largeur de la hitbox d'attaque
-#define HITBOX_HEIGHT 32   // Hauteur de la hitbox d'attaque
+
+double hitbox_width = 32;   // Largeur de la hitbox d'attaque
+double hitbox_height = 32;  // Hauteur de la hitbox d'attaque
+
+extern bool editor_active;
+extern bool is_in_shop;
 
 // Variable globale du combat
 CombatState gCombatState = {0};
@@ -34,20 +38,20 @@ static void UpdateAttackHitboxes(Knight *knight, float playerPixelX, float playe
     // Hitbox devant le chevalier
     switch (knight->facing_direction) {
         case DIR_UP:
-            knight->attack_hitbox_front = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY - TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
-            knight->attack_hitbox_back = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY + TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_front = (Rectangle){centerX - hitbox_width/2, playerPixelY - TILE_SIZE, hitbox_width, hitbox_height};
+            knight->attack_hitbox_back = (Rectangle){centerX - hitbox_width/2, playerPixelY + TILE_SIZE, hitbox_width, hitbox_height};
             break;
         case DIR_DOWN:
-            knight->attack_hitbox_front = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY + TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
-            knight->attack_hitbox_back = (Rectangle){centerX - HITBOX_WIDTH/2, playerPixelY - TILE_SIZE, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_front = (Rectangle){centerX - hitbox_width/2, playerPixelY + TILE_SIZE, hitbox_width, hitbox_height};
+            knight->attack_hitbox_back = (Rectangle){centerX - hitbox_width/2, playerPixelY - TILE_SIZE, hitbox_width, hitbox_height};
             break;
         case DIR_LEFT:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
-            knight->attack_hitbox_back = (Rectangle){playerPixelX + TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            knight->attack_hitbox_back = (Rectangle){playerPixelX + TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
             break;
         case DIR_RIGHT:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
-            knight->attack_hitbox_back = (Rectangle){playerPixelX - TILE_SIZE, centerY - HITBOX_HEIGHT/2, HITBOX_WIDTH, HITBOX_HEIGHT};
+            knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            knight->attack_hitbox_back = (Rectangle){playerPixelX - TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
             break;
     }
 }
@@ -127,7 +131,7 @@ void UpdateCombat(CombatState *state, float dt) {
 
     // Détecte les clics sur les boutons
     if (state->knight.state == KNIGHT_IDLE) {
-        if (IsButtonClicked(state->btn_attack) || IsKeyPressed(KEY_KP_4)) {
+        if (IsButtonClicked(state->btn_attack) || (IsKeyPressed(KEY_KP_4) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (!is_in_shop && !editor_active)))) {
             state->knight.state = KNIGHT_ATTACKING;
             state->knight.state_timer = ACTION_DURATION;
             state->knight.attack_animation_timer = 0;  // Réinitialiser le timer d'animation
@@ -141,7 +145,7 @@ void UpdateCombat(CombatState *state, float dt) {
         }
 
        
-        if (IsButtonClicked(state->btn_defend) || IsKeyDown(KEY_KP_6)) {
+        if (IsButtonClicked(state->btn_defend) || (IsKeyDown(KEY_KP_6) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT))) {
             state->knight.state = KNIGHT_DEFENDING;
             state->knight.state_timer = ACTION_DURATION;
             TraceLog(LOG_INFO, "Chevalier se défend!");
@@ -149,7 +153,7 @@ void UpdateCombat(CombatState *state, float dt) {
     }
     
     // Vérifier si la touche 6 est relâchée pour sortir de la défense
-    if (state->knight.state == KNIGHT_DEFENDING && !IsKeyDown(KEY_KP_6) && !IsButtonHovered(state->btn_defend)) {
+    if (state->knight.state == KNIGHT_DEFENDING && (!IsKeyDown(KEY_KP_6) && !IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) && !IsButtonHovered(state->btn_defend)) {
         state->knight.state = KNIGHT_IDLE;
         state->knight.state_timer = 0;
     }
