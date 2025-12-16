@@ -1,6 +1,7 @@
 #include "game.h"
 #include "battle.h"
 #include "raylib.h"
+#include "marchand.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
@@ -11,6 +12,7 @@
 #define ENEMY_ATTACK_INTERVAL 0.7f  // Réduit de 1.0f à 0.7f pour attaquer plus souvent
 #define ENEMY_ANIMATION_SPEED 350.0f  // pixels par seconde pour l'animation fluide (même que le joueur)
 
+extern double force_modifier;
 extern Texture2D gTileTextures[];
 extern int SOLID_TILES[];
 
@@ -64,7 +66,7 @@ static void InitEnemy(Enemy *enemy, int gridX, int gridY)
     enemy->is_alive = true;
     enemy->facing_direction = (EnemyDirection)GetRandomValue(0, 3);
     enemy->texture_id = GetEnemyTextureForDirection(enemy->facing_direction);
-    enemy->movement_timer = 0.0f;
+    enemy->movement_timer = 0.5f;
     enemy->think_timer = 0.0f;
 }
 
@@ -256,7 +258,8 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
             bool hitFront = CheckCollisionRecs(enemyRect, frontHitbox);
             bool hitBack = CheckCollisionRecs(enemyRect, backHitbox);
             if ((hitFront || hitBack) && !e->was_hit_this_swing) {
-                ApplyDamageToEnemy(e, combatState->knight.attack_power);
+                int knight_attack_power = combatState->knight.attack_power * force_modifier;
+                ApplyDamageToEnemy(e, knight_attack_power);
                 e->was_hit_this_swing = true;
                 TraceLog(LOG_INFO, "Ennemi touché! HP restant: %d", e->hp);
             }

@@ -11,6 +11,7 @@ bool is_in_shop = false;
 
 extern double hitbox_height;
 extern double hitbox_width;
+extern double attack_power;
 
 // Modificateurs de stats
 double force_modifier = 1.0;
@@ -143,6 +144,7 @@ void HandleShopItemClick(Vector2 mousePos, int player_money) {
                     case FORCE_UPGRADE:
                         TraceLog(LOG_INFO, "Force +");
                         force_modifier += 0.05;
+                        attack_power *= force_modifier;
                         break;
                         
                     case DEFENSE_UPGRADE:

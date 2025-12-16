@@ -106,7 +106,7 @@ int main(void)
     InitCombat(&gCombatState);
     
     //Charger la première carte Etage1
-    if (MapLoad(&board, "maps/Etage1.map")) {
+    if (MapLoad(&board, "maps/couloir_defaul.map")) {
         TraceLog(LOG_INFO, "Carte chargée avec succès");
     } else {
         TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte");
@@ -114,8 +114,6 @@ int main(void)
     extern bool special_level;
     special_level = true;
     extern void SpawnEnemiesForEtage(Board *board);
-    SpawnEnemiesForEtage(&board);
-    TraceLog(LOG_INFO, "Special_level = true et ennemis spawnés");
 
     // Récupère la variable pour savoir si le joueur est dans le shop
     extern bool is_in_shop;

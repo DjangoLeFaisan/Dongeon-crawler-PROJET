@@ -112,10 +112,10 @@ void GameUpdate(Board *board, float dt)
             gCombatState.knight.hp = gCombatState.knight.max_hp;
             
             // Recharger Etage1
-            if (MapLoad(board, "maps/Etage1.map")) {
-                TraceLog(LOG_INFO, "Etage1 rechargé après game over");
+            if (MapLoad(board, "maps/couloir_default.map")) {
+                TraceLog(LOG_INFO, "Couloir rechargé après game over");
             } else {
-                TraceLog(LOG_ERROR, "Erreur lors du rechargement d'Etage1");
+                TraceLog(LOG_ERROR, "Erreur lors du rechargement de couloir");
             }
             
             // Respawner les ennemis

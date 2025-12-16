@@ -10,9 +10,9 @@ Appuyer sur B pour activer/désactiver le mode combat
 #include "battle.h"
 
 #define ACTION_DURATION 1.0f
-#define ATTACK_POWER 15
 #define DEFEND_REDUCTION 0.5f
 
+double attack_power = 15;
 double hitbox_width = 32;   // Largeur de la hitbox d'attaque
 double hitbox_height = 32;  // Hauteur de la hitbox d'attaque
 
@@ -60,7 +60,7 @@ void InitCombat(CombatState *state) {
     // Initialiser le chevalier
     state->knight.hp = 100;
     state->knight.max_hp = 100;
-    state->knight.attack_power = ATTACK_POWER;
+    state->knight.attack_power = attack_power;
     state->knight.defense = 5;
     state->knight.state = KNIGHT_IDLE;
     state->knight.state_timer = 0;
