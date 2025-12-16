@@ -7,12 +7,14 @@
 #include "level_connexion.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
 extern bool special_level;
+extern int current_level;
 
 int objectIndex = 4;
 static int lastPreviewX = -1;
@@ -104,21 +106,43 @@ void GameUpdate(Board *board, float dt)
         TraceLog(LOG_INFO, "GAME OVER! Le joueur est mort!");
     }
     
-    // Si game over, attendre avant de revenir au menu
+    // Si game over, gérer les boutons
     if (game_over) {
-        game_over_timer += dt;
-        if (game_over_timer > 3.0f && IsKeyPressed(KEY_SPACE)) {
-            // Reset du game - recharger Etage1
-            game_over = false;
-            game_over_timer = 0.0f;
-            gCombatState.knight.hp = gCombatState.knight.max_hp;
-            
-            // Recharger Etage1
-            if (MapLoad(board, "maps/couloir_defaul.map")) {
-                TraceLog(LOG_INFO, "Couloir rechargé après game over");
+        Vector2 mousePos = GetMousePosition();
+        
+        // Définir les rectangles des boutons
+        Rectangle btnReessaie = {592 - 70, 400, 140, 60};
+        Rectangle btnAbandoner = {652 + 70, 400, 140, 60};
+        
+        // Vérifier si les boutons sont cliqués
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (CheckCollisionPointRec(mousePos, btnReessaie)) {
+                // Réinitialiser complètement le jeu
+                game_over = false;
+                game_over_timer = 0.0f;
+                
+                // Réinitialiser le joueur
+                GameInit(board);
+                
+                // Réinitialiser le combat
+                InitCombat(&gCombatState);
+                
+                // Réinitialiser les ennemis
+                ResetEnemies(board);
+                
+                // Réinitialiser le niveau
+                current_level = 1;
                 special_level = true;
-            } else {
-                TraceLog(LOG_ERROR, "Erreur lors du rechargement de couloir");
+                
+                // Recharger la première carte (couloir sans ennemis)
+                if (MapLoad(board, "maps/couloir_defaul.map")) {
+                    TraceLog(LOG_INFO, "Jeu réinitialisé - nouvelle partie lancée");
+                } else {
+                    TraceLog(LOG_ERROR, "Erreur lors du rechargement de couloir");
+                }
+            } else if (CheckCollisionPointRec(mousePos, btnAbandoner)) {
+                // Quitter le jeu
+                exit(0);
             }
         }
         return;  // Ne pas mettre à jour le jeu si game over
@@ -383,6 +407,8 @@ void GameDraw(const Board *board)
     
     // Afficher game over si le joueur est mort
     if (game_over) {
+        Vector2 mousePos = GetMousePosition();
+        
         // Fond semi-transparent noir
         Color darkOverlay = {0, 0, 0, 200};
         DrawRectangle(0, 0, 1384, 704, darkOverlay);
@@ -391,13 +417,26 @@ void GameDraw(const Board *board)
         int screenWidth = 1384;
         int screenHeight = 704;
         const char *gameOverText = "GAME OVER";
-        const char *restartText = "Press SPACE to restart";
         
         int gameOverWidth = MeasureText(gameOverText, 80);
-        int restartWidth = MeasureText(restartText, 20);
+        DrawText(gameOverText, (screenWidth - gameOverWidth) / 2, (screenHeight / 2) - 120, 80, RED);
         
-        DrawText(gameOverText, (screenWidth - gameOverWidth) / 2, (screenHeight / 2) - 80, 80, RED);
-        DrawText(restartText, (screenWidth - restartWidth) / 2, (screenHeight / 2) + 40, 20, WHITE);
+        // Définir les rectangles des boutons
+        Rectangle btnReessaie = {592 - 70, 400, 140, 60};
+        Rectangle btnAbandoner = {652 + 70, 400, 140, 60};
+        
+        // Couleurs des boutons (changent si survol)
+        Color colorReessaie = CheckCollisionPointRec(mousePos, btnReessaie) ? (Color){0, 200, 0, 255} : (Color){0, 150, 0, 255};
+        Color colorAbandoner = CheckCollisionPointRec(mousePos, btnAbandoner) ? (Color){200, 0, 0, 255} : (Color){150, 0, 0, 255};
+        
+        // Dessiner les boutons
+        DrawRectangleRec(btnReessaie, colorReessaie);
+        DrawRectangleLinesEx(btnReessaie, 2, WHITE);
+        DrawText("REESSAIE", (int)btnReessaie.x + 25, (int)btnReessaie.y + 18, 16, WHITE);
+        
+        DrawRectangleRec(btnAbandoner, colorAbandoner);
+        DrawRectangleLinesEx(btnAbandoner, 2, WHITE);
+        DrawText("ABANDONNER", (int)btnAbandoner.x + 10, (int)btnAbandoner.y + 18, 16, WHITE);
     }
     
     DrawCombat(&gCombatState);
