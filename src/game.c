@@ -384,15 +384,6 @@ void GameDraw(const Board *board)
                 RED);
         }
         
-        // Afficher la hitbox du joueur en rouge
-        Rectangle playerHitbox = {
-            (int)board->player.pixelX,
-            (int)board->player.pixelY,
-            TILE_SIZE,
-            TILE_SIZE
-        };
-        DrawRectangleRec(playerHitbox, (Color){255, 0, 0, 50});  // Rouge semi-transparent
-        DrawRectangleLinesEx(playerHitbox, 2, RED);  // Bordure rouge solide
     }
 
     // Affichage du nom de carte en haut à gauche
