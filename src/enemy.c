@@ -350,9 +350,34 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                     !IsEnemyAt(board, newGridX, newGridY, i)) {
                     e->gridX = newGridX;
                     e->gridY = newGridY;
-                    e->pixelX = (float)e->gridX * TILE_SIZE;
-                    e->pixelY = (float)e->gridY * TILE_SIZE;
                 }
+            }
+        }
+
+        // Animation fluide des pixels (comme le joueur)
+        float animTargetPixelX = e->gridX * TILE_SIZE;
+        float animTargetPixelY = e->gridY * TILE_SIZE;
+        
+        float animDiffX = animTargetPixelX - e->pixelX;
+        float animDiffY = animTargetPixelY - e->pixelY;
+        
+        float animMoveAmount = ENEMY_ANIMATION_SPEED * dt;
+        
+        // Anime pixelX
+        if (fabsf(animDiffX) > 0.5f) {
+            if (fabsf(animDiffX) <= animMoveAmount) {
+                e->pixelX = animTargetPixelX;
+            } else {
+                e->pixelX += (animDiffX > 0 ? animMoveAmount : -animMoveAmount);
+            }
+        }
+        
+        // Anime pixelY
+        if (fabsf(animDiffY) > 0.5f) {
+            if (fabsf(animDiffY) <= animMoveAmount) {
+                e->pixelY = animTargetPixelY;
+            } else {
+                e->pixelY += (animDiffY > 0 ? animMoveAmount : -animMoveAmount);
             }
         }
 
@@ -513,23 +538,6 @@ void DrawEnemies(const struct Board *board)
         } else {
             DrawRectangle((int)e->pixelX, (int)e->pixelY, TILE_SIZE, TILE_SIZE, DARKGREEN);
         }
-        
-        // Afficher la hitbox de l'ennemi en rouge
-        Rectangle enemyHitbox = {
-            (int)e->pixelX,
-            (int)e->pixelY,
-            TILE_SIZE,
-            TILE_SIZE
-        };
-        DrawRectangleRec(enemyHitbox, (Color){255, 0, 0, 30});  // Rouge très transparent
-        DrawRectangleLinesEx(enemyHitbox, 1, (Color){255, 0, 0, 150});  // Bordure rouge
-        
-        // Afficher les hitboxes d'attaque de l'ennemi (comme le joueur)
-        DrawRectangleRec(e->attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent
-        DrawRectangleLinesEx(e->attack_hitbox_front, 2, RED);  // Bordure rouge
-        
-        DrawRectangleRec(e->attack_hitbox_back, (Color){255, 0, 0, 50});   // Rouge très transparent
-        DrawRectangleLinesEx(e->attack_hitbox_back, 1, (Color){255, 0, 0, 150});
 
         // Barre de vie
         int bar_width = TILE_SIZE;
