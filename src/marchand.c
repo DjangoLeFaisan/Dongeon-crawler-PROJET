@@ -164,9 +164,7 @@ void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
                         
                     case RANGE_UPGRADE:
                         TraceLog(LOG_INFO, "Portée +");
-                        range_modifier += 0.05;
-                        hitbox_height *= range_modifier;
-                        hitbox_width *= range_modifier;
+                        range_modifier += 0.15;
                         shop_items[i].currentStack ++;
                         break;
                         
