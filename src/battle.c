@@ -137,7 +137,7 @@ void UpdateCombat(CombatState *state, float dt) {
 
     // Détecte les clics sur les boutons
     if (state->knight.state == KNIGHT_IDLE) {
-        if (IsButtonClicked(state->btn_attack) || (IsKeyPressed(KEY_KP_4) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && (!is_in_shop && !editor_active)))) {
+        if (IsKeyPressed(KEY_KP_4) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             state->knight.state = KNIGHT_ATTACKING;
             state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
             state->knight.attack_animation_timer = 0;  // Réinitialiser le timer d'animation
@@ -151,7 +151,7 @@ void UpdateCombat(CombatState *state, float dt) {
         }
 
        
-        if (IsButtonClicked(state->btn_defend) || (IsKeyDown(KEY_KP_6) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT))) {
+        if (IsKeyDown(KEY_KP_6) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
             state->knight.state = KNIGHT_DEFENDING;
             state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
             TraceLog(LOG_INFO, "Chevalier se défend!");
@@ -208,23 +208,8 @@ void DrawCombat(const CombatState *state) {
         DrawText("DEFENSE ACTIVE", bar_x + 160, bar_y + 2, 12, BLUE);
     }
 
-    // === BOUTONS (overlay sur la map) ===
-    Color btn_attack_color = IsButtonHovered(state->btn_attack) ? GRAY : RED;
-    Color btn_defend_color = IsButtonHovered(state->btn_defend) ? GRAY : BLUE;
-
-    // Boutons désactivés si le chevalier n'est pas en IDLE
-    if (state->knight.state != KNIGHT_IDLE) {
-        btn_attack_color = GRAY;
-        btn_defend_color = GRAY;
-    }
-
-    DrawRectangleRec(state->btn_attack, btn_attack_color);
-    DrawRectangleLinesEx(state->btn_attack, 2, WHITE);
-    DrawText("ATTAQUER", (int)state->btn_attack.x + 25, (int)state->btn_attack.y + 15, 14, WHITE);
-
-    DrawRectangleRec(state->btn_defend, btn_defend_color);
-    DrawRectangleLinesEx(state->btn_defend, 2, WHITE);
-    DrawText("DEFENDRE", (int)state->btn_defend.x + 22, (int)state->btn_defend.y + 15, 14, WHITE);
+    // === INSTRUCTIONS DE CONTRÔLE (texte en bas à gauche) ===
+    DrawText("Attaque : Clic Gauche ou  4 (pavé numérique)  |  Défense : Clic Droit ou  6 (pavé numérique)", 10, 650, 14, YELLOW);
 
     // Affiche les hitboxes d'attaque en carré rouge
     DrawRectangleRec(state->knight.attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent

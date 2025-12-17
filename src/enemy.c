@@ -80,8 +80,8 @@ static void InitEnemy(Enemy *enemy, int gridX, int gridY)
     enemy->gridY = gridY;
     enemy->pixelX = (float)gridX * TILE_SIZE;
     enemy->pixelY = (float)gridY * TILE_SIZE;
-    enemy->hp = 20;  // Augmenté de 30 à 40
-    enemy->max_hp = 40;
+    enemy->hp = 20;
+    enemy->max_hp = 20;
     enemy->attack_power = 10;  // Augmenté de 8 à 12 pour infliger plus de dégâts
     enemy->attack_cooldown = 0.0f;
     enemy->was_hit_this_swing = false;
@@ -291,8 +291,8 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
         int absdistY = (distY < 0) ? -distY : distY;
         bool isAdjacentToPlayer = (absdistX + absdistY == 1);  // Directement adjacent (1 case de distance)
 
-        // Attaque de l'ennemi s'il touche le joueur OU s'il est adjacent
-        if (combatState && e->attack_cooldown <= 0.0f && (CheckCollisionRecs(enemyRect, playerRect) || isAdjacentToPlayer)) {
+        // Attaque de l'ennemi s'il touche le joueur OU s'il est adjacent (mais pas s'il est étourdi)
+        if (combatState && e->attack_cooldown <= 0.0f && e->stun_timer <= 0.0f && (CheckCollisionRecs(enemyRect, playerRect) || isAdjacentToPlayer)) {
             // Vérifier si le joueur se défend et dans quelle direction
             bool blocked = false;
             if (combatState->knight.state == KNIGHT_DEFENDING) {
@@ -357,7 +357,8 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                 
                 if (isInDefenseZone) {
                     blocked = true;
-                    TraceLog(LOG_INFO, "Attaque bloquée! Le joueur se défend dans la zone de défense!");
+                    e->stun_timer = 4.0f;  // Étourdir l'ennemi pendant 2.5 secondes
+                    TraceLog(LOG_INFO, "Attaque bloquée! Le joueur se défend dans la zone de défense! Ennemi étourdi!");
                 }
             }
             
