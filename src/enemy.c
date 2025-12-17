@@ -352,9 +352,34 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                     !IsEnemyAt(board, newGridX, newGridY, i)) {
                     e->gridX = newGridX;
                     e->gridY = newGridY;
-                    e->pixelX = (float)e->gridX * TILE_SIZE;
-                    e->pixelY = (float)e->gridY * TILE_SIZE;
                 }
+            }
+        }
+
+        // Animation fluide des pixels (comme le joueur)
+        float animTargetPixelX = e->gridX * TILE_SIZE;
+        float animTargetPixelY = e->gridY * TILE_SIZE;
+        
+        float animDiffX = animTargetPixelX - e->pixelX;
+        float animDiffY = animTargetPixelY - e->pixelY;
+        
+        float animMoveAmount = ENEMY_ANIMATION_SPEED * dt;
+        
+        // Anime pixelX
+        if (fabsf(animDiffX) > 0.5f) {
+            if (fabsf(animDiffX) <= animMoveAmount) {
+                e->pixelX = animTargetPixelX;
+            } else {
+                e->pixelX += (animDiffX > 0 ? animMoveAmount : -animMoveAmount);
+            }
+        }
+        
+        // Anime pixelY
+        if (fabsf(animDiffY) > 0.5f) {
+            if (fabsf(animDiffY) <= animMoveAmount) {
+                e->pixelY = animTargetPixelY;
+            } else {
+                e->pixelY += (animDiffY > 0 ? animMoveAmount : -animMoveAmount);
             }
         }
 
