@@ -5,16 +5,31 @@
 #include "battle.h"
 #include "enemy.h"
 #include "level_connexion.h"
+#include "marchand.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#define PLAYABLE_ZONE_WIDTH 1088
+#define PLAYABLE_ZONE_HEIGTH 704
 
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
 extern bool special_level;
 extern int current_level;
+extern ShopItem shop_items[MAX_SHOP_ITEMS];
+
+extern int player_money;
+extern double force_modifier;
+extern double defense_modifier;
+extern double speed_modifier;
+extern double range_modifier;
+extern double attack_speed_modifier;
+extern double rage_modifier;
+extern int avarice_modifier;
+extern int ennemies_to_kill;
+extern int ennemies_killed;
 
 bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spawn des ennemis
 
@@ -113,8 +128,8 @@ void GameUpdate(Board *board, float dt)
         Vector2 mousePos = GetMousePosition();
         
         // Définir les rectangles des boutons
-        Rectangle btnReessaie = {592 - 70, 400, 140, 60};
-        Rectangle btnAbandoner = {652 + 70, 400, 140, 60};
+        Rectangle btnReessaie = {((PLAYABLE_ZONE_WIDTH / 2) - 70) - 100, 400, 140, 60};
+        Rectangle btnAbandoner = {((PLAYABLE_ZONE_WIDTH / 2) - 70) + 100, 400, 140, 60};
         
         // Vérifier si les boutons sont cliqués
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -135,6 +150,20 @@ void GameUpdate(Board *board, float dt)
                 // Réinitialiser le niveau
                 current_level = 1;
                 special_level = true;
+
+                // Réinitialiser les stats du joueur et le shop
+                player_money = 0;
+                force_modifier = 1.0;
+                defense_modifier = 1.0;
+                speed_modifier = 1.0;
+                range_modifier = 1.0;
+                attack_speed_modifier = 1.0;
+                rage_modifier = 1.0;
+                avarice_modifier = 1;
+                for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+                    shop_items[i].currentStack = 0;
+                }
+
                 
                 // Désactiver le spawn pour couloir_defaul
                 extern bool spawn_enemies_enabled;
@@ -142,10 +171,14 @@ void GameUpdate(Board *board, float dt)
                 
                 // Recharger la première carte (couloir sans ennemis)
                 if (MapLoad(board, "maps/couloir_defaul.map")) {
-                    TraceLog(LOG_INFO, "Jeu réinitialisé - nouvelle partie lancée");
+                    TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
+                    ennemies_killed = 0;
+                    ennemies_to_kill = 0;
+                    ToggleCombatOverlay();
                 } else {
-                    TraceLog(LOG_ERROR, "Erreur lors du rechargement de couloir");
+                    TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");
                 }
+
             } else if (CheckCollisionPointRec(mousePos, btnAbandoner)) {
                 // Quitter le jeu
                 exit(0);
@@ -409,19 +442,17 @@ void GameDraw(const Board *board)
         
         // Fond semi-transparent noir
         Color darkOverlay = {0, 0, 0, 200};
-        DrawRectangle(0, 0, 1384, 704, darkOverlay);
+        DrawRectangle(0, 0, 1088, 704, darkOverlay);
         
         // Texte GAME OVER
-        int screenWidth = 1384;
-        int screenHeight = 704;
         const char *gameOverText = "GAME OVER";
         
         int gameOverWidth = MeasureText(gameOverText, 80);
-        DrawText(gameOverText, (screenWidth - gameOverWidth) / 2, (screenHeight / 2) - 120, 80, RED);
+        DrawText(gameOverText, (PLAYABLE_ZONE_WIDTH - gameOverWidth) / 2, (PLAYABLE_ZONE_HEIGTH / 2) - 120, 80, RED);
         
         // Définir les rectangles des boutons
-        Rectangle btnReessaie = {592 - 70, 400, 140, 60};
-        Rectangle btnAbandoner = {652 + 70, 400, 140, 60};
+        Rectangle btnReessaie = {((PLAYABLE_ZONE_WIDTH / 2) - 70) - 100, 400, 140, 60};
+        Rectangle btnAbandoner = {((PLAYABLE_ZONE_WIDTH / 2) - 70) + 100, 400, 140, 60};
         
         // Couleurs des boutons (changent si survol)
         Color colorReessaie = CheckCollisionPointRec(mousePos, btnReessaie) ? (Color){0, 200, 0, 255} : (Color){0, 150, 0, 255};
@@ -430,11 +461,11 @@ void GameDraw(const Board *board)
         // Dessiner les boutons
         DrawRectangleRec(btnReessaie, colorReessaie);
         DrawRectangleLinesEx(btnReessaie, 2, WHITE);
-        DrawText("REESSAIE", (int)btnReessaie.x + 25, (int)btnReessaie.y + 18, 16, WHITE);
+        DrawText("REESSAYER", (int)btnReessaie.x + 15, (int)btnReessaie.y + 18, 18, WHITE);
         
         DrawRectangleRec(btnAbandoner, colorAbandoner);
         DrawRectangleLinesEx(btnAbandoner, 2, WHITE);
-        DrawText("ABANDONNER", (int)btnAbandoner.x + 10, (int)btnAbandoner.y + 18, 16, WHITE);
+        DrawText("ABANDONNER", (int)btnAbandoner.x + 10, (int)btnAbandoner.y + 18, 18, WHITE);
     }
     
     DrawCombat(&gCombatState);

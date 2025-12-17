@@ -192,17 +192,17 @@ void DrawCombat(const CombatState *state) {
         // Texte HP
         DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
                 bar_x + 5, bar_y + 2, 24, WHITE);
+
+        // État de défense
+        if (state->knight.state == KNIGHT_DEFENDING) {
+            DrawText("DEFENSE ACTIVE", bar_x + 160, bar_y + 2, 24, BLUE);
+        }
     }
 
     if (!state->combat_overlay_active) return;
-    
-    // État de défense
-    if (state->knight.state == KNIGHT_DEFENDING) {
-        DrawText("DEFENSE ACTIVE", bar_x + 160, bar_y + 2, 12, BLUE);
-    }
 
     // === INSTRUCTIONS DE CONTRÔLE (texte en bas à gauche) ===
-    DrawText("Attaque : Clic Gauche ou  4 (pavé numérique)  |  Défense : Clic Droit ou  6 (pavé numérique)", 10, 650, 14, YELLOW);
+    DrawText("Attaque : Clic Gauche ou  4 (pavé numérique)  |  Défense : Clic Droit ou  6 (pavé numérique)", 10, 680, 14, YELLOW);
 
     
     

@@ -1,6 +1,7 @@
 #include "marcher.h"
 #include "game.h"
 #include "marchand.h"
+#include "enemy.h"
 #include "raylib.h"
 #include <math.h>
 
@@ -9,6 +10,8 @@ extern int SOLID_TILES[];
 #define SOLID_TILES_COUNT 99
 extern bool special_level;
 extern bool LoadNextLevel(Board *board);
+extern int ennemies_killed;
+extern int ennemies_to_kill;
 
 static float moveTimer = 0.0f;
 
@@ -91,7 +94,10 @@ void Marcher(Player *player, Board *board)
         if (tileIndex >= 0 && VerifySolidTile(tileIndex)) {
             can_player_move = false;
         } else if (tileIndex == 28) {
-            LoadNextLevel(board);
+            can_player_move = false;
+            if (ennemies_killed >= ennemies_to_kill) {
+                LoadNextLevel(board);
+            }
             return;
         }
         

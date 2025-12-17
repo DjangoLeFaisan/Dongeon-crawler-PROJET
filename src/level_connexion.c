@@ -6,12 +6,13 @@
 #include "enemy.h"
 #include <stdio.h>
 #include <string.h>
-
-
+#include <math.h>
 
 int current_level = 1;
 bool special_level = false;
 char next_level[256] = "";
+int ennemies_killed = 0;
+int ennemies_to_kill = 0;
 
 // Charger le niveau suivant
 bool LoadNextLevel(Board *board) {
@@ -22,9 +23,11 @@ bool LoadNextLevel(Board *board) {
         
         if (MapLoad(board, next_level)) {
             TraceLog(LOG_INFO, "Carte chargée avec succès: %s", next_level);
-            current_level++;
             special_level = false;
             spawn_enemies_enabled = true;  // Activer le spawn pour les étages
+            ennemies_killed = 0;
+            ennemies_to_kill = floor((((current_level - 1) / 5.0) + 0.8) * 5);
+            current_level++;
             ToggleCombatOverlay();
             SpawnEnemiesForEtage(board);
             return true;
@@ -38,6 +41,8 @@ bool LoadNextLevel(Board *board) {
             TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
             special_level = true;
             spawn_enemies_enabled = false;  // Désactiver le spawn pour le couloir
+            ennemies_killed = 0;
+            ennemies_to_kill = 0;
             ToggleCombatOverlay();
             ResetEnemies(board);
             return true;

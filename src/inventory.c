@@ -6,12 +6,15 @@
 #include <stdlib.h>
 
 #define PLAY_AREA_WIDTH 1088
-#define MAX_SHOP_ITEMS 8
 
 extern ShopItem shop_items[MAX_SHOP_ITEMS];
 extern Texture2D money_texture;
 extern Texture2D gTileTextures[];
+extern int ennemies_killed;
+extern int ennemies_to_kill;
+
 char player_money_text[9];
+char ennemies_left_text[32];
 char stats_display[64] = "";
 
 int DrawInventory(bool editor_active, int player_money) {
@@ -21,6 +24,15 @@ int DrawInventory(bool editor_active, int player_money) {
         DrawTextureEx(money_texture, (Vector2){(PLAY_AREA_WIDTH + 16), 16}, 0.0f, 1.5f, WHITE);
         DrawText(player_money_text, (PLAY_AREA_WIDTH + 80), 16, 48, GOLD);
 
+        // Ennemis restants
+        sprintf(ennemies_left_text, "Ennemis à tuer : %d/%d", ennemies_killed, ennemies_to_kill);
+        DrawTextureEx(gTileTextures[111], (Vector2){(PLAY_AREA_WIDTH + 16), 80}, 0.0f, 1.5f, WHITE);
+
+        if (ennemies_killed >= ennemies_to_kill) {
+            DrawText(ennemies_left_text, (PLAY_AREA_WIDTH + 80), 96, 16, GREEN);
+        } else {
+            DrawText(ennemies_left_text, (PLAY_AREA_WIDTH + 80), 96, 16, WHITE);
+        }
         // Barre de séparation
         DrawLineEx((Vector2){(PLAY_AREA_WIDTH + 16), 140}, (Vector2){(PLAY_AREA_WIDTH + 272), 140}, 5.0, BROWN);    
 

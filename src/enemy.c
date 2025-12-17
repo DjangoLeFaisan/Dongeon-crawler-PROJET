@@ -27,6 +27,7 @@ extern int current_level;
 extern Texture2D gTileTextures[];
 extern int SOLID_TILES[];
 extern int special_level;
+extern int ennemies_killed;
 
 // Déclaration de la variable globale de gestion du spawn
 SpawnManager gSpawnManager = {0};
@@ -213,6 +214,7 @@ void ApplyDamageToEnemy(Enemy *enemy, int damage)
         enemy->hp = 0;
         enemy->is_alive = false;
         player_money += (10 * avarice_modifier);
+        ennemies_killed ++;
     }
     
     // Appliquer l'étourdissement quand l'ennemi est frappé
@@ -514,22 +516,24 @@ void DrawEnemies(const struct Board *board)
             DrawRectangle((int)e->pixelX, (int)e->pixelY, TILE_SIZE, TILE_SIZE, DARKGREEN);
         }
         
-        // Afficher la hitbox de l'ennemi en rouge
-        Rectangle enemyHitbox = {
-            (int)e->pixelX,
-            (int)e->pixelY,
-            TILE_SIZE,
-            TILE_SIZE
-        };
-        DrawRectangleRec(enemyHitbox, (Color){255, 0, 0, 30});  // Rouge très transparent
-        DrawRectangleLinesEx(enemyHitbox, 1, (Color){255, 0, 0, 150});  // Bordure rouge
-        
-        // Afficher les hitboxes d'attaque de l'ennemi (comme le joueur)
-        DrawRectangleRec(e->attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent
-        DrawRectangleLinesEx(e->attack_hitbox_front, 2, RED);  // Bordure rouge
-        
-        DrawRectangleRec(e->attack_hitbox_back, (Color){255, 0, 0, 50});   // Rouge très transparent
-        DrawRectangleLinesEx(e->attack_hitbox_back, 1, (Color){255, 0, 0, 150});
+        if (editor_active) {
+            // Afficher la hitbox de l'ennemi en rouge
+            Rectangle enemyHitbox = {
+                (int)e->pixelX,
+                (int)e->pixelY,
+                TILE_SIZE,
+                TILE_SIZE
+            };
+            DrawRectangleRec(enemyHitbox, (Color){255, 0, 0, 30});  // Rouge très transparent
+            DrawRectangleLinesEx(enemyHitbox, 1, (Color){255, 0, 0, 150});  // Bordure rouge
+            
+            // Afficher les hitboxes d'attaque de l'ennemi (comme le joueur)
+            DrawRectangleRec(e->attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent
+            DrawRectangleLinesEx(e->attack_hitbox_front, 2, RED);  // Bordure rouge
+            
+            DrawRectangleRec(e->attack_hitbox_back, (Color){255, 0, 0, 50});   // Rouge très transparent
+            DrawRectangleLinesEx(e->attack_hitbox_back, 1, (Color){255, 0, 0, 150});
+        }
 
         // Barre de vie
         int bar_width = TILE_SIZE;
