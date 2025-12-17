@@ -134,6 +134,10 @@ void GameUpdate(Board *board, float dt)
                 current_level = 1;
                 special_level = true;
                 
+                // Désactiver le spawn pour couloir_defaul
+                extern bool spawn_enemies_enabled;
+                spawn_enemies_enabled = false;
+                
                 // Recharger la première carte (couloir sans ennemis)
                 if (MapLoad(board, "maps/couloir_defaul.map")) {
                     TraceLog(LOG_INFO, "Jeu réinitialisé - nouvelle partie lancée");
@@ -155,6 +159,7 @@ void GameUpdate(Board *board, float dt)
     UpdateCombat(&gCombatState, dt);
     UpdateAttackHitboxesFromPlayer(&gCombatState, board->player.pixelX, board->player.pixelY);
     UpdateEnemies(board, dt, &gCombatState);
+    UpdateProgressiveSpawn(board, dt);
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;

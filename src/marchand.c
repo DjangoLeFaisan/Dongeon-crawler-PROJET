@@ -55,7 +55,7 @@ void InitShopItems(void) {
     
     // Exemple de configuration d'items (tu peux adapter selon tes besoins)
     shop_items[0].type = FORCE_UPGRADE;
-    shop_items[0].price = 75;
+    shop_items[0].price = 30;
     shop_items[0].isActive = true;
     shop_items[0].icon = LoadTexture("assets/hud/force.png");
     shop_items[0].maxStack = 5;
@@ -63,7 +63,7 @@ void InitShopItems(void) {
     shop_items[0].itemName = "Force";
     
     shop_items[1].type = DEFENSE_UPGRADE;
-    shop_items[1].price = 75;
+    shop_items[1].price = 30;
     shop_items[1].isActive = true;
     shop_items[1].icon = LoadTexture("assets/hud/defense.png");
     shop_items[1].maxStack = 5;
@@ -71,7 +71,7 @@ void InitShopItems(void) {
     shop_items[1].itemName = "Défense";
     
     shop_items[2].type = SPEED_UPGRADE;
-    shop_items[2].price = 50;
+    shop_items[2].price = 30;
     shop_items[2].isActive = true;
     shop_items[2].icon = LoadTexture("assets/hud/vitesse.png");
     shop_items[2].maxStack = 5;
@@ -79,7 +79,7 @@ void InitShopItems(void) {
     shop_items[2].itemName = "Vitesse";
 
     shop_items[3].type = RANGE_UPGRADE;
-    shop_items[3].price = 50;
+    shop_items[3].price = 30;
     shop_items[3].isActive = true;
     shop_items[3].icon = LoadTexture("assets/hud/portee.png");
     shop_items[3].maxStack = 5;
@@ -87,7 +87,7 @@ void InitShopItems(void) {
     shop_items[3].itemName = "Portée";
 
     shop_items[4].type = ATTACK_SPEED_UPGRADE;
-    shop_items[4].price = 75;
+    shop_items[4].price = 30;
     shop_items[4].isActive = true;
     shop_items[4].icon = LoadTexture("assets/hud/vitesse d'attaque.png");
     shop_items[4].maxStack = 5;
@@ -145,7 +145,7 @@ void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
                 switch (shop_items[i].type) {
                     case FORCE_UPGRADE:
                         TraceLog(LOG_INFO, "Force +");
-                        force_modifier += 0.075;
+                        force_modifier += 0.5;
                         attack_power *= force_modifier;
                         shop_items[i].currentStack ++;
                         break;
@@ -188,7 +188,7 @@ void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
                         defense_modifier += 2.0;
 
                         // Effets positifs
-                        avarice_modifier = 2.0;
+                        avarice_modifier = 4.0;
                         break;
                         
                     case RAGE_CURSE:

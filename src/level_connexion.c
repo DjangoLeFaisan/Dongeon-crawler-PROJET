@@ -24,6 +24,7 @@ bool LoadNextLevel(Board *board) {
             TraceLog(LOG_INFO, "Carte chargée avec succès: %s", next_level);
             current_level++;
             special_level = false;
+            spawn_enemies_enabled = true;  // Activer le spawn pour les étages
             ToggleCombatOverlay();
             SpawnEnemiesForEtage(board);
             return true;
@@ -36,6 +37,7 @@ bool LoadNextLevel(Board *board) {
         if (MapLoad(board, "maps/couloir_defaul.map")) {
             TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
             special_level = true;
+            spawn_enemies_enabled = false;  // Désactiver le spawn pour le couloir
             ToggleCombatOverlay();
             ResetEnemies(board);
             return true;

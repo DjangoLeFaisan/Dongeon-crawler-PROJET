@@ -44,6 +44,9 @@ typedef struct {
     Rectangle attack_hitbox_back;
 } Enemy;
 
+// Variable globale pour contrôler le spawn des ennemis
+extern bool spawn_enemies_enabled;
+
 // Forward declarations pour éviter les inclusions circulaires  
 // Utilisation de 'struct Board' au lieu de 'Board' pour éviter les conflits de typedef
 struct Board;
@@ -51,6 +54,7 @@ struct Board;
 // Gestion des ennemis
 void ResetEnemies(struct Board *board);
 void SpawnEnemiesForEtage(struct Board *board);
+void UpdateProgressiveSpawn(struct Board *board, float dt);
 void UpdateEnemies(struct Board *board, float dt, CombatState *combatState);
 void DrawEnemies(const struct Board *board);
 void ApplyDamageToEnemy(Enemy *enemy, int damage);
