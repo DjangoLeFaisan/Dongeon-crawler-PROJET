@@ -10,6 +10,7 @@
 #include "map_editor.h"
 
 // Gestionnaire de texture
+Texture2D money_texture;
 Texture2D gTileTextures[121];
 int gTileTextureCount = 0;
 
@@ -26,7 +27,6 @@ int gEtatJeu = ETAT_EDITOR;
 
 int main(void)
 {
-
    
     const int screenWidth = 1384;
     const int screenHeight = 704;
@@ -36,6 +36,8 @@ int main(void)
     srand((unsigned)time(NULL));
 
     // Chargement des textures
+    
+    money_texture = LoadTexture("assets/hud/pieces.png");
 
     gTileTextures[0] = LoadTexture("assets/noir.png");
     gTileTextures[1] = LoadTexture("assets/marron.png");
@@ -139,17 +141,17 @@ int main(void)
 
         GameDraw(&board);
 
+        // Dessiner l'inventaire
+        DrawInventory(editor_active, player_money);
+
         // Dessiner le shop et màj shop
         Vector2 mousePos = GetMousePosition();
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            HandleShopItemClick(mousePos, player_money, &gCombatState);
+            HandleShopItemClick(mousePos, &gCombatState);
         }
         BeginDrawing();
         DrawShop(is_in_shop);
         UpdateShopItemsHover(mousePos);  
-
-        // Dessiner l'inventaire
-        DrawInventory(editor_active);
 
         DrawFPS(400, 10);
 
