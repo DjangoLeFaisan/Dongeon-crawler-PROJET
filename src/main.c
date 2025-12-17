@@ -86,6 +86,8 @@ int main(void)
     gTileTextures[44] = LoadTexture("assets/murs/mur coin bas gauche.png");
     gTileTextures[45] = LoadTexture("assets/murs/mur coin bas droite.png");
     gTileTextures[46] = LoadTexture("assets/spawner/sol 1.png");
+    gTileTextures[46] = LoadTexture("assets/sols/sol 3.png");
+    gTileTextures[46] = LoadTexture("assets/sols/sol 4.png");
 
     gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
