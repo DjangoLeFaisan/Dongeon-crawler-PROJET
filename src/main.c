@@ -142,6 +142,7 @@ int main(void)
         }
         BeginDrawing();
         DrawShop(is_in_shop);
+        UpdateShopItemsHover(mousePos);  
 
         DrawFPS(400, 10);
 
