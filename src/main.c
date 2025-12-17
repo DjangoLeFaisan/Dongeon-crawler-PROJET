@@ -137,7 +137,6 @@ int main(void)
 
         // Dessiner le shop et màj shop
         Vector2 mousePos = GetMousePosition();
-        UpdateShopItemsHover(mousePos);  
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             HandleShopItemClick(mousePos, player_money, &gCombatState);
         }
