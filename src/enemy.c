@@ -80,15 +80,15 @@ static void InitEnemy(Enemy *enemy, int gridX, int gridY)
     enemy->gridY = gridY;
     enemy->pixelX = (float)gridX * TILE_SIZE;
     enemy->pixelY = (float)gridY * TILE_SIZE;
-    enemy->hp = 40;  // Augmenté de 30 à 40
+    enemy->hp = 20;  // Augmenté de 30 à 40
     enemy->max_hp = 40;
-    enemy->attack_power = 12;  // Augmenté de 8 à 12 pour infliger plus de dégâts
+    enemy->attack_power = 10;  // Augmenté de 8 à 12 pour infliger plus de dégâts
     enemy->attack_cooldown = 0.0f;
     enemy->was_hit_this_swing = false;
     enemy->is_alive = true;
     enemy->facing_direction = (EnemyDirection)GetRandomValue(0, 3);
     enemy->texture_id = GetEnemyTextureForDirection(enemy->facing_direction);
-    enemy->movement_timer = 0.5f;
+    enemy->movement_timer = 0.3f;
     enemy->think_timer = 0.0f;
     enemy->stun_timer = 0.0f;
     
@@ -227,7 +227,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                 int absdistY = (distY < 0) ? -distY : distY;
                 
                 // Distance de détection = 15 cases
-                if (absdistX + absdistY <= 15) {
+                if (absdistX + absdistY <= 10) {
                     // Le joueur est détecté - le poursuivre
                     if (absdistX > absdistY) {
                         // Mouvement horizontal prioritaire
@@ -303,53 +303,53 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                 // Déterminer de quel côté l'ennemi attaque
                 Direction attackDirection = DIR_DOWN;
                 if (distX < 0 && distX * distX > distY * distY) {
-                    // Ennemi à droite du joueur -> attaque de la droite
-                    attackDirection = DIR_RIGHT;
-                } else if (distX > 0 && distX * distX > distY * distY) {
                     // Ennemi à gauche du joueur -> attaque de la gauche
                     attackDirection = DIR_LEFT;
-                } else if (distY < 0) {
-                    // Ennemi en bas du joueur -> attaque d'en bas
-                    attackDirection = DIR_DOWN;
-                } else {
+                } else if (distX > 0 && distX * distX > distY * distY) {
+                    // Ennemi à droite du joueur -> attaque de la droite
+                    attackDirection = DIR_RIGHT;
+                } else if (distY < 0 && distY * distY > distX * distX) {
                     // Ennemi en haut du joueur -> attaque d'en haut
                     attackDirection = DIR_UP;
+                } else if (distY > 0 && distY * distY > distX * distX) {
+                    // Ennemi en bas du joueur -> attaque d'en bas
+                    attackDirection = DIR_DOWN;
                 }
                 
-                // Vérifier si l'attaque est dans la zone de défense en "C"
-                // La défense couvre : la case devant + les deux cases adjacentes perpendiculaires
+                // Vérifier si l'attaque est dans la zone de défense
+                // La défense couvre : devant, haut et bas selon la direction du chevalier
                 bool isInDefenseZone = false;
                 
                 switch (combatState->knight.facing_direction) {
                     case DIR_RIGHT:
-                        // Bloque : droite, droite-haut, droite-bas
+                        // Bloque : droite (devant), haut, bas
                         if (attackDirection == DIR_RIGHT || 
-                            (attackDirection == DIR_UP && distX < 0) ||
-                            (attackDirection == DIR_DOWN && distX < 0)) {
+                            attackDirection == DIR_UP ||
+                            attackDirection == DIR_DOWN) {
                             isInDefenseZone = true;
                         }
                         break;
                     case DIR_LEFT:
-                        // Bloque : gauche, gauche-haut, gauche-bas
+                        // Bloque : gauche (devant), haut, bas
                         if (attackDirection == DIR_LEFT || 
-                            (attackDirection == DIR_UP && distX > 0) ||
-                            (attackDirection == DIR_DOWN && distX > 0)) {
+                            attackDirection == DIR_UP ||
+                            attackDirection == DIR_DOWN) {
                             isInDefenseZone = true;
                         }
                         break;
                     case DIR_UP:
-                        // Bloque : haut, haut-gauche, haut-droite
+                        // Bloque : haut (devant), gauche, droite
                         if (attackDirection == DIR_UP || 
-                            (attackDirection == DIR_LEFT && distY > 0) ||
-                            (attackDirection == DIR_RIGHT && distY > 0)) {
+                            attackDirection == DIR_LEFT ||
+                            attackDirection == DIR_RIGHT) {
                             isInDefenseZone = true;
                         }
                         break;
                     case DIR_DOWN:
-                        // Bloque : bas, bas-gauche, bas-droite
+                        // Bloque : bas (devant), gauche, droite
                         if (attackDirection == DIR_DOWN || 
-                            (attackDirection == DIR_LEFT && distY < 0) ||
-                            (attackDirection == DIR_RIGHT && distY < 0)) {
+                            attackDirection == DIR_LEFT ||
+                            attackDirection == DIR_RIGHT) {
                             isInDefenseZone = true;
                         }
                         break;

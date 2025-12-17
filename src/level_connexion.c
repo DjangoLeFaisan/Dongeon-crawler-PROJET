@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 int current_level = 1;
 bool special_level = false;
 char next_level[256] = "";
