@@ -1,10 +1,11 @@
 #include "raylib.h"
 #include "game.h"
 #include "battle.h"
+#include "marchand.h"
 #include <stdio.h>
+#include <string.h>
 
 #define SHOP_TILE_ID 120
-#define MAX_SHOP_ITEMS 8
 
 int player_money = 999;
 bool is_in_shop = false;
@@ -21,31 +22,6 @@ double range_modifier = 1.0;
 double attack_speed_modifier = 1.0;
 double rage_modifier = 1.0;
 int avarice_modifier = 1;
-
-// Enumération pour identifier les différents types d'items
-typedef enum {
-    ITEM_NONE = 0,
-    FORCE_UPGRADE,
-    DEFENSE_UPGRADE,
-    SPEED_UPGRADE,
-    RANGE_UPGRADE,
-    HEALTH_UPGRADE,
-    ATTACK_SPEED_UPGRADE,
-    AVARICE_CURSE,
-    RAGE_CURSE
-} ItemType;
-
-// Structure représentant un item dans le shop
-typedef struct {
-    ItemType type;           // Type d'item
-    Rectangle bounds;        // Position et taille de l'icône (x, y, width, height)
-    Texture2D icon;         // Texture de l'icône
-    int price;              // Prix de l'item
-    bool isActive;          // Si l'item est disponible à l'achat
-    Color tintColor;        // Couleur pour teinter l'icône (utile pour feedback visuel)
-    int maxStack; // Définit le max d'un bonus qu'on peut avoir
-    int currentStack; // Variable du nombre de bonus actuel
-} ShopItem;
 
 ShopItem shop_items[MAX_SHOP_ITEMS];  // Tableau contenant tous les items du shop
 
@@ -83,48 +59,64 @@ void InitShopItems(void) {
     shop_items[0].isActive = true;
     shop_items[0].icon = LoadTexture("assets/hud/force.png");
     shop_items[0].maxStack = 5;
+    shop_items[0].itemDesc = "FORCE : fait plus de dégâts aux ennemis (max 5)";
+    shop_items[0].itemName = "Force";
     
     shop_items[1].type = DEFENSE_UPGRADE;
     shop_items[1].price = 30;
     shop_items[1].isActive = true;
     shop_items[1].icon = LoadTexture("assets/hud/defense.png");
     shop_items[1].maxStack = 5;
+    shop_items[1].itemDesc = "DEFENSE : les ennemis infligent moins de dégâts (max 5)";
+    shop_items[1].itemName = "Défense";
     
     shop_items[2].type = SPEED_UPGRADE;
     shop_items[2].price = 30;
     shop_items[2].isActive = true;
     shop_items[2].icon = LoadTexture("assets/hud/vitesse.png");
     shop_items[2].maxStack = 5;
+    shop_items[2].itemDesc = "VITESSE : déplacements plus rapide (max 5)";
+    shop_items[2].itemName = "Vitesse";
 
     shop_items[3].type = RANGE_UPGRADE;
     shop_items[3].price = 30;
     shop_items[3].isActive = true;
     shop_items[3].icon = LoadTexture("assets/hud/portee.png");
     shop_items[3].maxStack = 5;
+    shop_items[3].itemDesc = "PORTEE : touche les ennemis de plus loin (max 5)";
+    shop_items[3].itemName = "Portée";
 
     shop_items[4].type = ATTACK_SPEED_UPGRADE;
     shop_items[4].price = 30;
     shop_items[4].isActive = true;
     shop_items[4].icon = LoadTexture("assets/hud/vitesse d'attaque.png");
     shop_items[4].maxStack = 5;
+    shop_items[4].itemDesc = "VITESSE D'ATTAQUE : tape plus vite (max 5)";
+    shop_items[4].itemName = "ATK speed";
 
     shop_items[5].type = HEALTH_UPGRADE;
     shop_items[5].price = 25;
     shop_items[5].isActive = true;
     shop_items[5].icon = LoadTexture("assets/hud/PV.png");
     shop_items[5].maxStack = 10;
+    shop_items[5].itemDesc = "POTION DE VIE : remet la barre de vie au max (max 10)";
+    shop_items[5].itemName = "Potion";
 
     shop_items[6].type = AVARICE_CURSE;
     shop_items[6].price = 150;
     shop_items[6].isActive = true;
     shop_items[6].icon = LoadTexture("assets/hud/avarice.png");
     shop_items[6].maxStack = 1;
+    shop_items[6].itemDesc = "AVARICE : plus d'argent gagné mais beaucoup moins de défense (max 1)";
+    shop_items[6].itemName = "Avarice";
 
     shop_items[7].type = RAGE_CURSE;
     shop_items[7].price = 150;
     shop_items[7].isActive = true;
     shop_items[7].icon = LoadTexture("assets/hud/rage.png");
     shop_items[7].maxStack = 1;
+    shop_items[7].itemDesc = "RAGE : moins de défense et de vie pour plus de dégâts (max 1)";
+    shop_items[7].itemName = "Rage";
 }
 
 // Décharge les textures du shop
@@ -137,7 +129,7 @@ void UnloadShopItems(void) {
 }
 
 // Vérifie si un item a été cliqué et exécute son effet
-void HandleShopItemClick(Vector2 mousePos, int player_money, CombatState) {
+void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
     if (!is_in_shop) return;
     
     // Parcours tous les items du shop
@@ -172,9 +164,7 @@ void HandleShopItemClick(Vector2 mousePos, int player_money, CombatState) {
                         
                     case RANGE_UPGRADE:
                         TraceLog(LOG_INFO, "Portée +");
-                        range_modifier += 0.05;
-                        hitbox_height *= range_modifier;
-                        hitbox_width *= range_modifier;
+                        range_modifier += 0.15;
                         shop_items[i].currentStack ++;
                         break;
                         
@@ -240,6 +230,14 @@ void UpdateShopItemsHover(Vector2 mousePos) {
         if (shop_items[i].isActive) {
             // Change la couleur si la souris survole l'item
             if (CheckCollisionPointRec(mousePos, shop_items[i].bounds)) {
+
+                // Infobulles
+                Vector2 m = GetMousePosition();
+                int textWidth = MeasureText(shop_items[i].itemDesc, 21);
+                DrawRectangle((m.x + 2), (m.y + 2), (textWidth + 6), 25, GRAY);
+                DrawText(shop_items[i].itemDesc, (m.x + 4), (m.y + 4), 21, WHITE);
+
+                // Overlaw de couleur
                 if ((player_money >= shop_items[i].price) && (shop_items[i].currentStack < shop_items[i].maxStack)) {
                     shop_items[i].tintColor = GREEN;
                 } else {

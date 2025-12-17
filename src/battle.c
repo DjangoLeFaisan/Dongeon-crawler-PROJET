@@ -12,11 +12,12 @@ Appuyer sur B pour activer/désactiver le mode combat
 #define ACTION_DURATION 1.0f
 #define DEFEND_REDUCTION 0.5f
 
-double attack_power = 15;
+double attack_power = 10;
 double hitbox_width = 32;   // Largeur de la hitbox d'attaque
 double hitbox_height = 32;  // Hauteur de la hitbox d'attaque
 
 extern double attack_speed_modifier;
+extern double range_modifier;
 
 extern bool editor_active;
 extern bool is_in_shop;
@@ -37,23 +38,23 @@ static void UpdateAttackHitboxes(Knight *knight, float playerPixelX, float playe
     float centerX = playerPixelX + (TILE_SIZE / 2);
     float centerY = playerPixelY + (TILE_SIZE / 2);
     
-    // Hitbox devant le chevalier
+    // Hitbox devant le chevalier (rectangle couvrant 1-2 cases en diagonale)
     switch (knight->facing_direction) {
         case DIR_UP:
-            knight->attack_hitbox_front = (Rectangle){centerX - hitbox_width/2, playerPixelY - TILE_SIZE, hitbox_width, hitbox_height};
-            knight->attack_hitbox_back = (Rectangle){centerX - hitbox_width/2, playerPixelY + TILE_SIZE, hitbox_width, hitbox_height};
+            // Une case devant et une à gauche et une à droite
+            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, playerPixelY - (range_modifier * TILE_SIZE), 3*TILE_SIZE, TILE_SIZE * range_modifier};
             break;
         case DIR_DOWN:
-            knight->attack_hitbox_front = (Rectangle){centerX - hitbox_width/2, playerPixelY + TILE_SIZE, hitbox_width, hitbox_height};
-            knight->attack_hitbox_back = (Rectangle){centerX - hitbox_width/2, playerPixelY - TILE_SIZE, hitbox_width, hitbox_height};
+            // Une case devant et une à gauche et une à droite
+            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, playerPixelY + TILE_SIZE, 3*TILE_SIZE, TILE_SIZE * range_modifier};
             break;
         case DIR_LEFT:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
-            knight->attack_hitbox_back = (Rectangle){playerPixelX + TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            // Une case devant et une au-dessus et une au-dessous
+            knight->attack_hitbox_front = (Rectangle){playerPixelX - (range_modifier * TILE_SIZE), playerPixelY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
             break;
         case DIR_RIGHT:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
-            knight->attack_hitbox_back = (Rectangle){playerPixelX - TILE_SIZE, centerY - hitbox_height/2, hitbox_width, hitbox_height};
+            // Une case devant et une au-dessus et une au-dessous
+            knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, playerPixelY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
             break;
     }
 }
