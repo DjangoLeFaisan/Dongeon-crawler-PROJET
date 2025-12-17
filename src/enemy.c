@@ -2,6 +2,7 @@
 #include "battle.h"
 #include "raylib.h"
 #include "marchand.h"
+#include "map_editor.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
@@ -13,6 +14,7 @@
 #define ENEMY_ANIMATION_SPEED 350.0f  // pixels par seconde pour l'animation fluide (même que le joueur)
 #define ENEMY_STUN_DURATION 1.0f  // Durée d'étourdissement après avoir été frappé
 
+extern int editor_active;
 extern double defense_modifier;
 extern double force_modifier;
 extern int avarice_modifier;
@@ -363,7 +365,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
             }
             
             // Infliger les dégâts seulement si l'attaque n'est pas bloquée
-            if (!blocked) {
+            if (!blocked && !editor_active) {
                 combatState->knight.hp -= (e->attack_power *= defense_modifier);
                 if (combatState->knight.hp < 0) combatState->knight.hp = 0;
                 TraceLog(LOG_INFO, "Ennemi attaque le chevalier! HP: %d", combatState->knight.hp);
