@@ -7,7 +7,7 @@
 
 #define SHOP_TILE_ID 120
 
-int player_money = 999;
+int player_money = 0;
 bool is_in_shop = false;
 
 extern double hitbox_height;

@@ -174,24 +174,26 @@ Rectangle GetAttackHitboxBack(const CombatState *state) {
 void DrawCombat(const CombatState *state) {
 
     // === BARRE DE VIE DU JOUEUR ===
-    int bar_width = 150;
-    int bar_height = 20;
+    int bar_width = 300;
+    int bar_height = 40;
     int bar_x = 10;
-    int bar_y = 40;
+    int bar_y = 20;
     
     int hp_percent = (state->knight.hp * 100) / state->knight.max_hp;
     
-    // Fond rouge (HP manquant)
-    DrawRectangle(bar_x, bar_y, bar_width, bar_height, RED);
-    // HP restant en vert
-    DrawRectangle(bar_x, bar_y, (bar_width * hp_percent) / 100, bar_height, GREEN);
-    // Bordure blanche
-    DrawRectangleLines(bar_x, bar_y, bar_width, bar_height, WHITE);
-    
-    // Texte HP
-    DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
-             bar_x + 5, bar_y + 2, 12, WHITE);
-    
+    if (!editor_active) {
+        // Fond rouge (HP manquant)
+        DrawRectangle(bar_x, bar_y, bar_width, bar_height, RED);
+        // HP restant en vert
+        DrawRectangle(bar_x, bar_y, (bar_width * hp_percent) / 100, bar_height, GREEN);
+        // Bordure blanche
+        DrawRectangleLines(bar_x, bar_y, bar_width, bar_height, WHITE);
+        
+        // Texte HP
+        DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
+                bar_x + 5, bar_y + 2, 24, WHITE);
+    }
+
     if (!state->combat_overlay_active) return;
     
     // État de défense
