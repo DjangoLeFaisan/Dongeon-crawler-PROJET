@@ -6,19 +6,38 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
+#include "map_editor.h"
 
 #define MAX_ENEMIES 16
+#define MAX_SPAWN_POINTS 32
 #define ENEMY_SPAWN_ATTEMPTS 50
+#define ENEMY_SPAWN_INTERVAL 4.0f  // Délai de 4 secondes entre chaque spawn
 #define ENEMY_ATTACK_INTERVAL 0.7f  // Réduit de 1.0f à 0.7f pour attaquer plus souvent
 #define ENEMY_ANIMATION_SPEED 350.0f  // pixels par seconde pour l'animation fluide (même que le joueur)
 #define ENEMY_STUN_DURATION 1.0f  // Durée d'étourdissement après avoir été frappé
+
+// Structure pour gérer le spawn progressif
+typedef struct {
+    int spawnPoints[MAX_SPAWN_POINTS][2];  // Positions de spawn (gridX, gridY)
+    int spawnPointCount;
+    int nextSpawnIndex;
+    float spawnTimer;
+    int maxEnemiesToSpawn;  // Nombre maximum d'ennemis à spawn pour cet étage
+} ProgressiveSpawnManager;
+
+static ProgressiveSpawnManager gSpawnManager = {0};
+
+// Variable pour contrôler si les ennemis peuvent spawn
+bool spawn_enemies_enabled = true;
 
 extern double defense_modifier;
 extern double force_modifier;
 extern int avarice_modifier;
 extern int player_money;
+extern int current_level;
 extern Texture2D gTileTextures[];
 extern int SOLID_TILES[];
+extern int special_level;
 
 // Vérifie si une tuile est solide
 static bool IsSolidTile(int tileIndex)
@@ -106,27 +125,92 @@ void ResetEnemies(struct Board *board)
     }
 }
 
-// Spawne 3 orcs sur les maps "Etage" (zone jouable 0-33)
+// Initialise les points de spawn (appelé une seule fois au chargement de la carte)
+// Identifie toutes les tuiles spawner (ID 46) et les stocke dans le gestionnaire
 void SpawnEnemiesForEtage(struct Board *board)
 {
     if (!board) return;
 
     ResetEnemies(board);
-
-    int spawned = 0;
-    int attempts = 0;
-    while (spawned < 3 && attempts < ENEMY_SPAWN_ATTEMPTS) {
-        attempts++;
-        int gx = GetRandomValue(2, 32);
-        int gy = GetRandomValue(2, BOARD_ROWS - 4);
-
-        if (!IsWalkable(board, gx, gy)) continue;
-
-        InitEnemy(&board->enemies[spawned], gx, gy);
-        spawned++;
+    
+    // Initialiser le gestionnaire de spawn progressif
+    gSpawnManager.spawnPointCount = 0;
+    gSpawnManager.nextSpawnIndex = 0;
+    gSpawnManager.spawnTimer = 0.0f;
+    gSpawnManager.maxEnemiesToSpawn = 0;
+    
+    // Parcourir toutes les tuiles du board pour trouver les spawners (ID 46)
+    for (int gy = 0; gy < BOARD_ROWS && gSpawnManager.spawnPointCount < MAX_SPAWN_POINTS; gy++) {
+        for (int gx = 0; gx < BOARD_COLS && gSpawnManager.spawnPointCount < MAX_SPAWN_POINTS; gx++) {
+            Tile *tile = &board->tiles[gy][gx];
+            
+            // Vérifier toutes les couches pour trouver un spawner (ID 46)
+            for (int layer = 0; layer < tile->layerCount; layer++) {
+                if (tile->layers[layer] == 46) {
+                    gSpawnManager.spawnPoints[gSpawnManager.spawnPointCount][0] = gx;
+                    gSpawnManager.spawnPoints[gSpawnManager.spawnPointCount][1] = gy;
+                    gSpawnManager.spawnPointCount++;
+                    TraceLog(LOG_INFO, "Spawn point found at (%d, %d)", gx, gy);
+                    break;  // Une seule ennemi par tuile
+                }
+            }
+        }
     }
 
-    board->enemyCount = spawned;
+    // Ne configurer les ennemis à spawn que s'il y a au moins un point de spawn ET que le spawn est activé
+    if (gSpawnManager.spawnPointCount > 0 && spawn_enemies_enabled) {
+        // Définir le nombre d'ennemis selon l'étage
+        switch(current_level) {
+            case 1: gSpawnManager.maxEnemiesToSpawn = 4; break;
+            case 2: gSpawnManager.maxEnemiesToSpawn = 6; break;
+            case 3: gSpawnManager.maxEnemiesToSpawn = 8; break;
+            case 4: gSpawnManager.maxEnemiesToSpawn = 10; break;
+            case 5: gSpawnManager.maxEnemiesToSpawn = 12; break;
+            default: gSpawnManager.maxEnemiesToSpawn = 4; break;
+        }
+        TraceLog(LOG_INFO, "Level %d: will spawn %d enemies on %d spawn points", current_level, gSpawnManager.maxEnemiesToSpawn, gSpawnManager.spawnPointCount);
+    } else {
+        if (!spawn_enemies_enabled) {
+            TraceLog(LOG_WARNING, "Enemy spawning is disabled for this map");
+        } else {
+            TraceLog(LOG_WARNING, "No spawn points found on this map - no enemies will spawn");
+        }
+        gSpawnManager.maxEnemiesToSpawn = 0;
+    }
+
+    board->enemyCount = 0;
+}
+
+// Gère le spawn progressif des ennemis avec délai de 4 secondes
+void UpdateProgressiveSpawn(struct Board *board, float dt)
+{
+    if (!board || gSpawnManager.spawnPointCount <= 0) return;
+    
+    // Si tous les ennemis pour cet étage sont déjà spawned, rien à faire
+    if (board->enemyCount >= gSpawnManager.maxEnemiesToSpawn) return;
+    
+    gSpawnManager.spawnTimer += dt;
+    
+    // Si le délai de 4 secondes est écoulé
+    if (gSpawnManager.spawnTimer >= ENEMY_SPAWN_INTERVAL) {
+        gSpawnManager.spawnTimer = 0.0f;
+        
+        // Spawn le prochain ennemi
+        if (board->enemyCount < gSpawnManager.maxEnemiesToSpawn && board->enemyCount < MAX_ENEMIES) {
+            // Recycler les points de spawn si nécessaire (boucler sur les points de spawn)
+            int spawnIndex = gSpawnManager.nextSpawnIndex % gSpawnManager.spawnPointCount;
+            int spawnX = gSpawnManager.spawnPoints[spawnIndex][0];
+            int spawnY = gSpawnManager.spawnPoints[spawnIndex][1];
+            
+            if (!special_level) {
+                InitEnemy(&board->enemies[board->enemyCount], spawnX, spawnY);
+                board->enemyCount++;
+            }
+            
+            TraceLog(LOG_INFO, "Enemy spawned at (%d, %d) - Total: %d/%d", spawnX, spawnY, board->enemyCount, gSpawnManager.maxEnemiesToSpawn);
+            gSpawnManager.nextSpawnIndex++;
+        }
+    }
 }
 
 void ApplyDamageToEnemy(Enemy *enemy, int damage)
@@ -137,7 +221,7 @@ void ApplyDamageToEnemy(Enemy *enemy, int damage)
     if (enemy->hp <= 0) {
         enemy->hp = 0;
         enemy->is_alive = false;
-        player_money += (5 * avarice_modifier);
+        player_money += (10 * avarice_modifier);
     }
     
     // Appliquer l'étourdissement quand l'ennemi est frappé

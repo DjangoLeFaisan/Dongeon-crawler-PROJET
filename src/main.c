@@ -80,6 +80,7 @@ int main(void)
     gTileTextures[43] = LoadTexture("assets/objets/trois caisses.png");
     gTileTextures[44] = LoadTexture("assets/murs/mur coin bas gauche.png");
     gTileTextures[45] = LoadTexture("assets/murs/mur coin bas droite.png");
+    gTileTextures[46] = LoadTexture("assets/spawner/sol 1.png");
 
     gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
@@ -114,6 +115,8 @@ int main(void)
     extern bool special_level;
     special_level = true;
     extern void SpawnEnemiesForEtage(Board *board);
+    extern bool spawn_enemies_enabled;
+    spawn_enemies_enabled = false;  // Désactiver le spawn sur couloir_defaul
 
     // Récupère la variable pour savoir si le joueur est dans le shop
     extern bool is_in_shop;
