@@ -29,14 +29,8 @@ static bool IsButtonHovered(Rectangle btn) {
     return CheckCollisionPointRec(GetMousePosition(), btn);
 }
 
-static bool IsButtonClicked(Rectangle btn) {
-    return IsButtonHovered(btn) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
-}
-
 // Fonction pour mettre à jour les hitbox d'attaque basées sur la direction et la position du joueur
 static void UpdateAttackHitboxes(Knight *knight, float playerPixelX, float playerPixelY) {
-    float centerX = playerPixelX + (TILE_SIZE / 2);
-    float centerY = playerPixelY + (TILE_SIZE / 2);
     
     // Hitbox devant le chevalier (rectangle couvrant 1-2 cases en diagonale)
     switch (knight->facing_direction) {

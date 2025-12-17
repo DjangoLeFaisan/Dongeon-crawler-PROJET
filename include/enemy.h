@@ -44,6 +44,18 @@ typedef struct {
     Rectangle attack_hitbox_back;
 } Enemy;
 
+// Structure pour gérer le spawn progressif des ennemis
+typedef struct {
+    int spawnPoints[32][2];      // Coordonnées des points de spawn (max 32)
+    int spawnPointCount;         // Nombre de points de spawn
+    int nextSpawnIndex;          // Index du prochain point de spawn à utiliser
+    float spawnTimer;            // Timer pour délai entre spawns
+    int maxEnemiesToSpawn;       // Nombre max d'ennemis à spawn sur cet étage
+} SpawnManager;
+
+// Variable globale pour gérer le spawn progressif
+extern SpawnManager gSpawnManager;
+
 // Variable globale pour contrôler le spawn des ennemis
 extern bool spawn_enemies_enabled;
 

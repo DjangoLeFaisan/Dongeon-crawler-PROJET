@@ -1,5 +1,6 @@
 #include "game.h"
 #include "battle.h"
+#include "enemy.h"
 #include "raylib.h"
 #include "marchand.h"
 #include "map_editor.h"
@@ -26,6 +27,9 @@ extern int current_level;
 extern Texture2D gTileTextures[];
 extern int SOLID_TILES[];
 extern int special_level;
+
+// Déclaration de la variable globale de gestion du spawn
+SpawnManager gSpawnManager = {0};
 
 // Vérifie si une tuile est solide
 static bool IsSolidTile(int tileIndex)
@@ -186,9 +190,8 @@ void UpdateProgressiveSpawn(struct Board *board, float dt)
         // Spawn le prochain ennemi
         if (board->enemyCount < gSpawnManager.maxEnemiesToSpawn && board->enemyCount < MAX_ENEMIES) {
             // Recycler les points de spawn si nécessaire (boucler sur les points de spawn)
-            int spawnIndex = gSpawnManager.nextSpawnIndex % gSpawnManager.spawnPointCount;
-            int spawnX = gSpawnManager.spawnPoints[spawnIndex][0];
-            int spawnY = gSpawnManager.spawnPoints[spawnIndex][1];
+            int spawnX = gSpawnManager.spawnPoints[gSpawnManager.nextSpawnIndex % gSpawnManager.spawnPointCount][0];
+            int spawnY = gSpawnManager.spawnPoints[gSpawnManager.nextSpawnIndex % gSpawnManager.spawnPointCount][1];
             
             if (!special_level) {
                 InitEnemy(&board->enemies[board->enemyCount], spawnX, spawnY);

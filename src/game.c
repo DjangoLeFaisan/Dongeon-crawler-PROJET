@@ -16,6 +16,8 @@ extern bool editor_active;
 extern bool special_level;
 extern int current_level;
 
+bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spawn des ennemis
+
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
