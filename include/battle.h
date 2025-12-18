@@ -31,6 +31,7 @@ typedef struct {
     Rectangle attack_hitbox_back;
     float attack_animation_timer;  // Timer pour l'animation d'attaque
     int attack_animation_frame;    // Frame actuel (0-3 pour les 4 sprites)
+    bool attack_has_hit;           // Flag : l'attaque a-t-elle touché quelque chose ?
 } Knight;
 
 // Structure du Boss (simple, basé sur les orcs)

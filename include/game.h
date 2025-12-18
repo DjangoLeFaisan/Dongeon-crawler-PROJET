@@ -5,6 +5,11 @@
 #include "player.h"
 #include "enemy.h"
 
+extern Sound gEnemyMusic;
+extern Sound gVictoryMusic;
+extern Sound gDeathSound;
+extern Music gBackgroundMusic;
+
 #define TILE_SIZE 32
 #define BOARD_COLS 43
 #define BOARD_ROWS 24
@@ -35,7 +40,7 @@ void GameUpdate(Board *board, float dt);
 void GameDraw(const Board *board);
 
 // Fonctions Boss
-void SpawnBoss(Board *board);
+void SpawnBoss(Board *board, const char *mapName);
 void UpdateBoss(Board *board, float dt);
 void DrawBoss(const Board *board);
 void ResetBoss(void);
@@ -47,3 +52,4 @@ bool CheckBossHitThisSwing(void);
 void SetBossHitThisSwing(bool value);
 
 #endif
+

@@ -24,6 +24,24 @@ int gEtatJeu = ETAT_EDITOR;
 
 extern bool has_cheated;
 extern bool game_over;
+// Musique de fond globale
+Music gBackgroundMusic = {0};
+bool gMusicPlaying = false;
+
+// Musique de combat globale
+Music gCombatMusic = {0};
+bool gCombatMusicPlaying = false;
+
+// Musique du boss final (Etage7)
+Music gBossFinalMusic = {0};
+bool gBossFinalMusicPlaying = false;
+
+// Sons globaux
+Sound gWhooshSound = {0};
+Sound gCutSound = {0};
+Sound gBlockSound = {0};
+Sound gEnemyAttackSound = {0};
+Sound gDeathSound = {0};
 
 double chrono = 0;
 
@@ -34,8 +52,20 @@ int main(void)
     const int screenHeight = 704;
 
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
+    InitAudioDevice();
+
+        gEnemyMusic = LoadSound("assets/SONNNNS/ennemi.mp3");
+    gVictoryMusic = LoadSound("assets/SONNNNS/victoire.ogg");
+    gDeathSound = LoadSound("assets/SONNNNS/gameover.mp3");
+
+    gBackgroundMusic = LoadMusicStream("assets/SONNNNS/background.ogg");
+
+
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
+    
+    // Initialiser le système audio
+    InitAudioDevice();
 
     // Chargement des textures
     
@@ -133,13 +163,41 @@ int main(void)
     gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
 
     gTileTextureCount = 121; //Doit correspondre à l'ID max + 1
-    
+
     Board board = {0};
     GameInit(&board);
 
     // Initialiser le système de combat
     extern CombatState gCombatState;
     InitCombat(&gCombatState);
+    
+    // Charger la musique de fond (mais ne pas la jouer pour l'instant)
+    gBackgroundMusic = LoadMusicStream("assets/SON/Field (Extreme Cold)  Breath of the Wild - Original Soundtrack.mp3");
+    if (gBackgroundMusic.frameCount > 0) {
+        gBackgroundMusic.looping = true;
+        gMusicPlaying = false;
+    }
+    
+    // Charger la musique de combat
+    gCombatMusic = LoadMusicStream("assets/SON/Combat _ Lynel - The Legend of Zelda Breath of the Wild OST.mp3");
+    if (gCombatMusic.frameCount > 0) {
+        gCombatMusic.looping = true;
+        gCombatMusicPlaying = false;
+    }
+    
+    // Charger la musique du boss final (Etage7)
+    gBossFinalMusic = LoadMusicStream("assets/SON/FFVII REMAKE_ One-Winged Angel - Rebirth (FINAL FANTASY VII REMAKE Original Soundtrack) Audio.mp3");
+    if (gBossFinalMusic.frameCount > 0) {
+        gBossFinalMusic.looping = true;
+        gBossFinalMusicPlaying = false;
+    }
+    
+    // Charger les sons
+    gWhooshSound = LoadSound("assets/SON/SWSH_Whoosh 10 (ID 1798)_LS.wav");
+    gCutSound = LoadSound("assets/SON/sf_coup_couteau_xx01.mp3");
+    gBlockSound = LoadSound("assets/SON/SF-coupoing2.mp3");
+    gEnemyAttackSound = LoadSound("assets/SON/sabre 9.mp3");
+    gDeathSound = LoadSound("assets/SON/CREAHmn_Zombie 6 (ID 2111)_LaSonotheque.fr.wav");
     
     //Charger la première carte Etage1
     if (MapLoad(&board, "maps/couloir_defaul.map")) {
@@ -158,6 +216,9 @@ int main(void)
     // Récupère la monnaie du joueur
     extern int player_money;
     extern bool editor_active;
+
+    PlayMusicStream(gBackgroundMusic);
+    SetMusicVolume(gBackgroundMusic, 0.4f);
     
     // Initialise les items duInitShopItems(); shop
     InitShopItems();
@@ -166,8 +227,25 @@ int main(void)
     {
        // int test (resultatordi );
         float dt = GetFrameTime();
+        
+        // Mettre à jour la musique de fond (toujours)
+        if (gBackgroundMusic.frameCount > 0) {
+            UpdateMusicStream(gBackgroundMusic);
+        }
+        
+        // Mettre à jour la musique de combat (toujours)
+        if (gCombatMusic.frameCount > 0) {
+            UpdateMusicStream(gCombatMusic);
+        }
+        
+        // Mettre à jour la musique du boss final (toujours)
+        if (gBossFinalMusic.frameCount > 0) {
+            UpdateMusicStream(gBossFinalMusic);
+        }
 
         GameUpdate(&board, dt);
+
+        UpdateMusicStream(gBackgroundMusic);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -206,11 +284,20 @@ int main(void)
     }
     
     // Libération mémoire
+    UnloadMusicStream(gBackgroundMusic);
+    UnloadMusicStream(gCombatMusic);
+    UnloadMusicStream(gBossFinalMusic);
+    UnloadSound(gWhooshSound);
+    UnloadSound(gCutSound);
+    UnloadSound(gBlockSound);
+    UnloadSound(gEnemyAttackSound);
+    UnloadSound(gDeathSound);
     for (int i = 0; i < gTileTextureCount; i++)
     {
         UnloadTexture(gTileTextures[i]);
     }
     UnloadShopItems();
+    CloseAudioDevice();
     CloseWindow();
     return 0;
 }

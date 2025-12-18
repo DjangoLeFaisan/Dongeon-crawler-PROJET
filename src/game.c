@@ -36,6 +36,11 @@ extern double rage_modifier;
 extern int avarice_modifier;
 extern int ennemies_to_kill;
 extern int ennemies_killed;
+Sound gEnemyMusic;
+Sound gVictoryMusic;
+Sound gDeathSound;
+
+Music gBackgroundMusic;
 
 bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spawn des ennemis
 
@@ -152,6 +157,10 @@ void GameUpdate(Board *board, float dt)
                 
                 // Réinitialiser les ennemis
                 ResetEnemies(board);
+                
+                // Réinitialiser le boss
+                extern void ResetBoss(void);
+                ResetBoss();
                 
                 // Réinitialiser le niveau
                 current_level = 1;
@@ -403,10 +412,11 @@ void GameDraw(const Board *board)
         int texture_to_draw = board->player.texture_id;
         
         extern CombatState gCombatState;
-        if (gCombatState.combat_overlay_active && gCombatState.knight.state == KNIGHT_ATTACKING) {
+        // Afficher les animations même sans combat_overlay_active pour permettre les attaques fluides
+        if (gCombatState.knight.state == KNIGHT_ATTACKING) {
             // Utiliser les sprites d'attaque (103-106) selon le frame
             texture_to_draw = 103 + gCombatState.knight.attack_animation_frame;
-        } else if (gCombatState.combat_overlay_active && gCombatState.knight.state == KNIGHT_DEFENDING) {
+        } else if (gCombatState.knight.state == KNIGHT_DEFENDING) {
             // Utiliser les sprites de défense (107-108)
             texture_to_draw = 107;
         }
