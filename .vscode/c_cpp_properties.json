@@ -1,6 +1,6 @@
 {
     "version": 4,
-    "configurations": [
+  "configurations": [
         {
             "name": "macOS",
             "includePath": [
@@ -15,23 +15,23 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "macos-clang-x64"
         },
-        {
-            "name": "Windows",
-            "includePath": [
+    {
+      "name": "Windows",
+      "includePath": [
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/**",
-                "C:/msys64/mingw64/include"
-            ],
+        "${workspaceFolder}/**",
+        "C:/msys64/mingw64/include"
+      ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
-            "cStandard": "c17",
+      "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
+      "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x64"
-        }
+      "intelliSenseMode": "windows-gcc-x64"
+    }
     ]
 }

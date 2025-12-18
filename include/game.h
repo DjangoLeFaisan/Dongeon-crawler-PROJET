@@ -5,6 +5,11 @@
 #include "player.h"
 #include "enemy.h"
 
+extern Sound gEnemyMusic;
+extern Sound gVictoryMusic;
+extern Sound gDeathSound;
+extern Music gBackgroundMusic;
+
 #define TILE_SIZE 32
 #define BOARD_COLS 43
 #define BOARD_ROWS 24
@@ -47,3 +52,4 @@ bool CheckBossHitThisSwing(void);
 void SetBossHitThisSwing(bool value);
 
 #endif
+

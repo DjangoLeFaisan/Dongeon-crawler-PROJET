@@ -49,6 +49,15 @@ int main(void)
     const int screenHeight = 704;
 
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
+    InitAudioDevice();
+
+        gEnemyMusic = LoadSound("assets/SONNNNS/ennemi.mp3");
+    gVictoryMusic = LoadSound("assets/SONNNNS/victoire.ogg");
+    gDeathSound = LoadSound("assets/SONNNNS/gameover.mp3");
+
+    gBackgroundMusic = LoadMusicStream("assets/SONNNNS/background.ogg");
+
+
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
     
@@ -151,7 +160,7 @@ int main(void)
     gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
 
     gTileTextureCount = 121; //Doit correspondre à l'ID max + 1
-    
+
     Board board = {0};
     GameInit(&board);
 
@@ -204,6 +213,9 @@ int main(void)
     // Récupère la monnaie du joueur
     extern int player_money;
     extern bool editor_active;
+
+    PlayMusicStream(gBackgroundMusic);
+    SetMusicVolume(gBackgroundMusic, 0.4f);
     
     // Initialise les items duInitShopItems(); shop
     InitShopItems();
@@ -229,6 +241,8 @@ int main(void)
         }
 
         GameUpdate(&board, dt);
+
+        UpdateMusicStream(gBackgroundMusic);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
