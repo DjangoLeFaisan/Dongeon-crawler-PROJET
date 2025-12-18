@@ -22,6 +22,8 @@ int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 #define ETAT_EDITOR 0
 int gEtatJeu = ETAT_EDITOR;
 
+extern bool has_cheated;
+extern bool game_over;
 // Musique de fond globale
 Music gBackgroundMusic = {0};
 bool gMusicPlaying = false;
@@ -41,6 +43,7 @@ Sound gBlockSound = {0};
 Sound gEnemyAttackSound = {0};
 Sound gDeathSound = {0};
 
+double chrono = 0;
 
 int main(void)
 {
@@ -49,6 +52,15 @@ int main(void)
     const int screenHeight = 704;
 
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
+    InitAudioDevice();
+
+        gEnemyMusic = LoadSound("assets/SONNNNS/ennemi.mp3");
+    gVictoryMusic = LoadSound("assets/SONNNNS/victoire.ogg");
+    gDeathSound = LoadSound("assets/SONNNNS/gameover.mp3");
+
+    gBackgroundMusic = LoadMusicStream("assets/SONNNNS/background.ogg");
+
+
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
     
@@ -151,7 +163,7 @@ int main(void)
     gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
 
     gTileTextureCount = 121; //Doit correspondre à l'ID max + 1
-    
+
     Board board = {0};
     GameInit(&board);
 
@@ -204,6 +216,9 @@ int main(void)
     // Récupère la monnaie du joueur
     extern int player_money;
     extern bool editor_active;
+
+    PlayMusicStream(gBackgroundMusic);
+    SetMusicVolume(gBackgroundMusic, 0.4f);
     
     // Initialise les items duInitShopItems(); shop
     InitShopItems();
@@ -230,6 +245,8 @@ int main(void)
 
         GameUpdate(&board, dt);
 
+        UpdateMusicStream(gBackgroundMusic);
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
@@ -249,8 +266,14 @@ int main(void)
 
         //DrawFPS(400, 10);
 
-        double time = GetTime();
-        // DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
+        if (!has_cheated && !game_over) {
+            chrono ++;
+            DrawText(TextFormat("Chrono : %.2f", (chrono / 60)), 920, 20, 24, GREEN);
+        } else if (!has_cheated && game_over) {
+            DrawText(TextFormat("Chrono : %.2f", (chrono / 60)), 920, 20, 24, GREEN);
+        } else if (has_cheated) {
+            DrawText(TextFormat("Chrono : %.2f", (chrono / 60)), 920, 20, 24, RED);
+        }
 
         // Ouverture de l'editeur de map
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {
