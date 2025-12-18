@@ -30,6 +30,11 @@ extern double rage_modifier;
 extern int avarice_modifier;
 extern int ennemies_to_kill;
 extern int ennemies_killed;
+Sound gEnemyMusic;
+Sound gVictoryMusic;
+Sound gDeathSound;
+
+Music gBackgroundMusic;
 
 bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spawn des ennemis
 
