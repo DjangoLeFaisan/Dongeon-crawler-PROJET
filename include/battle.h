@@ -28,7 +28,7 @@ typedef struct {
     float state_timer;
     Direction facing_direction;
     Rectangle attack_hitbox_front;
-    Rectangle attack_hitbox_back;
+    Rectangle defense_hitbox;  // Hitbox de défense
     float attack_animation_timer;  // Timer pour l'animation d'attaque
     int attack_animation_frame;    // Frame actuel (0-3 pour les 4 sprites)
     bool attack_has_hit;           // Flag : l'attaque a-t-elle touché quelque chose ?

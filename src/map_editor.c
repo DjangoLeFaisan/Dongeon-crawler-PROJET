@@ -2,12 +2,15 @@
 #include "game.h"
 
 bool editor_active = false;
+bool has_cheated = false;
+
 extern int gTileTextureCount;
 
 int map_editor(Board *board) {
 
     if (editor_active == false) {
         //Affichage de l'éditeur de carte
+        has_cheated = true;
         int groundIndex = 0;
         int tile_list_index = 4;
         for (int y = 0; y < BOARD_ROWS; y++)

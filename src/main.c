@@ -22,6 +22,8 @@ int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 #define ETAT_EDITOR 0
 int gEtatJeu = ETAT_EDITOR;
 
+extern bool has_cheated;
+extern bool game_over;
 // Musique de fond globale
 Music gBackgroundMusic = {0};
 bool gMusicPlaying = false;
@@ -43,6 +45,7 @@ Sound gDeathSound = {0};
 Sound gEnemyMusic = {0};
 Sound gVictoryMusic = {0};
 
+double chrono = 0;
 
 int main(void)
 {
@@ -53,8 +56,18 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
     InitAudioDevice();
 
+        gEnemyMusic = LoadSound("assets/SONNNNS/ennemi.mp3");
+    gVictoryMusic = LoadSound("assets/SONNNNS/victoire.ogg");
+    gDeathSound = LoadSound("assets/SONNNNS/gameover.mp3");
+
+    gBackgroundMusic = LoadMusicStream("assets/SONNNNS/background.ogg");
+
+
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
+    
+    // Initialiser le système audio
+    InitAudioDevice();
 
     // Chargement des textures
     
@@ -209,7 +222,7 @@ int main(void)
     PlayMusicStream(gBackgroundMusic);
     SetMusicVolume(gBackgroundMusic, 0.4f);
     
-    // Initialise les items du shop
+    // Initialise les items duInitShopItems(); shop
     InitShopItems();
         
     while (!WindowShouldClose())
@@ -249,6 +262,7 @@ int main(void)
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             HandleShopItemClick(mousePos, &gCombatState);
         }
+        BeginDrawing();
         DrawShop(is_in_shop);
         UpdateShopItemsHover(mousePos);  
 

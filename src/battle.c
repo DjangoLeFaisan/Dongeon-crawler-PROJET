@@ -29,18 +29,26 @@ static bool IsButtonHovered(Rectangle btn) {
 
 // Met à jour la hitbox d'attaque selon la direction
 static void UpdateAttackHitboxes(Knight *knight, float playerPixelX, float playerPixelY) {
+    float centerX = playerPixelX;
+    float centerY = playerPixelY;
+    
+    // Hitbox d'attaque selon la direction
     switch (knight->facing_direction) {
         case DIR_UP:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, playerPixelY - (range_modifier * TILE_SIZE), 3*TILE_SIZE, TILE_SIZE * range_modifier};
+            knight->attack_hitbox_front = (Rectangle){centerX - TILE_SIZE, centerY - (range_modifier * TILE_SIZE), 3*TILE_SIZE, TILE_SIZE * range_modifier};
+            knight->defense_hitbox = (Rectangle){centerX - TILE_SIZE, centerY - (range_modifier * TILE_SIZE), 3*TILE_SIZE, TILE_SIZE * range_modifier};
             break;
         case DIR_DOWN:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, playerPixelY + TILE_SIZE, 3*TILE_SIZE, TILE_SIZE * range_modifier};
+            knight->attack_hitbox_front = (Rectangle){centerX - TILE_SIZE, centerY + TILE_SIZE, 3*TILE_SIZE, TILE_SIZE * range_modifier};
+            knight->defense_hitbox = (Rectangle){centerX - TILE_SIZE, centerY + TILE_SIZE, 3*TILE_SIZE, TILE_SIZE * range_modifier};
             break;
         case DIR_LEFT:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX - (range_modifier * TILE_SIZE), playerPixelY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
+            knight->attack_hitbox_front = (Rectangle){centerX - (range_modifier * TILE_SIZE), centerY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
+            knight->defense_hitbox = (Rectangle){centerX - (range_modifier * TILE_SIZE), centerY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
             break;
         case DIR_RIGHT:
-            knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, playerPixelY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
+            knight->attack_hitbox_front = (Rectangle){centerX + TILE_SIZE, centerY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
+            knight->defense_hitbox = (Rectangle){centerX + TILE_SIZE, centerY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
             break;
     }
 }
@@ -59,7 +67,7 @@ void InitCombat(CombatState *state) {
     state->knight.attack_has_hit = false;
     
     state->knight.attack_hitbox_front = (Rectangle){0, 0, 0, 0};
-    state->knight.attack_hitbox_back = (Rectangle){0, 0, 0, 0};
+    state->knight.defense_hitbox = (Rectangle){0, 0, 0, 0};
 
     state->btn_attack = (Rectangle){500, 650, 140, 50};
     state->btn_defend = (Rectangle){640, 650, 140, 50};
@@ -157,9 +165,9 @@ Rectangle GetAttackHitboxFront(const CombatState *state) {
     return state->knight.attack_hitbox_front;
 }
 
-// Récupère la hitbox d'attaque derrière
+// Récupère la hitbox d'attaque derrière (pour compatibilité)
 Rectangle GetAttackHitboxBack(const CombatState *state) {
-    return state->knight.attack_hitbox_back;
+    return state->knight.defense_hitbox;
 }
 
 // Affiche l'UI du combat
@@ -179,10 +187,6 @@ void DrawCombat(const CombatState *state) {
         
         DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
                 bar_x + 5, bar_y + 2, 24, WHITE);
-
-        if (state->knight.state == KNIGHT_DEFENDING) {
-            DrawText("DEFENSE ACTIVE", bar_x + 160, bar_y + 2, 24, BLUE);
-        }
     }
 
     if (!state->combat_overlay_active) return;

@@ -77,7 +77,7 @@ bool MapLoad(Board *board, const char *filename)
 
     fclose(file);
     
-    // Gestion de la musique : Field dans les couloirs, Combat dans Etage1-7, Boss Final dans Etage8
+    // Gestion de la musique : Field dans les couloirs, Combat dans Etage1-8, Boss Final dans Etage9
     extern Music gBackgroundMusic;
     extern bool gMusicPlaying;
     extern Music gCombatMusic;
@@ -85,17 +85,18 @@ bool MapLoad(Board *board, const char *filename)
     extern Music gBossFinalMusic;
     extern bool gBossFinalMusicPlaying;
     
-    // Vérifier si c'est Etage8 (boss final)
-    bool isBossFinalStage = (strstr(filename, "Etage8") != NULL);
+    // Vérifier si c'est Etage9 (boss final)
+    bool isBossFinalStage = (strstr(filename, "Etage9") != NULL);
     
-    // Vérifier si c'est un étage de combat (Etage1 à Etage7)
+    // Vérifier si c'est un étage de combat (Etage1 à Etage8)
     bool isCombatStage = (!isBossFinalStage && (strstr(filename, "Etage1") != NULL ||
                           strstr(filename, "Etage2") != NULL ||
                           strstr(filename, "Etage3") != NULL ||
                           strstr(filename, "Etage4") != NULL ||
                           strstr(filename, "Etage5") != NULL ||
                           strstr(filename, "Etage6") != NULL ||
-                          strstr(filename, "Etage7") != NULL));
+                          strstr(filename, "Etage7") != NULL ||
+                          strstr(filename, "Etage8") != NULL));
     
     if (isBossFinalStage) {
         // Étage du boss final : jouer la musique du boss final

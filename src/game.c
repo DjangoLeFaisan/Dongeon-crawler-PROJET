@@ -13,6 +13,9 @@
 #define PLAYABLE_ZONE_WIDTH 1088
 #define PLAYABLE_ZONE_HEIGTH 704
 
+extern double chrono;
+extern bool has_cheated;
+
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
@@ -34,11 +37,11 @@ extern double rage_modifier;
 extern int avarice_modifier;
 extern int ennemies_to_kill;
 extern int ennemies_killed;
-extern Sound gEnemyMusic;
-extern Sound gVictoryMusic;
-extern Sound gDeathSound;
+Sound gEnemyMusic;
+Sound gVictoryMusic;
+Sound gDeathSound;
 
-extern Music gBackgroundMusic;
+Music gBackgroundMusic;
 
 bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spawn des ennemis
 
@@ -163,6 +166,8 @@ void GameUpdate(Board *board, float dt)
                 // Réinitialiser le niveau
                 current_level = 1;
                 special_level = true;
+                chrono = 0;
+                has_cheated = false;
 
                 // Réinitialiser les stats du joueur et le shop
                 player_money = 0;

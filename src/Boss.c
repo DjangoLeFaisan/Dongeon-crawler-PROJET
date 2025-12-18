@@ -67,12 +67,12 @@ static void UpdateBossAttackHitboxes(void) {
 void SpawnBoss(Board *board, const char *mapName) {
     if (gBossSpawned) return;
     
-    // Le boss n'apparaît que sur Etage8
-    if (mapName == NULL || strstr(mapName, "Etage8") == NULL) {
+    // Le boss n'apparaît que sur Etage9
+    if (mapName == NULL || strstr(mapName, "Etage9") == NULL) {
         return;
     }
     
-    // Le boss apparaît au centre de l'étoile sur Etage8
+    // Le boss apparaît au centre de l'étoile sur Etage9
     gBoss.gridX = 18;
     gBoss.gridY = 8;
     gBoss.pixelX = gBoss.gridX * TILE_SIZE;
@@ -86,7 +86,7 @@ void SpawnBoss(Board *board, const char *mapName) {
     gBoss.stun_timer = 0.0f;
     gBossSpawned = true;
     gBossActive = true;
-    TraceLog(LOG_INFO, "BOSS SPAWNED at (%d, %d) on Etage8!", gBoss.gridX, gBoss.gridY);
+    TraceLog(LOG_INFO, "BOSS SPAWNED at (%d, %d) on Etage9!", gBoss.gridX, gBoss.gridY);
 }
 
 // Mise à jour du boss avec déplacement fluide et IA
