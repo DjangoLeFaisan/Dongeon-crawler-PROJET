@@ -152,7 +152,7 @@ void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
                         
                     case DEFENSE_UPGRADE:
                         TraceLog(LOG_INFO, "Défense +");
-                        defense_modifier -= 0.05;
+                        defense_modifier -= 0.02;
                         shop_items[i].currentStack ++;
                         break;
                         
