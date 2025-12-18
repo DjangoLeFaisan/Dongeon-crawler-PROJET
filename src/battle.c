@@ -56,6 +56,7 @@ void InitCombat(CombatState *state) {
     state->knight.facing_direction = DIR_DOWN;
     state->knight.attack_animation_timer = 0;
     state->knight.attack_animation_frame = 0;
+    state->knight.attack_has_hit = false;
     
     state->knight.attack_hitbox_front = (Rectangle){0, 0, 0, 0};
     state->knight.attack_hitbox_back = (Rectangle){0, 0, 0, 0};
@@ -68,8 +69,6 @@ void InitCombat(CombatState *state) {
 
 // Met à jour l'état du combat à chaque frame
 void UpdateCombat(CombatState *state, float dt) {
-    if (!state->combat_overlay_active) return;
-
     // SECTION 1: Mise à jour de la direction
     Direction newDirection = state->knight.facing_direction;
     if (IsKeyDown(KEY_W)) {
@@ -107,10 +106,22 @@ void UpdateCombat(CombatState *state, float dt) {
             // Réinitialiser le flag de hit du boss
             extern void SetBossHitThisSwing(bool value);
             SetBossHitThisSwing(false);
+            
+            // Jouer le son whoosh si l'attaque n'a touché rien
+            if (!state->knight.attack_has_hit) {
+                extern Sound gWhooshSound;
+                if (gWhooshSound.frameCount > 0) {
+                    PlaySound(gWhooshSound);
+                }
+            }
+            
+            // Réinitialiser le flag pour la prochaine attaque
+            state->knight.attack_has_hit = false;
         }
     } else {
         state->knight.attack_animation_timer = 0;
         state->knight.attack_animation_frame = 0;
+        state->knight.attack_has_hit = false;  // Réinitialiser aussi en dehors de l'attaque
     }
 
     // SECTION 4: Entrées utilisateur (attaque/défense)
@@ -120,6 +131,7 @@ void UpdateCombat(CombatState *state, float dt) {
             state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
             state->knight.attack_animation_timer = 0;
             state->knight.attack_animation_frame = 0;
+            state->knight.attack_has_hit = false;  // Réinitialiser le flag pour chaque nouvelle attaque
         }
 
         if (IsKeyDown(KEY_KP_6) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {

@@ -83,6 +83,92 @@ bool MapLoad(Board *board, const char *filename)
     }
 
     fclose(file);
+    
+    // Gestion de la musique : Field dans les couloirs, Combat dans Etage1-7, Boss Final dans Etage8
+    extern Music gBackgroundMusic;
+    extern bool gMusicPlaying;
+    extern Music gCombatMusic;
+    extern bool gCombatMusicPlaying;
+    extern Music gBossFinalMusic;
+    extern bool gBossFinalMusicPlaying;
+    
+    // Vérifier si c'est Etage8 (boss final)
+    bool isBossFinalStage = (strstr(filename, "Etage8") != NULL);
+    
+    // Vérifier si c'est un étage de combat (Etage1 à Etage7)
+    bool isCombatStage = (!isBossFinalStage && (strstr(filename, "Etage1") != NULL ||
+                          strstr(filename, "Etage2") != NULL ||
+                          strstr(filename, "Etage3") != NULL ||
+                          strstr(filename, "Etage4") != NULL ||
+                          strstr(filename, "Etage5") != NULL ||
+                          strstr(filename, "Etage6") != NULL ||
+                          strstr(filename, "Etage7") != NULL));
+    
+    if (isBossFinalStage) {
+        // Étage du boss final : jouer la musique du boss final
+        // Arrêter les autres musiques
+        if (gBackgroundMusic.frameCount > 0 && IsMusicStreamPlaying(gBackgroundMusic)) {
+            PauseMusicStream(gBackgroundMusic);
+            gMusicPlaying = false;
+        }
+        if (gCombatMusic.frameCount > 0 && IsMusicStreamPlaying(gCombatMusic)) {
+            PauseMusicStream(gCombatMusic);
+            gCombatMusicPlaying = false;
+        }
+        // Jouer la musique du boss final
+        if (gBossFinalMusic.frameCount > 0 && !IsMusicStreamPlaying(gBossFinalMusic)) {
+            PlayMusicStream(gBossFinalMusic);
+            gBossFinalMusicPlaying = true;
+            TraceLog(LOG_INFO, "Musique du boss final activée");
+        }
+    } else if (isCombatStage) {
+        // Étage de combat : jouer la musique de combat
+        // Arrêter les autres musiques
+        if (gBackgroundMusic.frameCount > 0 && IsMusicStreamPlaying(gBackgroundMusic)) {
+            PauseMusicStream(gBackgroundMusic);
+            gMusicPlaying = false;
+        }
+        if (gBossFinalMusic.frameCount > 0 && IsMusicStreamPlaying(gBossFinalMusic)) {
+            PauseMusicStream(gBossFinalMusic);
+            gBossFinalMusicPlaying = false;
+        }
+        // Jouer la musique de combat si elle ne joue pas
+        if (gCombatMusic.frameCount > 0 && !IsMusicStreamPlaying(gCombatMusic)) {
+            PlayMusicStream(gCombatMusic);
+            gCombatMusicPlaying = true;
+            TraceLog(LOG_INFO, "Musique de combat activée");
+        }
+    } else {
+        // Couloir ou autre : jouer la musique de fond
+        // Arrêter les autres musiques
+        if (gCombatMusic.frameCount > 0 && IsMusicStreamPlaying(gCombatMusic)) {
+            PauseMusicStream(gCombatMusic);
+            gCombatMusicPlaying = false;
+        }
+        if (gBossFinalMusic.frameCount > 0 && IsMusicStreamPlaying(gBossFinalMusic)) {
+            PauseMusicStream(gBossFinalMusic);
+            gBossFinalMusicPlaying = false;
+        }
+        // Jouer la musique de fond si elle ne joue pas
+        if (gBackgroundMusic.frameCount > 0 && !IsMusicStreamPlaying(gBackgroundMusic)) {
+            PlayMusicStream(gBackgroundMusic);
+            gMusicPlaying = true;
+            TraceLog(LOG_INFO, "Musique de fond activée");
+        }
+    }
+    
+    // Spawn le boss si c'est Etage8
+    extern void SpawnBoss(Board *board, const char *mapName);
+    SpawnBoss(board, filename);
+    
+    // S'assurer que l'overlay de combat est activé pour les étages
+    bool isCombatOrBossStage = (strstr(filename, "Etage") != NULL);
+    if (isCombatOrBossStage) {
+        extern CombatState gCombatState;
+        gCombatState.combat_overlay_active = true;
+        TraceLog(LOG_INFO, "Combat overlay forcé à ACTIF pour %s", filename);
+    }
+    
     TraceLog(LOG_INFO, "Map loaded successfully: %s", filename);
     return true;
 }

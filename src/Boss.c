@@ -2,8 +2,11 @@
 #include "battle.h"
 #include "raylib.h"
 #include <math.h>
+#include <string.h>
 
 extern Texture2D gTileTextures[];
+extern int current_level;
+extern Sound gDeathSound;
 
 // Constantes de direction
 #define ENEMY_DIR_UP 0
@@ -19,6 +22,7 @@ static bool gBossWasHitThisSwing = false;  // Flag pour éviter les dégâts mul
 static float gBossAttackCooldown = 0.0f;   // Cooldown avant prochaine attaque
 static Rectangle gBossAttackHitboxFront = {0};
 static Rectangle gBossAttackHitboxBack = {0};
+static bool gBossAlerted = false;  // Flag : le boss a-t-il détecté le joueur ?
 
 // Retourne la texture du boss selon sa direction
 static int GetBossTextureForDirection(int dir)
@@ -59,12 +63,18 @@ static void UpdateBossAttackHitboxes(void) {
     }
 }
 
-// Spawn le boss une seule fois par étage
-void SpawnBoss(Board *board) {
+// Spawn le boss une seule fois par étage (seulement sur Etage8)
+void SpawnBoss(Board *board, const char *mapName) {
     if (gBossSpawned) return;
     
-    gBoss.gridX = BOARD_COLS / 2;
-    gBoss.gridY = BOARD_ROWS / 2;
+    // Le boss n'apparaît que sur Etage8
+    if (mapName == NULL || strstr(mapName, "Etage8") == NULL) {
+        return;
+    }
+    
+    // Le boss apparaît au centre de l'étoile sur Etage8
+    gBoss.gridX = 18;
+    gBoss.gridY = 8;
     gBoss.pixelX = gBoss.gridX * TILE_SIZE;
     gBoss.pixelY = gBoss.gridY * TILE_SIZE;
     gBoss.hp = 80;
@@ -76,6 +86,7 @@ void SpawnBoss(Board *board) {
     gBoss.stun_timer = 0.0f;
     gBossSpawned = true;
     gBossActive = true;
+    TraceLog(LOG_INFO, "BOSS SPAWNED at (%d, %d) on Etage8!", gBoss.gridX, gBoss.gridY);
 }
 
 // Mise à jour du boss avec déplacement fluide et IA
@@ -129,7 +140,7 @@ void UpdateBoss(Board *board, float dt) {
         }
     }
     
-    // IA du boss: se déplacer vers le joueur (seulement s'il n'est pas étourdi)
+    // IA du boss: se déplacer vers le joueur (seulement s'il n'est pas étourdi ET seulement si le joueur est proche)
     if (gBoss.stun_timer <= 0.0f) {
         static float thinkTimer = 0.0f;
         thinkTimer += dt;
@@ -142,22 +153,33 @@ void UpdateBoss(Board *board, float dt) {
             int diffX = playerGridX - gBoss.gridX;
             int diffY = playerGridY - gBoss.gridY;
             
-            // Se rapprocher du joueur avec limites de la map
-            int newGridX = gBoss.gridX;
-            int newGridY = gBoss.gridY;
+            // Calculer la distance Manhattan vers le joueur
+            int distance = abs(diffX) + abs(diffY);
             
-            if (abs(diffX) > abs(diffY)) {
-                if (diffX > 0 && gBoss.gridX < BOARD_COLS - 2) newGridX++;
-                else if (diffX < 0 && gBoss.gridX > 1) newGridX--;
-            } else {
-                if (diffY > 0 && gBoss.gridY < BOARD_ROWS - 3) newGridY++;
-                else if (diffY < 0 && gBoss.gridY > 1) newGridY--;
+            // Si le joueur se rapproche à moins de 6 cases, le boss est alerté
+            if (distance < 6) {
+                gBossAlerted = true;
             }
             
-            // Vérifier la collision avec le joueur
-            if (newGridX != board->player.gridX || newGridY != board->player.gridY) {
-                gBoss.gridX = newGridX;
-                gBoss.gridY = newGridY;
+            // Le boss bouge une fois qu'il est alerté
+            if (gBossAlerted) {
+                // Se rapprocher du joueur avec limites de la map
+                int newGridX = gBoss.gridX;
+                int newGridY = gBoss.gridY;
+                
+                if (abs(diffX) > abs(diffY)) {
+                    if (diffX > 0 && gBoss.gridX < BOARD_COLS - 2) newGridX++;
+                    else if (diffX < 0 && gBoss.gridX > 1) newGridX--;
+                } else {
+                    if (diffY > 0 && gBoss.gridY < BOARD_ROWS - 3) newGridY++;
+                    else if (diffY < 0 && gBoss.gridY > 1) newGridY--;
+                }
+                
+                // Vérifier la collision avec le joueur
+                if (newGridX != board->player.gridX || newGridY != board->player.gridY) {
+                    gBoss.gridX = newGridX;
+                    gBoss.gridY = newGridY;
+                }
             }
         }
     }
@@ -201,6 +223,7 @@ void ResetBoss(void) {
     gBossSpawned = false;
     gBossActive = false;
     gBoss.is_alive = false;
+    gBossAlerted = false;  // Réinitialiser le flag d'alerte
 }
 
 // Vérifier les collisions et infliger des dégâts au boss
@@ -217,6 +240,11 @@ void DamageBoss(int damage) {
         gBoss.hp = 0;
         gBoss.is_alive = false;
         gBossActive = false;
+        
+        // Jouer le son de mort
+        if (gDeathSound.frameCount > 0) {
+            PlaySound(gDeathSound);
+        }
     }
 }
 
@@ -283,6 +311,13 @@ void BossAttackPlayer(Board *board, int damage) {
             if (isInDefenseZone) {
                 blocked = true;
                 gBoss.stun_timer = 3.0f;  // Étourdir le boss pendant 3 secondes
+                
+                // Jouer le son de bloc
+                extern Sound gBlockSound;
+                if (gBlockSound.frameCount > 0) {
+                    PlaySound(gBlockSound);
+                }
+                
                 TraceLog(LOG_INFO, "Attaque du Boss bloquée! Le joueur se défend!");
             }
         }
@@ -291,6 +326,13 @@ void BossAttackPlayer(Board *board, int damage) {
         if (!blocked) {
             gCombatState.knight.hp -= damage;
             if (gCombatState.knight.hp < 0) gCombatState.knight.hp = 0;
+            
+            // Jouer le son d'attaque du boss
+            extern Sound gEnemyAttackSound;
+            if (gEnemyAttackSound.frameCount > 0) {
+                PlaySound(gEnemyAttackSound);
+            }
+            
             TraceLog(LOG_INFO, "Boss attaque! Joueur HP: %d/%d", gCombatState.knight.hp, gCombatState.knight.max_hp);
         }
         

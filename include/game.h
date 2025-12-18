@@ -35,7 +35,7 @@ void GameUpdate(Board *board, float dt);
 void GameDraw(const Board *board);
 
 // Fonctions Boss
-void SpawnBoss(Board *board);
+void SpawnBoss(Board *board, const char *mapName);
 void UpdateBoss(Board *board, float dt);
 void DrawBoss(const Board *board);
 void ResetBoss(void);
