@@ -10,42 +10,41 @@
 #include "map_editor.h"
 
 // Gestionnaire de texture
-Texture2D money_texture;
-Texture2D gTileTextures[121];
-int gTileTextureCount = 0;
+extern Texture2D money_texture;
+extern Texture2D gTileTextures[];
+extern int gTileTextureCount;
 
 //Tuiles considérées comme solides
-int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
- 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 101, 102, 103 ,104 ,105 ,106 ,107 ,108 ,109 ,110 ,111 ,112 , 120};
+extern int SOLID_TILES[];
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0
-int gEtatJeu = ETAT_EDITOR;
+extern int gEtatJeu;
 
 extern bool has_cheated;
 extern bool game_over;
 // Musique de fond globale
-Music gBackgroundMusic = {0};
-bool gMusicPlaying = false;
+extern Music gBackgroundMusic;
+extern bool gMusicPlaying;
 
 // Musique de combat globale
-Music gCombatMusic = {0};
-bool gCombatMusicPlaying = false;
+extern Music gCombatMusic;
+extern bool gCombatMusicPlaying;
 
 // Musique du boss final (Etage7)
-Music gBossFinalMusic = {0};
-bool gBossFinalMusicPlaying = false;
+extern Music gBossFinalMusic;
+extern bool gBossFinalMusicPlaying;
 
 // Sons globaux
-Sound gWhooshSound = {0};
-Sound gCutSound = {0};
-Sound gBlockSound = {0};
-Sound gEnemyAttackSound = {0};
-Sound gDeathSound = {0};
-Sound gEnemyMusic = {0};
-Sound gVictoryMusic = {0};
+extern Sound gWhooshSound;
+extern Sound gCutSound;
+extern Sound gBlockSound;
+extern Sound gEnemyAttackSound;
+extern Sound gDeathSound;
+extern Sound gEnemyMusic;
+extern Sound gVictoryMusic;
 
-double chrono = 0;
+extern double chrono;
 
 int main(void)
 {
@@ -56,18 +55,8 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
     InitAudioDevice();
 
-        gEnemyMusic = LoadSound("assets/SONNNNS/ennemi.mp3");
-    gVictoryMusic = LoadSound("assets/SONNNNS/victoire.ogg");
-    gDeathSound = LoadSound("assets/SONNNNS/gameover.mp3");
-
-    gBackgroundMusic = LoadMusicStream("assets/SONNNNS/background.ogg");
-
-
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
-    
-    // Initialiser le système audio
-    InitAudioDevice();
 
     // Chargement des textures
     
@@ -262,7 +251,6 @@ int main(void)
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             HandleShopItemClick(mousePos, &gCombatState);
         }
-        BeginDrawing();
         DrawShop(is_in_shop);
         UpdateShopItemsHover(mousePos);  
 

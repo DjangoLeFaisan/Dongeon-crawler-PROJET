@@ -13,11 +13,43 @@
 #define PLAYABLE_ZONE_WIDTH 1088
 #define PLAYABLE_ZONE_HEIGTH 704
 
-extern double chrono;
+double chrono = 0;
 extern bool has_cheated;
 
-extern Texture2D gTileTextures[];
-extern int gTileTextureCount;
+// Gestionnaire de texture
+Texture2D money_texture;
+Texture2D gTileTextures[121];
+int gTileTextureCount = 0;
+
+// Tuiles considérées comme solides
+int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+ 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 101, 102, 103 ,104 ,105 ,106 ,107 ,108 ,109 ,110 ,111 ,112 , 120};
+
+// Gestionnaire de l'état de jeu
+#define ETAT_EDITOR 0
+int gEtatJeu = ETAT_EDITOR;
+
+// Musique de fond globale
+Music gBackgroundMusic = {0};
+bool gMusicPlaying = false;
+
+// Musique de combat globale
+Music gCombatMusic = {0};
+bool gCombatMusicPlaying = false;
+
+// Musique du boss final (Etage7)
+Music gBossFinalMusic = {0};
+bool gBossFinalMusicPlaying = false;
+
+// Sons globaux
+Sound gWhooshSound = {0};
+Sound gCutSound = {0};
+Sound gBlockSound = {0};
+Sound gEnemyAttackSound = {0};
+Sound gDeathSound = {0};
+Sound gEnemyMusic = {0};
+Sound gVictoryMusic = {0};
+
 extern bool editor_active;
 extern bool special_level;
 extern int current_level;
@@ -37,11 +69,6 @@ extern double rage_modifier;
 extern int avarice_modifier;
 extern int ennemies_to_kill;
 extern int ennemies_killed;
-Sound gEnemyMusic;
-Sound gVictoryMusic;
-Sound gDeathSound;
-
-Music gBackgroundMusic;
 
 bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spawn des ennemis
 
