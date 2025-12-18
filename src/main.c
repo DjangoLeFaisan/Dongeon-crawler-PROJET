@@ -22,8 +22,10 @@ int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 #define ETAT_EDITOR 0
 int gEtatJeu = ETAT_EDITOR;
 
-//Gestionnaire de l'état de combat (plus tard)
+extern bool has_cheated;
+extern bool game_over;
 
+double chrono = 0;
 
 int main(void)
 {
@@ -186,8 +188,14 @@ int main(void)
 
         //DrawFPS(400, 10);
 
-        double time = GetTime();
-        // DrawText(TextFormat("Time : %.2f", time), 570, 10, 20, GREEN);
+        if (!has_cheated && !game_over) {
+            chrono ++;
+            DrawText(TextFormat("Chrono : %.2f", (chrono / 60)), 920, 20, 24, GREEN);
+        } else if (!has_cheated && game_over) {
+            DrawText(TextFormat("Chrono : %.2f", (chrono / 60)), 920, 20, 24, GREEN);
+        } else if (has_cheated) {
+            DrawText(TextFormat("Chrono : %.2f", (chrono / 60)), 920, 20, 24, RED);
+        }
 
         // Ouverture de l'editeur de map
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_I)) {

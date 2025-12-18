@@ -13,13 +13,15 @@
 #define PLAYABLE_ZONE_WIDTH 1088
 #define PLAYABLE_ZONE_HEIGTH 704
 
+extern double chrono;
+extern bool has_cheated;
+
 extern Texture2D gTileTextures[];
 extern int gTileTextureCount;
 extern bool editor_active;
 extern bool special_level;
 extern int current_level;
 extern ShopItem shop_items[MAX_SHOP_ITEMS];
-
 
 extern double hitbox_height;
 extern double hitbox_width;
@@ -40,7 +42,7 @@ bool spawn_enemies_enabled = false;  // Variable globale pour contrôler le spaw
 int objectIndex = 4;
 static int lastPreviewX = -1;
 static int lastPreviewY = -1;
-static bool game_over = false;
+bool game_over = false;
 static float game_over_timer = 0.0f;
 
 // Gestion du nom de carte
@@ -154,6 +156,8 @@ void GameUpdate(Board *board, float dt)
                 // Réinitialiser le niveau
                 current_level = 1;
                 special_level = true;
+                chrono = 0;
+                has_cheated = false;
 
                 // Réinitialiser les stats du joueur et le shop
                 player_money = 0;
@@ -167,7 +171,7 @@ void GameUpdate(Board *board, float dt)
                 hitbox_height = 32;
                 hitbox_width = 32;
                 attack_power = 10;
-                
+
                 for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
                     shop_items[i].currentStack = 0;
                 }
