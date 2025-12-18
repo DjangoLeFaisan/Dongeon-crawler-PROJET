@@ -1,7 +1,4 @@
-/*Système de combat en overlay - les boutons Attaquer/Défendre s'affichent sur la map
-Le joueur peut continuer à se déplacer avec les flèches et attaquer avec les boutons
-Appuyer sur B pour activer/désactiver le mode combat
-*/ 
+// Système de combat en overlay
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -13,8 +10,8 @@ Appuyer sur B pour activer/désactiver le mode combat
 #define DEFEND_REDUCTION 0.5f
 
 double attack_power = 10;
-double hitbox_width = 32;   // Largeur de la hitbox d'attaque
-double hitbox_height = 32;  // Hauteur de la hitbox d'attaque
+double hitbox_width = 32;
+double hitbox_height = 32;
 
 extern double attack_speed_modifier;
 extern double range_modifier;
@@ -25,80 +22,71 @@ extern bool is_in_shop;
 // Variable globale du combat
 CombatState gCombatState = {0};
 
+// Vérifie si la souris survole un bouton
 static bool IsButtonHovered(Rectangle btn) {
     return CheckCollisionPointRec(GetMousePosition(), btn);
 }
 
-// Fonction pour mettre à jour les hitbox d'attaque basées sur la direction et la position du joueur
+// Met à jour la hitbox d'attaque selon la direction
 static void UpdateAttackHitboxes(Knight *knight, float playerPixelX, float playerPixelY) {
-    
-    // Hitbox devant le chevalier (rectangle couvrant 1-2 cases en diagonale)
     switch (knight->facing_direction) {
         case DIR_UP:
-            // Une case devant et une à gauche et une à droite
             knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, playerPixelY - (range_modifier * TILE_SIZE), 3*TILE_SIZE, TILE_SIZE * range_modifier};
             break;
         case DIR_DOWN:
-            // Une case devant et une à gauche et une à droite
             knight->attack_hitbox_front = (Rectangle){playerPixelX - TILE_SIZE, playerPixelY + TILE_SIZE, 3*TILE_SIZE, TILE_SIZE * range_modifier};
             break;
         case DIR_LEFT:
-            // Une case devant et une au-dessus et une au-dessous
             knight->attack_hitbox_front = (Rectangle){playerPixelX - (range_modifier * TILE_SIZE), playerPixelY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
             break;
         case DIR_RIGHT:
-            // Une case devant et une au-dessus et une au-dessous
             knight->attack_hitbox_front = (Rectangle){playerPixelX + TILE_SIZE, playerPixelY - TILE_SIZE, TILE_SIZE * range_modifier, 3*TILE_SIZE};
             break;
     }
 }
 
+// Initialise l'état du combat
 void InitCombat(CombatState *state) {
-    // Initialiser le chevalier
     state->knight.hp = 100;
     state->knight.max_hp = 100;
     state->knight.attack_power = attack_power;
     state->knight.defense = 5;
     state->knight.state = KNIGHT_IDLE;
     state->knight.state_timer = 0;
-    state->knight.facing_direction = DIR_DOWN;  // Direction initiale
-    state->knight.attack_animation_timer = 0;   // Timer pour l'animation d'attaque
-    state->knight.attack_animation_frame = 0;   // Frame courant (0-3)
+    state->knight.facing_direction = DIR_DOWN;
+    state->knight.attack_animation_timer = 0;
+    state->knight.attack_animation_frame = 0;
     
-    // Initialiser les hitbox
     state->knight.attack_hitbox_front = (Rectangle){0, 0, 0, 0};
     state->knight.attack_hitbox_back = (Rectangle){0, 0, 0, 0};
 
-    // Initialiser les boutons (bas de l'écran)
     state->btn_attack = (Rectangle){500, 650, 140, 50};
     state->btn_defend = (Rectangle){640, 650, 140, 50};
 
     state->combat_overlay_active = false;
 }
 
+// Met à jour l'état du combat à chaque frame
 void UpdateCombat(CombatState *state, float dt) {
     if (!state->combat_overlay_active) return;
 
-    // ===== MISE À JOUR DE LA DIRECTION =====
-    // Sur clavier AZERTY: KEY_W=Z physique, KEY_A=Q physique, KEY_S=S, KEY_D=D
+    // SECTION 1: Mise à jour de la direction
     Direction newDirection = state->knight.facing_direction;
-    if (IsKeyDown(KEY_W)) {  // Touche Z sur AZERTY
+    if (IsKeyDown(KEY_W)) {
         newDirection = DIR_UP;
-    } else if (IsKeyDown(KEY_S)) {  // Touche S
+    } else if (IsKeyDown(KEY_S)) {
         newDirection = DIR_DOWN;
-    } else if (IsKeyDown(KEY_A)) {  // Touche Q sur AZERTY
+    } else if (IsKeyDown(KEY_A)) {
         newDirection = DIR_LEFT;
-    } else if (IsKeyDown(KEY_D)) {  // Touche D
+    } else if (IsKeyDown(KEY_D)) {
         newDirection = DIR_RIGHT;
     }
     
-    // Met à jour la direction si elle a changé
     if (newDirection != state->knight.facing_direction) {
         state->knight.facing_direction = newDirection;
     }
 
-    // ===== CHEVALIER =====
-    // Décrémente le timer
+    // SECTION 2: Gestion des timers
     if (state->knight.state_timer > 0) {
         state->knight.state_timer -= dt;
         if (state->knight.state_timer <= 0) {
@@ -106,74 +94,65 @@ void UpdateCombat(CombatState *state, float dt) {
         }
     }
     
-    // Gestion de l'animation d'attaque
+    // SECTION 3: Animation d'attaque
     if (state->knight.state == KNIGHT_ATTACKING) {
         state->knight.attack_animation_timer += dt;
-        
-        // Changement de frame toutes les 0.1 secondes
         state->knight.attack_animation_frame = (int)(state->knight.attack_animation_timer / 0.1f);
         
-        // Limiter à 4 frames (indices 0-3)
         if (state->knight.attack_animation_frame > 3) {
             state->knight.attack_animation_frame = 3;
-            // L'animation d'attaque est terminée, revenir à IDLE
             state->knight.state = KNIGHT_IDLE;
             state->knight.attack_animation_timer = 0;
+            
+            // Réinitialiser le flag de hit du boss
+            extern void SetBossHitThisSwing(bool value);
+            SetBossHitThisSwing(false);
         }
     } else {
-        // Réinitialiser l'animation quand on n'attaque plus
         state->knight.attack_animation_timer = 0;
         state->knight.attack_animation_frame = 0;
     }
 
-    // Détecte les clics sur les boutons
+    // SECTION 4: Entrées utilisateur (attaque/défense)
     if (state->knight.state == KNIGHT_IDLE) {
         if (IsKeyPressed(KEY_KP_4) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             state->knight.state = KNIGHT_ATTACKING;
             state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
-            state->knight.attack_animation_timer = 0;  // Réinitialiser le timer d'animation
-            state->knight.attack_animation_frame = 0;  // Commencer au frame 0
-            TraceLog(LOG_INFO, "Chevalier attaque dans la direction %d! Hitbox front: (%f, %f, %f, %f)", 
-                     state->knight.facing_direction,
-                     state->knight.attack_hitbox_front.x,
-                     state->knight.attack_hitbox_front.y,
-                     state->knight.attack_hitbox_front.width,
-                     state->knight.attack_hitbox_front.height);
+            state->knight.attack_animation_timer = 0;
+            state->knight.attack_animation_frame = 0;
         }
 
-       
         if (IsKeyDown(KEY_KP_6) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
             state->knight.state = KNIGHT_DEFENDING;
             state->knight.state_timer = (ACTION_DURATION * attack_speed_modifier);
-            TraceLog(LOG_INFO, "Chevalier se défend!");
         }
     }
     
-    // Vérifier si la touche 6 est relâchée pour sortir de la défense
+    // SECTION 5: Sortie de défense
     if (state->knight.state == KNIGHT_DEFENDING && (!IsKeyDown(KEY_KP_6) && !IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) && !IsButtonHovered(state->btn_defend)) {
         state->knight.state = KNIGHT_IDLE;
         state->knight.state_timer = 0;
     }
 }
 
-// Fonction pour obtenir la position du joueur (doit être appelée avec les informations du Board)
+// Met à jour la hitbox d'attaque selon la position du joueur
 void UpdateAttackHitboxesFromPlayer(CombatState *state, float playerPixelX, float playerPixelY) {
     UpdateAttackHitboxes(&state->knight, playerPixelX, playerPixelY);
 }
 
-// Fonction pour récupérer la hitbox d'attaque devant
+// Récupère la hitbox d'attaque devant
 Rectangle GetAttackHitboxFront(const CombatState *state) {
     return state->knight.attack_hitbox_front;
 }
 
-// Fonction pour récupérer la hitbox d'attaque derrière
+// Récupère la hitbox d'attaque derrière
 Rectangle GetAttackHitboxBack(const CombatState *state) {
     return state->knight.attack_hitbox_back;
 }
 
+// Affiche l'UI du combat
 void DrawCombat(const CombatState *state) {
-
-    // === BARRE DE VIE DU JOUEUR ===
+    // SECTION 1: Barre de vie
     int bar_width = 300;
     int bar_height = 40;
     int bar_x = 10;
@@ -182,18 +161,13 @@ void DrawCombat(const CombatState *state) {
     int hp_percent = (state->knight.hp * 100) / state->knight.max_hp;
     
     if (!editor_active) {
-        // Fond rouge (HP manquant)
         DrawRectangle(bar_x, bar_y, bar_width, bar_height, RED);
-        // HP restant en vert
         DrawRectangle(bar_x, bar_y, (bar_width * hp_percent) / 100, bar_height, GREEN);
-        // Bordure blanche
         DrawRectangleLines(bar_x, bar_y, bar_width, bar_height, WHITE);
         
-        // Texte HP
         DrawText(TextFormat("HP: %d/%d", state->knight.hp, state->knight.max_hp), 
                 bar_x + 5, bar_y + 2, 24, WHITE);
 
-        // État de défense
         if (state->knight.state == KNIGHT_DEFENDING) {
             DrawText("DEFENSE ACTIVE", bar_x + 160, bar_y + 2, 24, BLUE);
         }
@@ -201,13 +175,10 @@ void DrawCombat(const CombatState *state) {
 
     if (!state->combat_overlay_active) return;
 
-    // === INSTRUCTIONS DE CONTRÔLE (texte en bas à gauche) ===
+    // SECTION 2: Instructions de contrôle
     DrawText("Attaque : Clic Gauche ou  4 (pavé numérique)  |  Défense : Clic Droit ou  6 (pavé numérique)", 10, 680, 14, YELLOW);
 
-    
-    
-
-    // Affiche la direction actuelle du chevalier
+    // SECTION 3: Direction actuelle
     const char* direction_text = "";
     switch (state->knight.facing_direction) {
         case DIR_UP:
@@ -226,13 +197,9 @@ void DrawCombat(const CombatState *state) {
     DrawText(direction_text, 10, 70, 14, WHITE);
 }
 
+// Active/désactive l'overlay de combat
 void ToggleCombatOverlay(void) {
     gCombatState.combat_overlay_active = !gCombatState.combat_overlay_active;
-    if (gCombatState.combat_overlay_active) {
-        TraceLog(LOG_INFO, "Mode combat activé!");
-    } else {
-        TraceLog(LOG_INFO, "Mode combat désactivé!");
-    }
 }
 
 
