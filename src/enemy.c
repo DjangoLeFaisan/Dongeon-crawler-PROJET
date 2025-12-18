@@ -93,8 +93,8 @@ static void InitEnemy(Enemy *enemy, int gridX, int gridY)
     enemy->gridY = gridY;
     enemy->pixelX = (float)gridX * TILE_SIZE;
     enemy->pixelY = (float)gridY * TILE_SIZE;
-    enemy->hp = 20;
-    enemy->max_hp = 20;
+    enemy->hp = 30;
+    enemy->max_hp = 30;
     enemy->attack_power = 10;  // Augmenté de 8 à 12 pour infliger plus de dégâts
     enemy->attack_cooldown = 0.0f;
     enemy->was_hit_this_swing = false;
@@ -276,7 +276,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
 
     if (combatState) {
         frontHitbox = combatState->knight.attack_hitbox_front;
-        backHitbox = combatState->knight.attack_hitbox_back;
+        backHitbox = combatState->knight.defense_hitbox;
     }
 
     for (int i = 0; i < board->enemyCount; i++) {
@@ -557,7 +557,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
     if (boss && boss->is_alive && combatState && combatState->knight.state == KNIGHT_ATTACKING) {
         Rectangle bossRect = {boss->pixelX, boss->pixelY, TILE_SIZE, TILE_SIZE};
         Rectangle frontHitbox = combatState->knight.attack_hitbox_front;
-        Rectangle backHitbox = combatState->knight.attack_hitbox_back;
+        Rectangle backHitbox = combatState->knight.defense_hitbox;
         
         bool hitFront = CheckCollisionRecs(bossRect, frontHitbox);
         bool hitBack = CheckCollisionRecs(bossRect, backHitbox);

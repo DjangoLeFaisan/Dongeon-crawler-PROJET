@@ -145,7 +145,7 @@ void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
                 switch (shop_items[i].type) {
                     case FORCE_UPGRADE:
                         TraceLog(LOG_INFO, "Force +");
-                        force_modifier += 0.2;
+                        force_modifier += 0.125;
                         attack_power *= force_modifier;
                         shop_items[i].currentStack ++;
                         break;
@@ -164,7 +164,7 @@ void HandleShopItemClick(Vector2 mousePos, CombatState *combatState) {
                         
                     case RANGE_UPGRADE:
                         TraceLog(LOG_INFO, "Portée +");
-                        range_modifier += 0.15;
+                        range_modifier += 0.12;
                         shop_items[i].currentStack ++;
                         break;
                         
