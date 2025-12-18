@@ -157,16 +157,12 @@ void SpawnEnemiesForEtage(struct Board *board)
 
     // Ne configurer les ennemis à spawn que s'il y a au moins un point de spawn ET que le spawn est activé
     if (gSpawnManager.spawnPointCount > 0 && spawn_enemies_enabled) {
-        // Définir le nombre d'ennemis selon l'étage
-        switch(current_level) {
-            case 1: gSpawnManager.maxEnemiesToSpawn = 4; break;
-            case 2: gSpawnManager.maxEnemiesToSpawn = 6; break;
-            case 3: gSpawnManager.maxEnemiesToSpawn = 8; break;
-            case 4: gSpawnManager.maxEnemiesToSpawn = 10; break;
-            case 5: gSpawnManager.maxEnemiesToSpawn = 12; break;
-            default: gSpawnManager.maxEnemiesToSpawn = 4; break;
-        }
-        TraceLog(LOG_INFO, "Level %d: will spawn %d enemies on %d spawn points", current_level, gSpawnManager.maxEnemiesToSpawn, gSpawnManager.spawnPointCount);
+        // CORRECTION : S'assurer de ne JAMAIS dépasser MAX_ENEMIES
+        int desired_enemies = gSpawnManager.spawnPointCount * 3;
+        gSpawnManager.maxEnemiesToSpawn = (desired_enemies < MAX_ENEMIES) ? desired_enemies : MAX_ENEMIES;
+
+        TraceLog(LOG_INFO, "Level %d: will spawn %d enemies on %d spawn points (capped at MAX_ENEMIES=%d)", 
+                 current_level, gSpawnManager.maxEnemiesToSpawn, gSpawnManager.spawnPointCount, MAX_ENEMIES);
     } else {
         if (!spawn_enemies_enabled) {
             TraceLog(LOG_WARNING, "Enemy spawning is disabled for this map");
@@ -190,10 +186,11 @@ void UpdateProgressiveSpawn(struct Board *board, float dt)
     gSpawnManager.spawnTimer += dt;
     
     // Si le délai de 4 secondes est écoulé
-    if (gSpawnManager.spawnTimer >= ENEMY_SPAWN_INTERVAL) {
+    if (gSpawnManager.spawnTimer >= (ENEMY_SPAWN_INTERVAL * 3) / gSpawnManager.spawnPointCount) {
         gSpawnManager.spawnTimer = 0.0f;
         
         // Spawn le prochain ennemi
+        // CORRECTION : Vérifier qu'on ne dépasse JAMAIS MAX_ENEMIES
         if (board->enemyCount < gSpawnManager.maxEnemiesToSpawn && board->enemyCount < MAX_ENEMIES) {
             // Recycler les points de spawn si nécessaire (boucler sur les points de spawn)
             int spawnX = gSpawnManager.spawnPoints[gSpawnManager.nextSpawnIndex % gSpawnManager.spawnPointCount][0];
@@ -201,10 +198,10 @@ void UpdateProgressiveSpawn(struct Board *board, float dt)
             
             if (!special_level) {
                 InitEnemy(&board->enemies[board->enemyCount], spawnX, spawnY);
+                TraceLog(LOG_INFO, "Enemy spawned at (%d, %d) - Total: %d/%d", spawnX, spawnY, board->enemyCount + 1, gSpawnManager.maxEnemiesToSpawn);
                 board->enemyCount++;
             }
             
-            TraceLog(LOG_INFO, "Enemy spawned at (%d, %d) - Total: %d/%d", spawnX, spawnY, board->enemyCount, gSpawnManager.maxEnemiesToSpawn);
             gSpawnManager.nextSpawnIndex++;
         }
     }

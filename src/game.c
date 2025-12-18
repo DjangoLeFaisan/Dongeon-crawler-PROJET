@@ -20,6 +20,10 @@ extern bool special_level;
 extern int current_level;
 extern ShopItem shop_items[MAX_SHOP_ITEMS];
 
+
+extern double hitbox_height;
+extern double hitbox_width;
+extern double attack_power;
 extern int player_money;
 extern double force_modifier;
 extern double defense_modifier;
@@ -164,6 +168,10 @@ void GameUpdate(Board *board, float dt)
                 attack_speed_modifier = 1.0;
                 rage_modifier = 1.0;
                 avarice_modifier = 1;
+                hitbox_height = 32;
+                hitbox_width = 32;
+                attack_power = 10;
+                
                 for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
                     shop_items[i].currentStack = 0;
                 }
@@ -178,7 +186,6 @@ void GameUpdate(Board *board, float dt)
                     TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
                     ennemies_killed = 0;
                     ennemies_to_kill = 0;
-                    ToggleCombatOverlay();
                 } else {
                     TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");
                 }
