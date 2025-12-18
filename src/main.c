@@ -87,7 +87,29 @@ int main(void)
     gTileTextures[45] = LoadTexture("assets/murs/mur coin bas droite.png");
     gTileTextures[46] = LoadTexture("assets/spawner/sol 1.png");
     gTileTextures[46] = LoadTexture("assets/sols/sol 3.png");
-    gTileTextures[46] = LoadTexture("assets/sols/sol 4.png");
+    gTileTextures[47] = LoadTexture("assets/sols/sol 4.png");
+    gTileTextures[49] = LoadTexture("assets/sols/sol 5.png");
+    gTileTextures[50] = LoadTexture("assets/sols/sol 6.png");
+    gTileTextures[51] = LoadTexture("assets/sols/sol 7.png");
+    gTileTextures[52] = LoadTexture("assets/sols/sol 8.png");
+    gTileTextures[53] = LoadTexture("assets/sols/sol 9.png");
+    gTileTextures[54] = LoadTexture("assets/sols/sol 10.png");
+    gTileTextures[55] = LoadTexture("assets/sols/sol 11.png");
+    gTileTextures[56] = LoadTexture("assets/sols/sol 12.png");
+    gTileTextures[57] = LoadTexture("assets/sols/sol 13.png");
+    gTileTextures[58] = LoadTexture("assets/sols/sol 14.png");
+    gTileTextures[59] = LoadTexture("assets/sols/sol 15.png");
+    gTileTextures[60] = LoadTexture("assets/sols/sol 17.png");
+    gTileTextures[61] = LoadTexture("assets/sols/sol 18.png");
+    gTileTextures[62] = LoadTexture("assets/sols/sol 19.png");
+    gTileTextures[63] = LoadTexture("assets/sols/sol 20.png");
+    gTileTextures[65] = LoadTexture("assets/sols/sol 21.png");
+    gTileTextures[66] = LoadTexture("assets/sols/sol 22.png");
+    gTileTextures[67] = LoadTexture("assets/sols/sol 23.png");
+    gTileTextures[68] = LoadTexture("assets/sols/sol 24.png");
+    gTileTextures[69] = LoadTexture("assets/sols/sol 25.png");
+    gTileTextures[70] = LoadTexture("assets/eclairage/braserorose.png");
+    gTileTextures[71] = LoadTexture("assets/eclairage/torche muralerose.png");
 
     gTileTextures[101] = LoadTexture("assets/personnages/sorcier/Sorcier_Idle.png");
     gTileTextures[102] = LoadTexture("assets/personnages/chevalier/chevlalier idle.png");
@@ -101,6 +123,8 @@ int main(void)
     gTileTextures[110] = LoadTexture("assets/personnages/orcvert/orcvertidldroite.png");
     gTileTextures[111] = LoadTexture("assets/personnages/orcvert/orcvertidlface.png");
     gTileTextures[112] = LoadTexture("assets/personnages/orcvert/orcvertidlgauche.png");
+    gTileTextures[113] = LoadTexture("assets/personnages/BOSS/BOSSdevant.png");
+    gTileTextures[114] = LoadTexture("assets/personnages/BOSS/BOSSderriere.png");
 
     gTileTextures[120] = LoadTexture("assets/personnages/marchand.png");
 
