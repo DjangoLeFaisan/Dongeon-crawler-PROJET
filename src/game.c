@@ -195,6 +195,7 @@ void GameUpdate(Board *board, float dt)
     UpdateAttackHitboxesFromPlayer(&gCombatState, board->player.pixelX, board->player.pixelY);
     UpdateEnemies(board, dt, &gCombatState);
     UpdateProgressiveSpawn(board, dt);
+    UpdateBoss(board, dt);
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;
@@ -380,6 +381,9 @@ void GameDraw(const Board *board)
 
     // Afficher les ennemis au-dessus des tuiles
     DrawEnemies(board);
+    
+    // Afficher le boss
+    DrawBoss(board);
 
     // Afficher le joueur par-dessus les tuiles
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)

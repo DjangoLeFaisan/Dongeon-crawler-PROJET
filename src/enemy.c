@@ -126,6 +126,10 @@ void SpawnEnemiesForEtage(struct Board *board)
 
     ResetEnemies(board);
     
+    // Spawn le boss une fois par étage
+    extern void SpawnBoss(struct Board *board);
+    SpawnBoss(board);
+    
     // Initialiser le gestionnaire de spawn progressif
     gSpawnManager.spawnPointCount = 0;
     gSpawnManager.nextSpawnIndex = 0;
@@ -519,6 +523,34 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
         
         // Mettre à jour les hitboxes d'attaque selon la position et la direction actuelles
         UpdateEnemyAttackHitboxes(e);
+    }
+    
+    // Vérifier les collisions avec le boss
+    extern Boss* GetBoss(void);
+    extern void DamageBoss(int damage);
+    Boss *boss = GetBoss();
+    if (boss && boss->is_alive && combatState && combatState->knight.state == KNIGHT_ATTACKING) {
+        Rectangle bossRect = {boss->pixelX, boss->pixelY, TILE_SIZE, TILE_SIZE};
+        Rectangle frontHitbox = combatState->knight.attack_hitbox_front;
+        Rectangle backHitbox = combatState->knight.attack_hitbox_back;
+        
+        bool hitFront = CheckCollisionRecs(bossRect, frontHitbox);
+        bool hitBack = CheckCollisionRecs(bossRect, backHitbox);
+        
+        // Vérification d'attaque du boss contre le joueur
+        extern bool CheckBossHitThisSwing(void);
+        extern void SetBossHitThisSwing(bool value);
+        
+        if ((hitFront || hitBack)) {
+            if (!CheckBossHitThisSwing()) {
+                int knight_attack_power = combatState->knight.attack_power * force_modifier;
+                DamageBoss(knight_attack_power);
+                SetBossHitThisSwing(true);
+                TraceLog(LOG_INFO, "Boss touché! HP: %d/%d", boss->hp, boss->max_hp);
+            }
+        } else {
+            SetBossHitThisSwing(false);
+        }
     }
 }
 

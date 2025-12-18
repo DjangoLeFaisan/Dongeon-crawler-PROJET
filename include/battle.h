@@ -33,6 +33,18 @@ typedef struct {
     int attack_animation_frame;    // Frame actuel (0-3 pour les 4 sprites)
 } Knight;
 
+// Structure du Boss (simple, basé sur les orcs)
+typedef struct {
+    int gridX, gridY;
+    float pixelX, pixelY;
+    int hp, max_hp;
+    int attack_power;
+    bool is_alive;
+    int texture_id;
+    int facing_direction;  // 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT
+    float stun_timer;  // Timer pour étourdissement
+} Boss;
+
 // Structure globale du combat (mode overlay)
 typedef struct {
     Knight knight;

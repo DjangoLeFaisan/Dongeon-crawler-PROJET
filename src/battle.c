@@ -103,6 +103,10 @@ void UpdateCombat(CombatState *state, float dt) {
             state->knight.attack_animation_frame = 3;
             state->knight.state = KNIGHT_IDLE;
             state->knight.attack_animation_timer = 0;
+            
+            // Réinitialiser le flag de hit du boss
+            extern void SetBossHitThisSwing(bool value);
+            SetBossHitThisSwing(false);
         }
     } else {
         state->knight.attack_animation_timer = 0;
