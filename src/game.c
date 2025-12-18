@@ -174,7 +174,6 @@ void GameUpdate(Board *board, float dt)
                     TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
                     ennemies_killed = 0;
                     ennemies_to_kill = 0;
-                    ToggleCombatOverlay();
                 } else {
                     TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");
                 }
