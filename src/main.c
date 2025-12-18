@@ -40,6 +40,8 @@ Sound gCutSound = {0};
 Sound gBlockSound = {0};
 Sound gEnemyAttackSound = {0};
 Sound gDeathSound = {0};
+Sound gEnemyMusic = {0};
+Sound gVictoryMusic = {0};
 
 
 int main(void)
@@ -51,18 +53,8 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Dungeon Crawler");
     InitAudioDevice();
 
-        gEnemyMusic = LoadSound("assets/SONNNNS/ennemi.mp3");
-    gVictoryMusic = LoadSound("assets/SONNNNS/victoire.ogg");
-    gDeathSound = LoadSound("assets/SONNNNS/gameover.mp3");
-
-    gBackgroundMusic = LoadMusicStream("assets/SONNNNS/background.ogg");
-
-
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
-    
-    // Initialiser le système audio
-    InitAudioDevice();
 
     // Chargement des textures
     
@@ -217,7 +209,7 @@ int main(void)
     PlayMusicStream(gBackgroundMusic);
     SetMusicVolume(gBackgroundMusic, 0.4f);
     
-    // Initialise les items duInitShopItems(); shop
+    // Initialise les items du shop
     InitShopItems();
         
     while (!WindowShouldClose())
@@ -257,7 +249,6 @@ int main(void)
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             HandleShopItemClick(mousePos, &gCombatState);
         }
-        BeginDrawing();
         DrawShop(is_in_shop);
         UpdateShopItemsHover(mousePos);  
 
