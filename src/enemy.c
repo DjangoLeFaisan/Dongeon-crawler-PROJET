@@ -28,6 +28,7 @@ extern Texture2D gTileTextures[];
 extern int SOLID_TILES[];
 extern int special_level;
 extern int ennemies_killed;
+extern Sound gDeathSound;
 
 // Déclaration de la variable globale de gestion du spawn
 SpawnManager gSpawnManager = {0};
@@ -126,6 +127,10 @@ void SpawnEnemiesForEtage(struct Board *board)
 
     ResetEnemies(board);
     
+    // Spawn le boss une fois par étage
+    // On ne peut pas accéder au nom du fichier ici, donc on passe NULL
+    // Le boss sera spawné via un autre mécanisme
+    
     // Initialiser le gestionnaire de spawn progressif
     gSpawnManager.spawnPointCount = 0;
     gSpawnManager.nextSpawnIndex = 0;
@@ -152,16 +157,12 @@ void SpawnEnemiesForEtage(struct Board *board)
 
     // Ne configurer les ennemis à spawn que s'il y a au moins un point de spawn ET que le spawn est activé
     if (gSpawnManager.spawnPointCount > 0 && spawn_enemies_enabled) {
-        // Définir le nombre d'ennemis selon l'étage
-        switch(current_level) {
-            case 1: gSpawnManager.maxEnemiesToSpawn = 4; break;
-            case 2: gSpawnManager.maxEnemiesToSpawn = 6; break;
-            case 3: gSpawnManager.maxEnemiesToSpawn = 8; break;
-            case 4: gSpawnManager.maxEnemiesToSpawn = 10; break;
-            case 5: gSpawnManager.maxEnemiesToSpawn = 12; break;
-            default: gSpawnManager.maxEnemiesToSpawn = 4; break;
-        }
-        TraceLog(LOG_INFO, "Level %d: will spawn %d enemies on %d spawn points", current_level, gSpawnManager.maxEnemiesToSpawn, gSpawnManager.spawnPointCount);
+        // CORRECTION : S'assurer de ne JAMAIS dépasser MAX_ENEMIES
+        int desired_enemies = gSpawnManager.spawnPointCount * 3;
+        gSpawnManager.maxEnemiesToSpawn = (desired_enemies < MAX_ENEMIES) ? desired_enemies : MAX_ENEMIES;
+
+        TraceLog(LOG_INFO, "Level %d: will spawn %d enemies on %d spawn points (capped at MAX_ENEMIES=%d)", 
+                 current_level, gSpawnManager.maxEnemiesToSpawn, gSpawnManager.spawnPointCount, MAX_ENEMIES);
     } else {
         if (!spawn_enemies_enabled) {
             TraceLog(LOG_WARNING, "Enemy spawning is disabled for this map");
@@ -185,10 +186,11 @@ void UpdateProgressiveSpawn(struct Board *board, float dt)
     gSpawnManager.spawnTimer += dt;
     
     // Si le délai de 4 secondes est écoulé
-    if (gSpawnManager.spawnTimer >= ENEMY_SPAWN_INTERVAL) {
+    if (gSpawnManager.spawnTimer >= (ENEMY_SPAWN_INTERVAL * 3) / gSpawnManager.spawnPointCount) {
         gSpawnManager.spawnTimer = 0.0f;
         
         // Spawn le prochain ennemi
+        // CORRECTION : Vérifier qu'on ne dépasse JAMAIS MAX_ENEMIES
         if (board->enemyCount < gSpawnManager.maxEnemiesToSpawn && board->enemyCount < MAX_ENEMIES) {
             // Recycler les points de spawn si nécessaire (boucler sur les points de spawn)
             int spawnX = gSpawnManager.spawnPoints[gSpawnManager.nextSpawnIndex % gSpawnManager.spawnPointCount][0];
@@ -196,10 +198,10 @@ void UpdateProgressiveSpawn(struct Board *board, float dt)
             
             if (!special_level) {
                 InitEnemy(&board->enemies[board->enemyCount], spawnX, spawnY);
+                TraceLog(LOG_INFO, "Enemy spawned at (%d, %d) - Total: %d/%d", spawnX, spawnY, board->enemyCount + 1, gSpawnManager.maxEnemiesToSpawn);
                 board->enemyCount++;
             }
             
-            TraceLog(LOG_INFO, "Enemy spawned at (%d, %d) - Total: %d/%d", spawnX, spawnY, board->enemyCount, gSpawnManager.maxEnemiesToSpawn);
             gSpawnManager.nextSpawnIndex++;
         }
     }
@@ -215,6 +217,11 @@ void ApplyDamageToEnemy(Enemy *enemy, int damage)
         enemy->is_alive = false;
         player_money += (10 * avarice_modifier);
         ennemies_killed ++;
+        
+        // Jouer le son de mort
+        if (gDeathSound.frameCount > 0) {
+            PlaySound(gDeathSound);
+        }
     }
     
     // Appliquer l'étourdissement quand l'ennemi est frappé
@@ -460,6 +467,13 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                 if (isInDefenseZone) {
                     blocked = true;
                     e->stun_timer = 4.0f;  // Étourdir l'ennemi pendant 2.5 secondes
+                    
+                    // Jouer le son de bloc
+                    extern Sound gBlockSound;
+                    if (gBlockSound.frameCount > 0) {
+                        PlaySound(gBlockSound);
+                    }
+                    
                     TraceLog(LOG_INFO, "Attaque bloquée! Le joueur se défend dans la zone de défense! Ennemi étourdi!");
                 }
             }
@@ -468,6 +482,13 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
             if (!blocked && !editor_active) {
                 combatState->knight.hp -= (e->attack_power *= defense_modifier);
                 if (combatState->knight.hp < 0) combatState->knight.hp = 0;
+                
+                // Jouer le son d'attaque ennemie
+                extern Sound gEnemyAttackSound;
+                if (gEnemyAttackSound.frameCount > 0) {
+                    PlaySound(gEnemyAttackSound);
+                }
+                
                 TraceLog(LOG_INFO, "Ennemi attaque le chevalier! HP: %d", combatState->knight.hp);
             }
             
@@ -482,6 +503,14 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
                 int knight_attack_power = combatState->knight.attack_power * force_modifier;
                 ApplyDamageToEnemy(e, knight_attack_power);
                 e->was_hit_this_swing = true;
+                combatState->knight.attack_has_hit = true;  // Marquer que l'attaque a touché quelque chose
+                
+                // Jouer le son de coup
+                extern Sound gCutSound;
+                if (gCutSound.frameCount > 0) {
+                    PlaySound(gCutSound);
+                }
+                
                 TraceLog(LOG_INFO, "Ennemi touché! HP restant: %d", e->hp);
             }
         } else {
@@ -519,6 +548,42 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
         
         // Mettre à jour les hitboxes d'attaque selon la position et la direction actuelles
         UpdateEnemyAttackHitboxes(e);
+    }
+    
+    // Vérifier les collisions avec le boss
+    extern Boss* GetBoss(void);
+    extern void DamageBoss(int damage);
+    Boss *boss = GetBoss();
+    if (boss && boss->is_alive && combatState && combatState->knight.state == KNIGHT_ATTACKING) {
+        Rectangle bossRect = {boss->pixelX, boss->pixelY, TILE_SIZE, TILE_SIZE};
+        Rectangle frontHitbox = combatState->knight.attack_hitbox_front;
+        Rectangle backHitbox = combatState->knight.attack_hitbox_back;
+        
+        bool hitFront = CheckCollisionRecs(bossRect, frontHitbox);
+        bool hitBack = CheckCollisionRecs(bossRect, backHitbox);
+        
+        // Vérification d'attaque du boss contre le joueur
+        extern bool CheckBossHitThisSwing(void);
+        extern void SetBossHitThisSwing(bool value);
+        
+        if ((hitFront || hitBack)) {
+            if (!CheckBossHitThisSwing()) {
+                int knight_attack_power = combatState->knight.attack_power * force_modifier;
+                DamageBoss(knight_attack_power);
+                SetBossHitThisSwing(true);
+                combatState->knight.attack_has_hit = true;  // Marquer que l'attaque a touché quelque chose
+                
+                // Jouer le son de coup
+                extern Sound gCutSound;
+                if (gCutSound.frameCount > 0) {
+                    PlaySound(gCutSound);
+                }
+                
+                TraceLog(LOG_INFO, "Boss touché! HP: %d/%d", boss->hp, boss->max_hp);
+            }
+        } else {
+            SetBossHitThisSwing(false);
+        }
     }
 }
 

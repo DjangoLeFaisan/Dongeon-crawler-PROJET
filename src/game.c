@@ -20,6 +20,10 @@ extern bool special_level;
 extern int current_level;
 extern ShopItem shop_items[MAX_SHOP_ITEMS];
 
+
+extern double hitbox_height;
+extern double hitbox_width;
+extern double attack_power;
 extern int player_money;
 extern double force_modifier;
 extern double defense_modifier;
@@ -152,6 +156,10 @@ void GameUpdate(Board *board, float dt)
                 // Réinitialiser les ennemis
                 ResetEnemies(board);
                 
+                // Réinitialiser le boss
+                extern void ResetBoss(void);
+                ResetBoss();
+                
                 // Réinitialiser le niveau
                 current_level = 1;
                 special_level = true;
@@ -165,6 +173,10 @@ void GameUpdate(Board *board, float dt)
                 attack_speed_modifier = 1.0;
                 rage_modifier = 1.0;
                 avarice_modifier = 1;
+                hitbox_height = 32;
+                hitbox_width = 32;
+                attack_power = 10;
+                
                 for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
                     shop_items[i].currentStack = 0;
                 }
@@ -179,7 +191,6 @@ void GameUpdate(Board *board, float dt)
                     TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
                     ennemies_killed = 0;
                     ennemies_to_kill = 0;
-                    ToggleCombatOverlay();
                 } else {
                     TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");
                 }
@@ -200,6 +211,7 @@ void GameUpdate(Board *board, float dt)
     UpdateAttackHitboxesFromPlayer(&gCombatState, board->player.pixelX, board->player.pixelY);
     UpdateEnemies(board, dt, &gCombatState);
     UpdateProgressiveSpawn(board, dt);
+    UpdateBoss(board, dt);
     
     Vector2 m = GetMousePosition();
     int tileX = (int)(m.x) / TILE_SIZE;
@@ -385,6 +397,9 @@ void GameDraw(const Board *board)
 
     // Afficher les ennemis au-dessus des tuiles
     DrawEnemies(board);
+    
+    // Afficher le boss
+    DrawBoss(board);
 
     // Afficher le joueur par-dessus les tuiles
     if (board->player.texture_id >= 0 && board->player.texture_id < gTileTextureCount)
@@ -393,10 +408,11 @@ void GameDraw(const Board *board)
         int texture_to_draw = board->player.texture_id;
         
         extern CombatState gCombatState;
-        if (gCombatState.combat_overlay_active && gCombatState.knight.state == KNIGHT_ATTACKING) {
+        // Afficher les animations même sans combat_overlay_active pour permettre les attaques fluides
+        if (gCombatState.knight.state == KNIGHT_ATTACKING) {
             // Utiliser les sprites d'attaque (103-106) selon le frame
             texture_to_draw = 103 + gCombatState.knight.attack_animation_frame;
-        } else if (gCombatState.combat_overlay_active && gCombatState.knight.state == KNIGHT_DEFENDING) {
+        } else if (gCombatState.knight.state == KNIGHT_DEFENDING) {
             // Utiliser les sprites de défense (107-108)
             texture_to_draw = 107;
         }

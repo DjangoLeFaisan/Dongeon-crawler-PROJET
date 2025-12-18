@@ -39,6 +39,17 @@ void GameInit(Board *board);
 void GameUpdate(Board *board, float dt);
 void GameDraw(const Board *board);
 
+// Fonctions Boss
+void SpawnBoss(Board *board, const char *mapName);
+void UpdateBoss(Board *board, float dt);
+void DrawBoss(const Board *board);
+void ResetBoss(void);
+bool CheckBossCollision(int gridX, int gridY);
+void DamageBoss(int damage);
+void BossAttackPlayer(Board *board, int damage);
+Boss* GetBoss(void);
+bool CheckBossHitThisSwing(void);
+void SetBossHitThisSwing(bool value);
 
 #endif
 
