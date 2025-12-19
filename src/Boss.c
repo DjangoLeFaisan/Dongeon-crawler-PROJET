@@ -345,6 +345,11 @@ Boss* GetBoss(void) {
     return &gBoss;
 }
 
+// Vérifier si le boss est actif
+bool GetBossActive(void) {
+    return gBossActive;
+}
+
 // Vérifier si le boss a été touché cette frame
 bool CheckBossHitThisSwing(void) {
     return gBossWasHitThisSwing;

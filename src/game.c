@@ -77,6 +77,8 @@ static int lastPreviewX = -1;
 static int lastPreviewY = -1;
 static bool game_over = false;
 static float game_over_timer = 0.0f;
+static bool boss_victory = false;
+static float boss_victory_timer = 0.0f;
 
 // Gestion du nom de carte
 #define MAX_MAP_NAME_LENGTH 64
@@ -160,6 +162,78 @@ void GameUpdate(Board *board, float dt)
         game_over = true;
         game_over_timer = 0.0f;
         TraceLog(LOG_INFO, "GAME OVER! Le joueur est mort!");
+    }
+    
+    // Vérifier si le boss est mort
+    extern Boss* GetBoss(void);
+    extern bool GetBossActive(void);
+    Boss* boss = GetBoss();
+    if (boss != NULL && GetBossActive() && boss->is_alive == false && !boss_victory) {
+        boss_victory = true;
+        boss_victory_timer = 0.0f;
+        TraceLog(LOG_INFO, "VICTOIRE! Le boss est vaincu!");
+    }
+    
+    // Si victoire du boss, gérer les boutons
+    if (boss_victory) {
+        Vector2 mousePos = GetMousePosition();
+        
+        // Définir les rectangles des boutons
+        Rectangle btnRecommencer = {((PLAYABLE_ZONE_WIDTH / 2) - 70) - 100, 400, 140, 60};
+        Rectangle btnQuitter = {((PLAYABLE_ZONE_WIDTH / 2) - 70) + 100, 400, 140, 60};
+        
+        // Vérifier si les boutons sont cliqués
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (CheckCollisionPointRec(mousePos, btnRecommencer)) {
+                // Réinitialiser complètement le jeu
+                boss_victory = false;
+                boss_victory_timer = 0.0f;
+                
+                // Réinitialiser le joueur
+                GameInit(board);
+                
+                // Réinitialiser le combat
+                InitCombat(&gCombatState);
+                
+                // Réinitialiser les ennemis
+                ResetEnemies(board);
+                
+                // Réinitialiser le boss
+                extern void ResetBoss(void);
+                ResetBoss();
+                
+                // Réinitialiser le niveau
+                current_level = 1;
+                special_level = true;
+                chrono = 0;
+                has_cheated = false;
+
+                // Réinitialiser les stats du joueur et le shop
+                player_money = 0;
+                force_modifier = 1.0;
+                defense_modifier = 1.0;
+                speed_modifier = 1.0;
+                range_modifier = 1.0;
+                attack_speed_modifier = 1.0;
+                rage_modifier = 1.0;
+                avarice_modifier = 1;
+                hitbox_height = 32;
+                hitbox_width = 32;
+                attack_power = 10;
+                
+                for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+                    shop_items[i].currentStack = 0;
+                }
+
+                extern bool spawn_enemies_enabled;
+                spawn_enemies_enabled = false;
+                
+                MapLoad(board, "maps/couloir_defaul.map");
+            } else if (CheckCollisionPointRec(mousePos, btnQuitter)) {
+                // Quitter le jeu
+                exit(0);
+            }
+        }
     }
     
     // Si game over, gérer les boutons
@@ -488,6 +562,46 @@ void GameDraw(const Board *board)
 
     // Afficher l'overlay du combat par-dessus la map
     extern CombatState gCombatState;
+    
+    // Afficher victoire si le boss est mort
+    if (boss_victory) {
+        Vector2 mousePos = GetMousePosition();
+        
+        // Fond semi-transparent noir
+        Color darkOverlay = {0, 0, 0, 200};
+        DrawRectangle(0, 0, 1088, 704, darkOverlay);
+        
+        // Texte VICTOIRE
+        const char *victoryText = "VICTOIRE";
+        int victoryWidth = MeasureText(victoryText, 80);
+        DrawText(victoryText, (PLAYABLE_ZONE_WIDTH - victoryWidth) / 2, (PLAYABLE_ZONE_HEIGTH / 2) - 120, 80, GOLD);
+        
+        // Afficher le chrono
+        extern double chrono;
+        char chronoText[64];
+        int minutes = (int)chrono / 60;
+        int seconds = (int)chrono % 60;
+        snprintf(chronoText, sizeof(chronoText), "Temps: %02d:%02d", minutes, seconds);
+        int chronoWidth = MeasureText(chronoText, 40);
+        DrawText(chronoText, (PLAYABLE_ZONE_WIDTH - chronoWidth) / 2, (PLAYABLE_ZONE_HEIGTH / 2) - 20, 40, YELLOW);
+        
+        // Définir les rectangles des boutons
+        Rectangle btnRecommencer = {((PLAYABLE_ZONE_WIDTH / 2) - 70) - 100, 400, 140, 60};
+        Rectangle btnQuitter = {((PLAYABLE_ZONE_WIDTH / 2) - 70) + 100, 400, 140, 60};
+        
+        // Couleurs des boutons (changent si survol)
+        Color colorRecommencer = CheckCollisionPointRec(mousePos, btnRecommencer) ? (Color){0, 200, 0, 255} : (Color){0, 150, 0, 255};
+        Color colorQuitter = CheckCollisionPointRec(mousePos, btnQuitter) ? (Color){200, 0, 0, 255} : (Color){150, 0, 0, 255};
+        
+        // Dessiner les boutons
+        DrawRectangleRec(btnRecommencer, colorRecommencer);
+        DrawRectangleLinesEx(btnRecommencer, 2, WHITE);
+        DrawText("RECOMMENCER", (int)btnRecommencer.x + 10, (int)btnRecommencer.y + 18, 16, WHITE);
+        
+        DrawRectangleRec(btnQuitter, colorQuitter);
+        DrawRectangleLinesEx(btnQuitter, 2, WHITE);
+        DrawText("QUITTER", (int)btnQuitter.x + 35, (int)btnQuitter.y + 18, 18, WHITE);
+    }
     
     // Afficher game over si le joueur est mort
     if (game_over) {
