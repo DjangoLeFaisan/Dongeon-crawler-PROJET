@@ -48,6 +48,7 @@ bool CheckBossCollision(int gridX, int gridY);
 void DamageBoss(int damage);
 void BossAttackPlayer(Board *board, int damage);
 Boss* GetBoss(void);
+bool GetBossActive(void);
 bool CheckBossHitThisSwing(void);
 void SetBossHitThisSwing(bool value);
 
