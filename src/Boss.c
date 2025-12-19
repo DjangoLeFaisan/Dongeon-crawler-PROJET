@@ -223,6 +223,8 @@ void ResetBoss(void) {
     gBossSpawned = false;
     gBossActive = false;
     gBoss.is_alive = false;
+    gBoss.hp = 0;  // Réinitialiser le HP du boss
+    gBoss.max_hp = 0;  // Réinitialiser le max HP du boss
     gBossAlerted = false;  // Réinitialiser le flag d'alerte
 }
 

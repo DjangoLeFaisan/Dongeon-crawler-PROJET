@@ -218,13 +218,13 @@ void GameUpdate(Board *board, float dt)
         TraceLog(LOG_INFO, "GAME OVER! Le joueur est mort!");
     }
     
-    // Vérifier si le boss est vaincu (uniquement à l'Étage 9)
+    // Vérifier si le boss est vaincu (boss spawné ET hp <= 0)
     extern Boss* GetBoss(void);
     extern Music gBossFinalMusic;
     extern Music gCombatMusic;
     extern Music gBackgroundMusic;
     Boss* boss = GetBoss();
-    if (boss && current_level == 9 && boss->hp <= 0 && !victory) {
+    if (boss && boss->max_hp > 0 && boss->hp <= 0 && !victory) {
         victory = true;
         victory_timer = 0.0f;
         TraceLog(LOG_INFO, "VICTOIRE! Le boss est vaincu!");
