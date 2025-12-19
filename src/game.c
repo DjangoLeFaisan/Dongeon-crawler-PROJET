@@ -226,7 +226,7 @@ void GameUpdate(Board *board, float dt)
     extern Music gCombatMusic;
     extern Music gBackgroundMusic;
     Boss* boss = GetBoss();
-    if (gBossActive && current_level == 9 && boss->hp <= 0 && !victory) {
+    if (current_level == 9  && boss->max_hp > 0 && boss->hp <= 0 && !victory) {
         victory = true;
         victory_timer = 0.0f;
         TraceLog(LOG_INFO, "VICTOIRE! Le boss est vaincu!");
