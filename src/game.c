@@ -15,6 +15,7 @@
 
 double chrono = 0;
 extern bool has_cheated;
+extern bool gBossActive;
 
 // Gestionnaire de texture
 Texture2D money_texture;
@@ -23,7 +24,7 @@ int gTileTextureCount = 0;
 
 // Tuiles considérées comme solides
 int SOLID_TILES[99] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
- 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 101, 102, 103 ,104 ,105 ,106 ,107 ,108 ,109 ,110 ,111 ,112 , 120};
+ 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 71, 101, 102, 103 ,104 ,105 ,106 ,107 ,108 ,109 ,110 ,111 ,112 , 120};
 
 // Gestionnaire de l'état de jeu
 #define ETAT_EDITOR 0
@@ -96,14 +97,9 @@ static void GetMapFilepath(const char *mapName, char *filepath, int maxLen)
 static void ResetGameState(Board *board)
 {
     extern CombatState gCombatState;
+    extern Knight knight;
     extern void ResetBoss(void);
     extern bool spawn_enemies_enabled;
-    
-    // Réinitialiser le joueur
-    GameInit(board);
-    
-    // Réinitialiser le combat
-    InitCombat(&gCombatState);
     
     // Réinitialiser les ennemis
     ResetEnemies(board);
@@ -129,6 +125,12 @@ static void ResetGameState(Board *board)
     hitbox_height = 32;
     hitbox_width = 32;
     attack_power = 10;
+
+    // Réinitialiser le joueur
+    GameInit(board);
+    
+    // Réinitialiser le combat
+    InitCombat(&gCombatState);
     
     for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
         shop_items[i].currentStack = 0;
@@ -224,7 +226,7 @@ void GameUpdate(Board *board, float dt)
     extern Music gCombatMusic;
     extern Music gBackgroundMusic;
     Boss* boss = GetBoss();
-    if (boss && current_level == 9 && boss->hp <= 0 && !victory) {
+    if (gBossActive && current_level == 9 && boss->hp <= 0 && !victory) {
         victory = true;
         victory_timer = 0.0f;
         TraceLog(LOG_INFO, "VICTOIRE! Le boss est vaincu!");

@@ -17,7 +17,7 @@ extern Sound gDeathSound;
 // Boss global (variable statique)
 static Boss gBoss = {0};
 static bool gBossSpawned = false;
-static bool gBossActive = false;
+bool gBossActive = false;
 static bool gBossWasHitThisSwing = false;  // Flag pour éviter les dégâts multiples
 static float gBossAttackCooldown = 0.0f;   // Cooldown avant prochaine attaque
 static Rectangle gBossAttackHitboxFront = {0};
