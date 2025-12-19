@@ -479,7 +479,7 @@ void UpdateEnemies(struct Board *board, float dt, CombatState *combatState)
             }
             
             // Infliger les dégâts seulement si l'attaque n'est pas bloquée
-            if (!blocked && !editor_active) {
+            if (!blocked) {
                 combatState->knight.hp -= (e->attack_power *= defense_modifier);
                 if (combatState->knight.hp < 0) combatState->knight.hp = 0;
                 
@@ -606,24 +606,6 @@ void DrawEnemies(const struct Board *board)
             DrawRectangle((int)e->pixelX, (int)e->pixelY, TILE_SIZE, TILE_SIZE, DARKGREEN);
         }
         
-        if (editor_active) {
-            // Afficher la hitbox de l'ennemi en rouge
-            Rectangle enemyHitbox = {
-                (int)e->pixelX,
-                (int)e->pixelY,
-                TILE_SIZE,
-                TILE_SIZE
-            };
-            DrawRectangleRec(enemyHitbox, (Color){255, 0, 0, 30});  // Rouge très transparent
-            DrawRectangleLinesEx(enemyHitbox, 1, (Color){255, 0, 0, 150});  // Bordure rouge
-            
-            // Afficher les hitboxes d'attaque de l'ennemi (comme le joueur)
-            DrawRectangleRec(e->attack_hitbox_front, (Color){255, 0, 0, 100});  // Rouge semi-transparent
-            DrawRectangleLinesEx(e->attack_hitbox_front, 2, RED);  // Bordure rouge
-            
-            DrawRectangleRec(e->attack_hitbox_back, (Color){255, 0, 0, 50});   // Rouge très transparent
-            DrawRectangleLinesEx(e->attack_hitbox_back, 1, (Color){255, 0, 0, 150});
-        }
 
         // Barre de vie
         int bar_width = TILE_SIZE;

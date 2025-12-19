@@ -77,8 +77,8 @@ void SpawnBoss(Board *board, const char *mapName) {
     gBoss.gridY = 8;
     gBoss.pixelX = gBoss.gridX * TILE_SIZE;
     gBoss.pixelY = gBoss.gridY * TILE_SIZE;
-    gBoss.hp = 80;
-    gBoss.max_hp = 80;
+    gBoss.hp = 300;
+    gBoss.max_hp = 300;
     gBoss.attack_power = 15;
     gBoss.is_alive = true;
     gBoss.facing_direction = ENEMY_DIR_DOWN;

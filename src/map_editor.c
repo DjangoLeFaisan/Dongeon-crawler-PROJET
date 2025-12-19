@@ -35,7 +35,7 @@ int map_editor(Board *board) {
         editor_active = true;
 
     } else {
-        //Retour à l'inventaire
+        //Retour à l'inventaire (quand on appuie sur Ctrl+I)
         int groundIndex = 0;
         
         for (int y = 0; y < BOARD_ROWS; y++)

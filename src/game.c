@@ -77,6 +77,8 @@ static int lastPreviewX = -1;
 static int lastPreviewY = -1;
 static bool game_over = false;
 static float game_over_timer = 0.0f;
+static bool victory = false;
+static float victory_timer = 0.0f;
 
 // Gestion du nom de carte
 #define MAX_MAP_NAME_LENGTH 64
@@ -90,6 +92,60 @@ static void GetMapFilepath(const char *mapName, char *filepath, int maxLen)
     snprintf(filepath, maxLen, "maps/%s.map", mapName);
 }
 
+// Réinitialiser l'état complet du jeu
+static void ResetGameState(Board *board)
+{
+    extern CombatState gCombatState;
+    extern void ResetBoss(void);
+    extern bool spawn_enemies_enabled;
+    
+    // Réinitialiser le joueur
+    GameInit(board);
+    
+    // Réinitialiser le combat
+    InitCombat(&gCombatState);
+    
+    // Réinitialiser les ennemis
+    ResetEnemies(board);
+    
+    // Réinitialiser le boss
+    ResetBoss();
+    
+    // Réinitialiser le niveau
+    current_level = 1;
+    special_level = true;
+    chrono = 0;
+    has_cheated = false;
+
+    // Réinitialiser les stats du joueur et le shop
+    player_money = 0;
+    force_modifier = 1.0;
+    defense_modifier = 1.0;
+    speed_modifier = 1.0;
+    range_modifier = 1.0;
+    attack_speed_modifier = 1.0;
+    rage_modifier = 1.0;
+    avarice_modifier = 1;
+    hitbox_height = 32;
+    hitbox_width = 32;
+    attack_power = 10;
+    
+    for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
+        shop_items[i].currentStack = 0;
+    }
+    
+    // Désactiver le spawn pour couloir_defaul
+    spawn_enemies_enabled = false;
+    
+    // Recharger la première carte (couloir sans ennemis)
+    if (MapLoad(board, "maps/couloir_defaul.map")) {
+        TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
+        ennemies_killed = 0;
+        ennemies_to_kill = 0;
+    } else {
+        TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");
+    }
+}
 
 // ******************************************
 //
@@ -162,6 +218,22 @@ void GameUpdate(Board *board, float dt)
         TraceLog(LOG_INFO, "GAME OVER! Le joueur est mort!");
     }
     
+    // Vérifier si le boss est vaincu (uniquement à l'Étage 9)
+    extern Boss* GetBoss(void);
+    extern Music gBossFinalMusic;
+    extern Music gCombatMusic;
+    extern Music gBackgroundMusic;
+    Boss* boss = GetBoss();
+    if (boss && current_level == 9 && boss->hp <= 0 && !victory) {
+        victory = true;
+        victory_timer = 0.0f;
+        TraceLog(LOG_INFO, "VICTOIRE! Le boss est vaincu!");
+        // Arrêter les musiques
+        StopMusicStream(gBossFinalMusic);
+        StopMusicStream(gCombatMusic);
+        StopMusicStream(gBackgroundMusic);
+    }
+    
     // Si game over, gérer les boutons
     if (game_over) {
         Vector2 mousePos = GetMousePosition();
@@ -176,56 +248,7 @@ void GameUpdate(Board *board, float dt)
                 // Réinitialiser complètement le jeu
                 game_over = false;
                 game_over_timer = 0.0f;
-                
-                // Réinitialiser le joueur
-                GameInit(board);
-                
-                // Réinitialiser le combat
-                InitCombat(&gCombatState);
-                
-                // Réinitialiser les ennemis
-                ResetEnemies(board);
-                
-                // Réinitialiser le boss
-                extern void ResetBoss(void);
-                ResetBoss();
-                
-                // Réinitialiser le niveau
-                current_level = 1;
-                special_level = true;
-                chrono = 0;
-                has_cheated = false;
-
-                // Réinitialiser les stats du joueur et le shop
-                player_money = 0;
-                force_modifier = 1.0;
-                defense_modifier = 1.0;
-                speed_modifier = 1.0;
-                range_modifier = 1.0;
-                attack_speed_modifier = 1.0;
-                rage_modifier = 1.0;
-                avarice_modifier = 1;
-                hitbox_height = 32;
-                hitbox_width = 32;
-                attack_power = 10;
-                
-                for (int i = 0; i < MAX_SHOP_ITEMS; i++) {
-                    shop_items[i].currentStack = 0;
-                }
-
-                
-                // Désactiver le spawn pour couloir_defaul
-                extern bool spawn_enemies_enabled;
-                spawn_enemies_enabled = false;
-                
-                // Recharger la première carte (couloir sans ennemis)
-                if (MapLoad(board, "maps/couloir_defaul.map")) {
-                    TraceLog(LOG_INFO, "Carte chargée avec succès: maps/couloir_defaul.map");
-                    ennemies_killed = 0;
-                    ennemies_to_kill = 0;
-                } else {
-                    TraceLog(LOG_ERROR, "Erreur lors du chargement de la carte: maps/couloir_defaul.map");
-                }
+                ResetGameState(board);
 
             } else if (CheckCollisionPointRec(mousePos, btnAbandoner)) {
                 // Quitter le jeu
@@ -233,6 +256,30 @@ void GameUpdate(Board *board, float dt)
             }
         }
         return;  // Ne pas mettre à jour le jeu si game over
+    }
+    
+    // Si victoire, gérer l'écran de victoire
+    if (victory) {
+        Vector2 mousePos = GetMousePosition();
+        
+        // Définir les rectangles des boutons
+        Rectangle btnRecommencer = {((PLAYABLE_ZONE_WIDTH / 2) - 70) - 100, 400, 140, 60};
+        Rectangle btnQuitter = {((PLAYABLE_ZONE_WIDTH / 2) - 70) + 100, 400, 140, 60};
+        
+        // Vérifier si les boutons sont cliqués
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (CheckCollisionPointRec(mousePos, btnRecommencer)) {
+                // Réinitialiser complètement le jeu
+                victory = false;
+                victory_timer = 0.0f;
+                ResetGameState(board);
+
+            } else if (CheckCollisionPointRec(mousePos, btnQuitter)) {
+                // Quitter le jeu
+                exit(0);
+            }
+        }
+        return;  // Ne pas mettre à jour le jeu si victoire
     }
     
     // Gestion du joueur
@@ -488,6 +535,38 @@ void GameDraw(const Board *board)
 
     // Afficher l'overlay du combat par-dessus la map
     extern CombatState gCombatState;
+    
+    // Afficher l'écran de victoire si le boss est vaincu
+    if (victory) {
+        Vector2 mousePos = GetMousePosition();
+        
+        // Fond semi-transparent noir
+        Color darkOverlay = {0, 0, 0, 200};
+        DrawRectangle(0, 0, 1088, 704, darkOverlay);
+        
+        // Texte VICTOIRE
+        const char *victoryText = "VICTOIRE!";
+        
+        int victoryWidth = MeasureText(victoryText, 80);
+        DrawText(victoryText, (PLAYABLE_ZONE_WIDTH - victoryWidth) / 2, (PLAYABLE_ZONE_HEIGTH / 2) - 120, 80, GOLD);
+        
+        // Définir les rectangles des boutons
+        Rectangle btnRecommencer = {((PLAYABLE_ZONE_WIDTH / 2) - 70) - 100, 400, 140, 60};
+        Rectangle btnQuitter = {((PLAYABLE_ZONE_WIDTH / 2) - 70) + 100, 400, 140, 60};
+        
+        // Couleurs des boutons (changent si survol)
+        Color colorRecommencer = CheckCollisionPointRec(mousePos, btnRecommencer) ? (Color){0, 200, 0, 255} : (Color){0, 150, 0, 255};
+        Color colorQuitter = CheckCollisionPointRec(mousePos, btnQuitter) ? (Color){200, 0, 0, 255} : (Color){150, 0, 0, 255};
+        
+        // Dessiner les boutons
+        DrawRectangleRec(btnRecommencer, colorRecommencer);
+        DrawRectangleLinesEx(btnRecommencer, 2, WHITE);
+        DrawText("RECOMMENCER", (int)btnRecommencer.x + 5, (int)btnRecommencer.y + 18, 16, WHITE);
+        
+        DrawRectangleRec(btnQuitter, colorQuitter);
+        DrawRectangleLinesEx(btnQuitter, 2, WHITE);
+        DrawText("QUITTER", (int)btnQuitter.x + 30, (int)btnQuitter.y + 18, 18, WHITE);
+    }
     
     // Afficher game over si le joueur est mort
     if (game_over) {
